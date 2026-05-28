@@ -1,0 +1,242 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String?
+  phone         String?
+  country       String?
+  role          String    @default("customer") // customer, admin, support
+  avatar        String?
+  isBanned      Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  referralCode  String    @unique
+  referredBy    String?
+  walletAddress String?
+  balance       Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  orders       Order[]
+  payments     Payment[]
+  tickets      Ticket[]
+  reviews      Review[]
+  referrals    Referral[]  @relation("UserReferrals")
+  referrer     Referral?   @relation("ReferredBy")
+  notifications Notification[]
+  transactions   Transaction[]
+  walletTransactions WalletTransaction[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?
+  image       String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String
+  shortDesc     String?
+  images        String   @default("[]") // JSON array of image URLs
+  price         Float
+  comparePrice  Float?
+  sku           String   @unique
+  categoryId    String
+  stock         Int      @default(0)
+  deliveryType  String   @default("automatic") // automatic, manual
+  deliveryInfo  String?  // JSON for automatic delivery content
+  isFeatured    Boolean  @default(false)
+  isNew         Boolean  @default(false)
+  isTrending    Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0)
+  soldCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category Category     @relation(fields: [categoryId], references: [id])
+  reviews  Review[]
+  items    OrderItem[]
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  orderNumber   String   @unique
+  userId        String
+  status        String   @default("pending") // pending, payment_waiting, paid, processing, completed, cancelled, refunded
+  itemsPrice    Float
+  discount      Float    @default(0)
+  fee           Float    @default(0)
+  total         Float
+  couponId      String?
+  paymentMethod String?  // usdt_trc20, usdt_bep20
+  paymentStatus String   @default("pending") // pending, confirmed, failed, refunded
+  paymentId     String?
+  deliveryStatus String  @default("pending") // pending, delivered, failed
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user    User        @relation(fields: [userId], references: [id])
+  items   OrderItem[]
+  payment Payment?
+  coupon  Coupon?     @relation(fields: [couponId], references: [id])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  total     Float
+  deliveryData String? // JSON for automatic delivery content
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  orderId         String   @unique
+  userId          String
+  method          String   // usdt_trc20, usdt_bep20
+  amount          Float
+  walletAddress   String?  // Generated wallet for payment
+  txHash          String?
+  status          String   @default("pending") // pending, confirmed, failed, expired, refunded
+  expiresAt       DateTime?
+  confirmedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  type        String   // percentage, fixed
+  value       Float
+  minOrder    Float    @default(0)
+  maxDiscount Float?
+  usageLimit  Int?
+  usedCount   Int      @default(0)
+  userLimit   Int      @default(1)
+  expiresAt   DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  category    String   // payment, delivery, account, other
+  description String
+  screenshot  String?
+  status      String   @default("open") // open, pending, solved, closed
+  priority    String   @default("medium") // low, medium, high
+  messages    String   @default("[]") // JSON array of messages
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  referrerId  String
+  referredId  String   @unique
+  commission  Float    @default(0)
+  status      String   @default("active") // active, paid, cancelled
+  createdAt   DateTime @default(now())
+
+  referrer User @relation("UserReferrals", fields: [referrerId], references: [id])
+  referred User @relation("ReferredBy", fields: [referredId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("info") // info, success, warning, error
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // deposit, withdrawal, purchase, refund, commission
+  amount      Float
+  status      String   @default("completed") // pending, completed, failed
+  description String?
+  referenceId String?  // Order ID or payment ID
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // deposit, withdrawal
+  amount      Float
+  status      String   @default("pending") // pending, completed, failed
+  txHash      String?
+  method      String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+}
