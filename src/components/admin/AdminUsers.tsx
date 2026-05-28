@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import type { User, UserRole } from '@/lib/types';
-import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -77,12 +77,8 @@ export function AdminUsers() {
 
   const handleResetPassword = async (userId: string) => {
     try {
-      const res = await fetch(`/api/admin/users/${userId}/reset-password`, {
-        method: 'POST',
-      });
-      if (res.ok) {
-        setResetConfirm(null);
-      }
+      const res = await fetch(`/api/admin/users/${userId}/reset-password`, { method: 'POST' });
+      if (res.ok) setResetConfirm(null);
     } catch {
       // handle error
     }
@@ -93,151 +89,158 @@ export function AdminUsers() {
     setDetailOpen(true);
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   if (loading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-10 w-48 bg-white/5" />
+        <Skeleton className="h-64 w-full bg-white/5" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Users</h2>
-          <p className="text-muted-foreground">Manage user accounts and permissions</p>
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h2 className="text-2xl font-bold text-gradient-cyan">Users</h2>
+        <p className="text-muted-foreground">Manage user accounts and permissions</p>
+      </motion.div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="relative"
+      >
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-400/50" />
         <Input
           placeholder="Search users by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-10 glass-input"
         />
-      </div>
+      </motion.div>
 
       {/* Users Table */}
-      <Card>
-        <CardContent className="p-0">
-          {filteredUsers.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-              <Users className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-lg font-medium">No users found</p>
-              <p className="text-sm">Users will appear here when they register.</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Orders</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-medium">
-                            {user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
-                          </span>
-                        </div>
-                        <span className="font-medium text-sm">{user.name}</span>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="glass-card rounded-xl overflow-hidden"
+      >
+        {filteredUsers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+            <Users className="h-12 w-12 mb-4 opacity-50" />
+            <p className="text-lg font-medium">No users found</p>
+            <p className="text-sm">Users will appear here when they register.</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+                <TableHead className="text-muted-foreground">Name</TableHead>
+                <TableHead className="text-muted-foreground">Email</TableHead>
+                <TableHead className="text-muted-foreground">Role</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead className="text-muted-foreground">Orders</TableHead>
+                <TableHead className="text-muted-foreground">Balance</TableHead>
+                <TableHead className="text-muted-foreground">Joined</TableHead>
+                <TableHead className="text-right text-muted-foreground">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.map((user) => (
+                <TableRow key={user.id} className="border-cyan-500/5 hover:bg-cyan-500/5">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-cyan-500/15 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
+                        <span className="text-xs font-medium text-cyan-400">
+                          {user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                        </span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{user.email}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                        {user.role === 'admin' ? <Shield className="h-3 w-3 mr-1" /> : null}
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={
-                          user.isBanned
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-green-100 text-green-800'
-                        }
+                      <span className="font-medium text-sm text-foreground">{user.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{user.email}</TableCell>
+                  <TableCell>
+                    <Badge className={
+                      user.role === 'admin'
+                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                        : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                    }>
+                      {user.role === 'admin' ? <Shield className="h-3 w-3 mr-1" /> : null}
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={
+                        user.isBanned
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                          : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      }
+                    >
+                      {user.isBanned ? 'Banned' : 'Active'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-foreground">{user.orderCount || 0}</TableCell>
+                  <TableCell className="font-medium text-sm text-gradient-gold">${user.balance.toFixed(2)}</TableCell>
+                  <TableCell className="text-muted-foreground text-xs">{formatDate(user.createdAt)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => openDetail(user)}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleToggleBan(user.id, !!user.isBanned)}
+                        disabled={banToggling === user.id || user.role === 'admin'}
+                        className={user.isBanned ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-red-400 hover:bg-red-500/10'}
                       >
-                        {user.isBanned ? 'Banned' : 'Active'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{user.orderCount || 0}</TableCell>
-                    <TableCell className="font-medium text-sm">${user.balance.toFixed(2)}</TableCell>
-                    <TableCell className="text-muted-foreground text-xs">{formatDate(user.createdAt)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => openDetail(user)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleToggleBan(user.id, !!user.isBanned)}
-                          disabled={banToggling === user.id || user.role === 'admin'}
-                          className={user.isBanned ? 'text-green-600' : 'text-red-600'}
-                        >
-                          {user.isBanned ? <Shield className="h-4 w-4" /> : <ShieldOff className="h-4 w-4" />}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-orange-600"
-                          onClick={() => setResetConfirm(user.id)}
-                        >
-                          <KeyRound className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                        {user.isBanned ? <Shield className="h-4 w-4" /> : <ShieldOff className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-amber-400 hover:bg-amber-500/10"
+                        onClick={() => setResetConfirm(user.id)}
+                      >
+                        <KeyRound className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </motion.div>
 
       {/* User Detail Dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="glass-strong border-cyan-500/20 sm:max-w-[500px]">
           {selectedUser && (
             <>
               <DialogHeader>
-                <DialogTitle>User Details</DialogTitle>
-                <DialogDescription>View and manage user information</DialogDescription>
+                <DialogTitle className="text-gradient-cyan">User Details</DialogTitle>
+                <DialogDescription className="text-muted-foreground">View and manage user information</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-xl font-medium">
+                  <div className="h-16 w-16 rounded-2xl bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20">
+                    <span className="text-xl font-medium text-cyan-400">
                       {selectedUser.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
                     </span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold">{selectedUser.name}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{selectedUser.name}</h3>
                     <p className="text-sm text-muted-foreground flex items-center gap-1">
                       <Mail className="h-3 w-3" /> {selectedUser.email}
                     </p>
@@ -245,50 +248,30 @@ export function AdminUsers() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Role</p>
-                    <Badge variant={selectedUser.role === 'admin' ? 'default' : 'secondary'} className="mt-1">
-                      {selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}
-                    </Badge>
-                  </div>
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Status</p>
-                    <Badge
-                      variant="secondary"
-                      className={`mt-1 ${selectedUser.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}
-                    >
-                      {selectedUser.isBanned ? 'Banned' : 'Active'}
-                    </Badge>
-                  </div>
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Balance</p>
-                    <p className="font-semibold mt-1">${selectedUser.balance.toFixed(2)} USDT</p>
-                  </div>
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Orders</p>
-                    <p className="font-semibold mt-1">{selectedUser.orderCount || 0}</p>
-                  </div>
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Verified</p>
-                    <Badge variant="secondary" className={`mt-1 ${selectedUser.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                      {selectedUser.isVerified ? 'Yes' : 'No'}
-                    </Badge>
-                  </div>
-                  <div className="p-3 rounded-lg border">
-                    <p className="text-muted-foreground">Joined</p>
-                    <p className="font-semibold mt-1">{formatDate(selectedUser.createdAt)}</p>
-                  </div>
+                  {[
+                    { label: 'Role', content: <Badge className={selectedUser.role === 'admin' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'}>{selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}</Badge> },
+                    { label: 'Status', content: <Badge className={selectedUser.isBanned ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}>{selectedUser.isBanned ? 'Banned' : 'Active'}</Badge> },
+                    { label: 'Balance', content: <span className="font-semibold text-gradient-gold">${selectedUser.balance.toFixed(2)} USDT</span> },
+                    { label: 'Orders', content: <span className="font-semibold text-foreground">{selectedUser.orderCount || 0}</span> },
+                    { label: 'Verified', content: <Badge className={selectedUser.isVerified ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}>{selectedUser.isVerified ? 'Yes' : 'No'}</Badge> },
+                    { label: 'Joined', content: <span className="font-semibold text-foreground">{formatDate(selectedUser.createdAt)}</span> },
+                  ].map((item) => (
+                    <div key={item.label} className="glass-light rounded-lg p-3">
+                      <p className="text-muted-foreground text-xs">{item.label}</p>
+                      <div className="mt-1">{item.content}</div>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="p-3 rounded-lg border">
+                <div className="glass-light rounded-lg p-3">
                   <p className="text-muted-foreground text-sm">Referral Code</p>
-                  <p className="font-mono text-sm mt-1">{selectedUser.referralCode || 'N/A'}</p>
+                  <p className="font-mono text-sm mt-1 text-cyan-400">{selectedUser.referralCode || 'N/A'}</p>
                 </div>
 
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant={selectedUser.isBanned ? 'default' : 'destructive'}
-                    className="flex-1"
+                    className={`flex-1 ${selectedUser.isBanned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'}`}
                     onClick={() => handleToggleBan(selectedUser.id, !!selectedUser.isBanned)}
                     disabled={selectedUser.role === 'admin'}
                   >
@@ -300,7 +283,7 @@ export function AdminUsers() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 glass-light border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/10"
                     onClick={() => setResetConfirm(selectedUser.id)}
                   >
                     <KeyRound className="h-4 w-4 mr-2" /> Reset Password
@@ -314,16 +297,16 @@ export function AdminUsers() {
 
       {/* Reset Password Confirm Dialog */}
       <Dialog open={!!resetConfirm} onOpenChange={() => setResetConfirm(null)}>
-        <DialogContent>
+        <DialogContent className="glass-strong border-cyan-500/20">
           <DialogHeader>
-            <DialogTitle>Reset Password</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gradient-cyan">Reset Password</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Are you sure you want to reset this user&apos;s password? A new temporary password will be sent to their email.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setResetConfirm(null)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => resetConfirm && handleResetPassword(resetConfirm)}>
+            <Button variant="ghost" className="text-muted-foreground" onClick={() => setResetConfirm(null)}>Cancel</Button>
+            <Button variant="destructive" className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30" onClick={() => resetConfirm && handleResetPassword(resetConfirm)}>
               Reset Password
             </Button>
           </DialogFooter>

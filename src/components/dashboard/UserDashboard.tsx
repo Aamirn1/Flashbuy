@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import type { Page } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -21,6 +20,7 @@ import {
   TrendingUp,
   ArrowRight,
   LogOut,
+  Zap,
 } from 'lucide-react';
 import { OrderHistory } from './OrderHistory';
 import { OrderDetail } from './OrderDetail';
@@ -37,6 +37,28 @@ const NAV_ITEMS: { page: Page; label: string; icon: React.ReactNode }[] = [
   { page: 'referrals', label: 'Referrals', icon: <Users className="h-4 w-4" /> },
 ];
 
+const statCards = [
+  { key: 'orders', page: 'orders' as Page, label: 'Total Orders', value: '12', icon: Package, color: 'from-cyan-500/20 to-cyan-600/5', iconBg: 'bg-cyan-500/20', iconColor: 'text-cyan-400' },
+  { key: 'wallet', page: 'wallet' as Page, label: 'Wallet Balance', value: '$0.00', icon: DollarSign, color: 'from-emerald-500/20 to-emerald-600/5', iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
+  { key: 'tickets', page: 'tickets' as Page, label: 'Active Tickets', value: '2', icon: Ticket, color: 'from-amber-500/20 to-amber-600/5', iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400' },
+  { key: 'referrals', page: 'referrals' as Page, label: 'Referral Earnings', value: '$45.50', icon: TrendingUp, color: 'from-violet-500/20 to-violet-600/5', iconBg: 'bg-violet-500/20', iconColor: 'text-violet-400' },
+];
+
+const recentOrders = [
+  { id: 'ORD-001', date: '2024-01-15', items: 'Flash USDT 10K', total: 100.00, status: 'completed' },
+  { id: 'ORD-002', date: '2024-01-14', items: 'Flash USDT 5K', total: 50.00, status: 'processing' },
+  { id: 'ORD-003', date: '2024-01-12', items: 'Flash USDT 1K', total: 10.00, status: 'paid' },
+  { id: 'ORD-004', date: '2024-01-10', items: 'Flash USDT 50K', total: 500.00, status: 'pending' },
+  { id: 'ORD-005', date: '2024-01-08', items: 'Flash USDT 100K', total: 1000.00, status: 'completed' },
+];
+
+const statusColors: Record<string, string> = {
+  completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+  processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
+  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+};
+
 export function UserDashboard() {
   const { user, currentPage, navigate, logout } = useStore();
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -46,230 +68,203 @@ export function UserDashboard() {
     navigate(page);
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const getInitials = (name: string) =>
+    name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   const renderContent = () => {
     switch (currentPage) {
-      case 'order-detail':
-        return <OrderDetail />;
-      case 'ticket-detail':
-        return <TicketDetail />;
-      case 'orders':
-        return <OrderHistory />;
-      case 'wallet':
-        return <WalletView />;
-      case 'tickets':
-        return <TicketList />;
-      case 'referrals':
-        return <ReferralView />;
-      default:
-        return <OverviewContent />;
+      case 'order-detail': return <OrderDetail />;
+      case 'ticket-detail': return <TicketDetail />;
+      case 'orders': return <OrderHistory />;
+      case 'wallet': return <WalletView />;
+      case 'tickets': return <TicketList />;
+      case 'referrals': return <ReferralView />;
+      default: return <OverviewContent />;
     }
   };
 
   const OverviewContent = () => (
     <div className="space-y-6">
       {/* Welcome */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+      >
         <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14">
-            <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-              {user ? getInitials(user.name) : 'U'}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="h-14 w-14 ring-2 ring-cyan-500/40 ring-offset-2 ring-offset-[#050a15]">
+              <AvatarFallback className="bg-cyan-500/20 text-cyan-400 text-lg font-bold border border-cyan-500/30">
+                {user ? getInitials(user.name) : 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-cyan-500 flex items-center justify-center animate-pulse-glow">
+              <Zap className="h-3 w-3 text-[#050a15]" />
+            </div>
+          </div>
           <div>
-            <h2 className="text-2xl font-bold">Welcome back, {user?.name || 'User'}!</h2>
-            <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your account.</p>
+            <h2 className="text-2xl font-bold text-gradient-cyan">
+              Welcome back, {user?.name || 'User'}!
+            </h2>
+            <p className="text-muted-foreground text-sm">Here&apos;s what&apos;s happening with your account.</p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleNavClick('orders')}>
-          <CardContent className="p-6">
+        {statCards.map((stat, idx) => (
+          <motion.div
+            key={stat.key}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="glass-card glass-card-hover rounded-xl cursor-pointer p-6"
+            onClick={() => handleNavClick(stat.page)}
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold mt-1">12</p>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-2xl font-bold mt-1 text-gradient-gold">
+                  {stat.key === 'wallet' ? `$${user?.balance?.toFixed(2) || '0.00'}` : stat.value}
+                </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
-                <Package className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleNavClick('wallet')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Wallet Balance</p>
-                <p className="text-2xl font-bold mt-1">${user?.balance?.toFixed(2) || '0.00'}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className={`h-12 w-12 rounded-xl ${stat.iconBg} flex items-center justify-center`}>
+                <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleNavClick('tickets')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Tickets</p>
-                <p className="text-2xl font-bold mt-1">2</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Ticket className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleNavClick('referrals')}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Referral Earnings</p>
-                <p className="text-2xl font-bold mt-1">$45.50</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Recent Orders & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders */}
-        <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Recent Orders</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => handleNavClick('orders')}>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          className="lg:col-span-2 glass-card rounded-xl"
+        >
+          <div className="flex items-center justify-between p-6 pb-0">
+            <h3 className="text-lg font-semibold text-glow-cyan">Recent Orders</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+              onClick={() => handleNavClick('orders')}
+            >
               View All <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {[
-                { id: 'ORD-001', date: '2024-01-15', items: 'Netflix Premium, Spotify', total: 25.99, status: 'completed' },
-                { id: 'ORD-002', date: '2024-01-14', items: 'Steam Gift Card $50', total: 48.99, status: 'processing' },
-                { id: 'ORD-003', date: '2024-01-12', items: 'ChatGPT Plus', total: 19.99, status: 'paid' },
-                { id: 'ORD-004', date: '2024-01-10', items: 'Xbox Game Pass', total: 14.99, status: 'pending' },
-                { id: 'ORD-005', date: '2024-01-08', items: 'Apple Gift Card $100', total: 95.99, status: 'completed' },
-              ].map((order) => (
-                <div
-                  key={order.id}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => navigate('order-detail', order.id)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">{order.id}</p>
-                    <p className="text-xs text-muted-foreground truncate">{order.items}</p>
-                  </div>
-                  <div className="flex items-center gap-3 ml-4">
-                    <p className="text-sm font-semibold">${order.total}</p>
-                    <Badge
-                      variant="secondary"
-                      className={
-                        order.status === 'completed'
-                          ? 'bg-green-100 text-green-800'
-                          : order.status === 'processing'
-                            ? 'bg-purple-100 text-purple-800'
-                            : order.status === 'paid'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                      }
-                    >
-                      {order.status}
-                    </Badge>
-                  </div>
+          </div>
+          <div className="p-4 space-y-2">
+            {recentOrders.map((order) => (
+              <div
+                key={order.id}
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
+                onClick={() => navigate('order-detail', order.id)}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-foreground">{order.id}</p>
+                  <p className="text-xs text-muted-foreground truncate">{order.items}</p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex items-center gap-3 ml-4">
+                  <p className="text-sm font-semibold text-gradient-gold">${order.total.toFixed(2)}</p>
+                  <Badge className={`${statusColors[order.status] || 'bg-muted/50 text-muted-foreground'} text-xs`}>
+                    {order.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => navigate('products')}>
-              <ShoppingCart className="h-4 w-4" /> Browse Products
-            </Button>
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => handleNavClick('wallet')}>
-              <Wallet className="h-4 w-4" /> Deposit Funds
-            </Button>
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => handleNavClick('tickets')}>
-              <Ticket className="h-4 w-4" /> Open Support Ticket
-            </Button>
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => handleNavClick('referrals')}>
-              <Users className="h-4 w-4" /> Refer a Friend
-            </Button>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+          className="glass-card rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-glow-cyan mb-4">Quick Actions</h3>
+          <div className="space-y-3">
+            {[
+              { icon: <ShoppingCart className="h-4 w-4" />, label: 'Browse Products', action: () => navigate('products') },
+              { icon: <Wallet className="h-4 w-4" />, label: 'Deposit Funds', action: () => handleNavClick('wallet') },
+              { icon: <Ticket className="h-4 w-4" />, label: 'Open Support Ticket', action: () => handleNavClick('tickets') },
+              { icon: <Users className="h-4 w-4" />, label: 'Refer a Friend', action: () => handleNavClick('referrals') },
+            ].map((action) => (
+              <button
+                key={action.label}
+                onClick={action.action}
+                className="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium glass-light glass-card-hover text-foreground transition-all hover:border-cyan-500/30"
+              >
+                <span className="text-cyan-400">{action.icon}</span>
+                {action.label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-mesh">
       {/* Mobile Tabs */}
       <div className="lg:hidden">
-        <div className="border-b bg-card px-4 py-3">
+        <div className="glass border-b border-cyan-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+              <Avatar className="h-9 w-9 ring-1 ring-cyan-500/30">
+                <AvatarFallback className="bg-cyan-500/20 text-cyan-400 text-sm font-bold">
                   {user ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
-              <span className="font-semibold text-sm">{user?.name || 'User'}</span>
+              <span className="font-semibold text-sm text-gradient-cyan">{user?.name || 'User'}</span>
             </div>
-            <Button variant="ghost" size="sm" onClick={logout}>
+            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <Tabs value={activeTab} onValueChange={(v) => handleNavClick(v as Page)}>
-            <TabsList className="w-full">
-              {NAV_ITEMS.map((item) => (
-                <TabsTrigger key={item.page} value={item.page} className="flex-1 gap-1 text-xs px-1">
+          <div className="flex gap-1 overflow-x-auto pb-1">
+            {NAV_ITEMS.map((item) => {
+              const isActive = currentPage === item.page ||
+                (item.page === 'orders' && currentPage === 'order-detail') ||
+                (item.page === 'tickets' && currentPage === 'ticket-detail');
+              return (
+                <button
+                  key={item.page}
+                  onClick={() => handleNavClick(item.page)}
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
+                    isActive
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                  }`}
+                >
                   {item.icon}
-                  <span className="hidden sm:inline">{item.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
         <div className="p-4">{renderContent()}</div>
       </div>
 
       {/* Desktop Layout */}
       <div className="hidden lg:flex lg:min-h-screen">
-        {/* Sidebar */}
-        <aside className="w-64 border-r bg-card flex flex-col">
-          <div className="p-6 border-b">
+        {/* Glass Sidebar */}
+        <aside className="w-64 glass-strong flex flex-col border-r border-cyan-500/10">
+          <div className="p-6 border-b border-cyan-500/10">
             <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-primary text-primary-foreground">
+              <Avatar className="h-12 w-12 ring-2 ring-cyan-500/40 ring-offset-2 ring-offset-[#050a15]">
+                <AvatarFallback className="bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">
                   {user ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="font-semibold truncate">{user?.name || 'User'}</p>
+                <p className="font-semibold truncate text-gradient-cyan">{user?.name || 'User'}</p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
               </div>
             </div>
@@ -277,28 +272,32 @@ export function UserDashboard() {
 
           <ScrollArea className="flex-1 py-4">
             <nav className="space-y-1 px-3">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.page}
-                  onClick={() => handleNavClick(item.page)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                    (currentPage === item.page ||
-                      (item.page === 'dashboard' && currentPage === 'dashboard') ||
-                      (item.page === 'orders' && currentPage === 'order-detail') ||
-                      (item.page === 'tickets' && currentPage === 'ticket-detail'))
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const isActive = currentPage === item.page ||
+                  (item.page === 'dashboard' && currentPage === 'dashboard') ||
+                  (item.page === 'orders' && currentPage === 'order-detail') ||
+                  (item.page === 'tickets' && currentPage === 'ticket-detail');
+                return (
+                  <button
+                    key={item.page}
+                    onClick={() => handleNavClick(item.page)}
+                    className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 glow-cyan'
+                        : 'text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent'
+                    }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                  </button>
+                );
+              })}
             </nav>
           </ScrollArea>
 
-          <div className="p-3 border-t">
-            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={logout}>
+          <div className="p-3 border-t border-cyan-500/10">
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={logout}>
               <LogOut className="h-4 w-4" />
               Sign Out
             </Button>

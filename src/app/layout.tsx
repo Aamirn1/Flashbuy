@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flash Buy - Instant Crypto Marketplace",
-  description: "Purchase digital products instantly with USDT. Secure, fast, and global crypto-powered eCommerce platform.",
-  keywords: ["Flash Buy", "USDT", "crypto", "eCommerce", "digital products", "TRC20", "BEP20"],
+  title: "Flash Buy - Flash USDT | Instant Crypto at Unbeatable Prices",
+  description: "Buy Flash USDT instantly. 1000 Flash USDT = $10. Secure, fast, and global crypto transfers via TRC20 and BEP20.",
+  keywords: ["Flash Buy", "Flash USDT", "USDT", "crypto", "TRC20", "BEP20", "instant transfer"],
   icons: {
     icon: "/logo.svg",
   },

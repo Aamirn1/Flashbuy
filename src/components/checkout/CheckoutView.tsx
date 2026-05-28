@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ArrowLeft,
   Copy,
   Check,
   Clock,
@@ -12,14 +12,18 @@ import {
   CheckCircle2,
   Loader2,
   ExternalLink,
+  ArrowLeft,
+  Zap,
+  Link2,
+  CircleDot,
+  Sparkles,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useStore } from '@/lib/store';
+import { useStore, formatUSDT } from '@/lib/store';
 import { CRYPTO_WALLETS } from '@/lib/constants';
 
 type PaymentMethod = 'usdt_trc20' | 'usdt_bep20';
@@ -33,7 +37,7 @@ export default function CheckoutView() {
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('usdt_trc20');
   const [copiedAddress, setCopiedAddress] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes
   const [isConfirming, setIsConfirming] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
@@ -71,7 +75,6 @@ export default function CheckoutView() {
       setCopiedAddress(true);
       setTimeout(() => setCopiedAddress(false), 2000);
     } catch {
-      // Fallback
       const textArea = document.createElement('textarea');
       textArea.value = selectedWallet.address;
       document.body.appendChild(textArea);
@@ -114,7 +117,6 @@ export default function CheckoutView() {
       clearCart();
       removeCoupon();
     } catch {
-      // Even if API fails, show success for demo purposes
       setOrderNumber(generateOrderNumber());
       setOrderComplete(true);
       clearCart();
@@ -127,62 +129,140 @@ export default function CheckoutView() {
   // Order Complete State
   if (orderComplete) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center max-w-lg mx-auto">
-        <div className="rounded-full bg-emerald-100 p-4 mb-6">
-          <CheckCircle2 className="size-16 text-emerald-600" />
-        </div>
-        <h1 className="text-2xl font-bold mb-2">Payment Submitted!</h1>
-        <p className="text-muted-foreground mb-2">
-          Your payment confirmation has been received. We&apos;re verifying your transaction on the blockchain.
-        </p>
-        <Card className="w-full mt-6 mb-6">
-          <CardContent className="pt-6 space-y-3">
+      <div className="relative bg-mesh min-h-screen overflow-hidden">
+        {/* Animated Orbs */}
+        <div className="orb orb-cyan w-[600px] h-[600px] -top-60 -right-60 animate-float-slow" />
+        <div className="orb orb-teal w-[400px] h-[400px] bottom-20 -left-32 animate-float" />
+
+        <div className="relative z-10 flex flex-col items-center justify-center py-16 text-center max-w-lg mx-auto px-4">
+          {/* Animated Checkmark */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+            className="relative mb-8"
+          >
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center glow-cyan-strong shadow-2xl shadow-emerald-500/30">
+              <motion.div
+                initial={{ scale: 0, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+              >
+                <CheckCircle2 className="size-14 text-white" />
+              </motion.div>
+            </div>
+            {/* Sparkle ring */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1.4, opacity: 0 }}
+              transition={{ delay: 0.3, duration: 1.2, ease: 'easeOut' }}
+              className="absolute inset-0 rounded-full border-2 border-emerald-400/40"
+            />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1.8, opacity: 0 }}
+              transition={{ delay: 0.5, duration: 1.5, ease: 'easeOut' }}
+              className="absolute inset-0 rounded-full border border-emerald-400/20"
+            />
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="text-3xl font-bold mb-2 text-gradient-cyan"
+          >
+            Payment Submitted!
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="text-muted-foreground mb-2"
+          >
+            Your payment confirmation has been received. We&apos;re verifying your transaction on the blockchain.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="glass-card rounded-2xl p-6 w-full mt-6 mb-6 space-y-4"
+          >
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Order Number</span>
-              <span className="font-mono font-semibold">{orderNumber}</span>
+              <span className="font-mono font-semibold text-cyan-300">{orderNumber}</span>
             </div>
-            <Separator />
+            <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Amount</span>
-              <span className="font-semibold">{total.toFixed(2)} USDT</span>
+              <span className="font-semibold text-gradient-gold text-lg">${total.toFixed(2)} USDT</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Payment Method</span>
               <span className="font-medium">{selectedWallet.name}</span>
             </div>
-            <Separator />
-            <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
-              <AlertTriangle className="size-4 text-amber-600 mt-0.5 shrink-0" />
-              <p className="text-xs text-amber-700 text-left">
+            <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+            <div className="flex items-start gap-2 p-3 glass-light rounded-xl">
+              <AlertTriangle className="size-4 text-amber-400 mt-0.5 shrink-0" />
+              <p className="text-xs text-amber-300/80 text-left">
                 Your order will be processed once the blockchain confirms your payment.
                 This typically takes {selectedWallet.estimatedTime}. You can check your order status
                 in the Orders page.
               </p>
             </div>
-          </CardContent>
-        </Card>
-        <div className="flex flex-col sm:flex-row gap-3 w-full">
-          <Button className="flex-1 gap-2" onClick={() => navigate('orders')}>
-            <ExternalLink className="size-4" />
-            View Orders
-          </Button>
-          <Button variant="outline" className="flex-1" onClick={() => navigate('products')}>
-            Continue Shopping
-          </Button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="flex flex-col sm:flex-row gap-3 w-full"
+          >
+            <Button
+              className="flex-1 gap-2 glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl h-11"
+              onClick={() => navigate('orders')}
+            >
+              <ExternalLink className="size-4" />
+              View Orders
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 glass-light border-cyan-500/20 text-cyan-300 hover:bg-cyan-500/10 rounded-xl h-11"
+              onClick={() => navigate('products')}
+            >
+              Continue Shopping
+            </Button>
+          </motion.div>
         </div>
       </div>
     );
   }
 
+  // Empty cart state
   if (cart.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="rounded-full bg-muted p-8 mb-6">
-          <Shield className="size-16 text-muted-foreground" />
+      <div className="relative bg-mesh min-h-screen overflow-hidden">
+        <div className="orb orb-cyan w-[500px] h-[500px] -top-40 -left-40 animate-float-slow" />
+        <div className="relative z-10 flex flex-col items-center justify-center py-20 text-center px-4">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+          >
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/15 flex items-center justify-center mb-6 mx-auto">
+              <Shield className="size-10 text-cyan-400" />
+            </div>
+          </motion.div>
+          <h2 className="text-2xl font-bold mb-2">No Items to Checkout</h2>
+          <p className="text-muted-foreground mb-6">Add some Flash USDT to your cart before proceeding.</p>
+          <Button
+            className="glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl"
+            onClick={() => navigate('products')}
+          >
+            Browse Products
+          </Button>
         </div>
-        <h2 className="text-2xl font-bold mb-2">No Items to Checkout</h2>
-        <p className="text-muted-foreground mb-6">Add some products to your cart before proceeding.</p>
-        <Button onClick={() => navigate('products')}>Browse Products</Button>
       </div>
     );
   }
@@ -190,235 +270,318 @@ export default function CheckoutView() {
   const isExpired = timeLeft === 0;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="shrink-0"
-          onClick={() => navigate('cart')}
+    <div className="relative bg-mesh min-h-screen overflow-hidden">
+      {/* Animated Orbs */}
+      <div className="orb orb-cyan w-[600px] h-[600px] -top-60 -right-60 animate-float-slow" />
+      <div className="orb orb-blue w-[400px] h-[400px] top-1/3 -left-48 animate-float" />
+      <div className="orb orb-teal w-[350px] h-[350px] -bottom-32 right-1/4 animate-float-slow" />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-4 mb-8"
         >
-          <ArrowLeft className="size-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Checkout</h1>
-          <p className="text-sm text-muted-foreground">Complete your purchase with USDT</p>
-        </div>
-      </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('cart')}
+            className="size-10 rounded-xl glass-light border border-cyan-500/15 flex items-center justify-center text-muted-foreground hover:text-cyan-400 transition-colors"
+          >
+            <ArrowLeft className="size-5" />
+          </motion.button>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gradient-cyan">Checkout</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Complete your purchase with USDT</p>
+          </div>
+        </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Payment Section */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Timer */}
-          <Card className={`${isExpired ? 'border-red-200 bg-red-50/50' : 'border-amber-200 bg-amber-50/50'}`}>
-            <CardContent className="flex items-center gap-3 py-4">
-              <Clock className={`size-5 ${isExpired ? 'text-red-500' : 'text-amber-500'}`} />
-              <div className="flex-1">
-                <p className={`text-sm font-medium ${isExpired ? 'text-red-700' : 'text-amber-700'}`}>
-                  {isExpired ? 'Payment window expired' : 'Complete payment within'}
-                </p>
-                {!isExpired && (
-                  <p className="text-xs text-amber-600 mt-0.5">
-                    Please send the exact amount before the timer runs out
-                  </p>
-                )}
-              </div>
-              <span className={`font-mono text-2xl font-bold ${isExpired ? 'text-red-600' : 'text-amber-600'}`}>
-                {formatTime(timeLeft)}
-              </span>
-            </CardContent>
-          </Card>
-
-          {/* Payment Method Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Payment Method</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
-                className="space-y-3"
-              >
-                {Object.entries(CRYPTO_WALLETS).map(([key, wallet]) => (
-                  <Label
-                    key={key}
-                    htmlFor={key}
-                    className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                      paymentMethod === key
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <RadioGroupItem value={key} id={key} />
-                    <div className="text-2xl">{wallet.icon}</div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm">{wallet.name}</div>
-                      <div className="text-xs text-muted-foreground">{wallet.network}</div>
-                    </div>
-                    <div className="text-right">
-                      <Badge variant="outline" className="text-xs">
-                        ~{wallet.estimatedTime}
-                      </Badge>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {wallet.confirmations} confirmations
-                      </div>
-                    </div>
-                  </Label>
-                ))}
-              </RadioGroup>
-            </CardContent>
-          </Card>
-
-          {/* Wallet Address & QR */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Send Payment</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {/* Amount to send */}
-              <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-                <p className="text-sm text-muted-foreground">Send exactly</p>
-                <p className="text-3xl font-bold text-primary mt-1">{total.toFixed(2)} USDT</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  on {selectedWallet.network}
-                </p>
-              </div>
-
-              {/* Wallet Address */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium">To this wallet address:</p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-muted rounded-lg px-4 py-3 font-mono text-sm break-all">
-                    {selectedWallet.address}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: Payment Section */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Timer Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className={`glass-card rounded-2xl p-5 ${isExpired ? 'border-red-500/30' : 'border-amber-500/20'}`}>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isExpired ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
+                    <Clock className={`size-5 ${isExpired ? 'text-red-400' : 'text-amber-400'}`} />
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0 size-10"
-                    onClick={copyAddress}
-                  >
-                    {copiedAddress ? (
-                      <Check className="size-4 text-emerald-600" />
-                    ) : (
-                      <Copy className="size-4" />
+                  <div className="flex-1">
+                    <p className={`text-sm font-semibold ${isExpired ? 'text-red-400' : 'text-amber-400'}`}>
+                      {isExpired ? 'Payment window expired' : 'Complete payment within'}
+                    </p>
+                    {!isExpired && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Please send the exact amount before the timer runs out
+                      </p>
                     )}
-                  </Button>
-                </div>
-                {copiedAddress && (
-                  <p className="text-xs text-emerald-600 font-medium">Address copied to clipboard!</p>
-                )}
-              </div>
-
-              {/* QR Code Placeholder */}
-              <div className="flex flex-col items-center gap-3 p-6 bg-muted/50 rounded-lg">
-                <div className="size-40 bg-white rounded-xl flex items-center justify-center border shadow-sm">
-                  <QrCode className="size-24 text-muted-foreground" />
-                </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  Scan QR code with your wallet app to send payment
-                </p>
-              </div>
-
-              {/* Important notice */}
-              <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                <AlertTriangle className="size-4 text-amber-600 mt-0.5 shrink-0" />
-                <div className="text-xs text-amber-700 space-y-1">
-                  <p className="font-semibold">Important:</p>
-                  <ul className="list-disc list-inside space-y-0.5">
-                    <li>Send only USDT on the {selectedWallet.network}</li>
-                    <li>Sending on the wrong network may result in permanent loss</li>
-                    <li>Send exactly {total.toFixed(2)} USDT — no more, no less</li>
-                    <li>Payment typically confirms in {selectedWallet.estimatedTime}</li>
-                  </ul>
+                  </div>
+                  <motion.span
+                    key={timeLeft}
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    className={`font-mono text-3xl font-bold ${isExpired ? 'text-red-400' : 'text-amber-400'}`}
+                  >
+                    {formatTime(timeLeft)}
+                  </motion.span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </motion.div>
 
-        {/* Right: Order Summary */}
-        <div className="lg:col-span-1">
-          <Card className="sticky top-4">
-            <CardHeader>
-              <CardTitle className="text-lg">Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            {/* Payment Method Selection */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <div className="glass-card rounded-2xl p-6">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                    <CircleDot className="size-4 text-cyan-400" />
+                  </div>
+                  <h2 className="text-lg font-bold">Payment Method</h2>
+                </div>
+                <RadioGroup
+                  value={paymentMethod}
+                  onValueChange={(val) => setPaymentMethod(val as PaymentMethod)}
+                  className="space-y-3"
+                >
+                  {Object.entries(CRYPTO_WALLETS).map(([key, wallet]) => (
+                    <Label
+                      key={key}
+                      htmlFor={key}
+                      className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 ${
+                        paymentMethod === key
+                          ? 'glass-light border-cyan-500/30 shadow-lg shadow-cyan-500/5'
+                          : 'glass border-white/5 hover:border-cyan-500/15'
+                      }`}
+                    >
+                      <RadioGroupItem value={key} id={key} className="border-cyan-500/30 text-cyan-400" />
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/15 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center text-xl">
+                        {wallet.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">{wallet.name}</div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Link2 className="size-3" />
+                          {wallet.network}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-xs">
+                          ~{wallet.estimatedTime}
+                        </Badge>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {wallet.confirmations} confirmations
+                        </div>
+                      </div>
+                    </Label>
+                  ))}
+                </RadioGroup>
+              </div>
+            </motion.div>
+
+            {/* Send Payment */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="glass-card rounded-2xl p-6 space-y-6">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                    <Zap className="size-4 text-cyan-400" />
+                  </div>
+                  <h2 className="text-lg font-bold">Send Payment</h2>
+                </div>
+
+                {/* Amount to send */}
+                <div className="glass-light rounded-xl p-5 text-center border border-cyan-500/15">
+                  <p className="text-sm text-muted-foreground mb-1">Send exactly</p>
+                  <p className="text-4xl font-bold text-gradient-gold">${total.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground mt-1">USDT on {selectedWallet.network}</p>
+                </div>
+
+                {/* Wallet Address */}
+                <div className="space-y-2.5">
+                  <p className="text-sm font-medium text-muted-foreground">To this wallet address:</p>
+                  <div className="glass rounded-xl p-4">
+                    <div className="flex items-center gap-2">
+                      <p className="flex-1 font-mono text-sm break-all text-cyan-200/80">
+                        {selectedWallet.address}
+                      </p>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={copyAddress}
+                        className={`shrink-0 size-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          copiedAddress
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'glass-light border-cyan-500/15 text-cyan-400 hover:bg-cyan-500/10'
+                        }`}
+                      >
+                        <AnimatePresence mode="wait">
+                          {copiedAddress ? (
+                            <motion.div
+                              key="check"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                            >
+                              <Check className="size-4" />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key="copy"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                            >
+                              <Copy className="size-4" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.button>
+                    </div>
+                    {copiedAddress && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-xs text-emerald-400 font-medium mt-2"
+                      >
+                        Address copied to clipboard!
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+
+                {/* QR Code Placeholder */}
+                <div className="flex flex-col items-center gap-3 glass-light rounded-xl p-6">
+                  <div className="w-40 h-40 rounded-xl bg-white/5 border border-cyan-500/10 flex items-center justify-center relative overflow-hidden">
+                    <QrCode className="size-20 text-cyan-500/40" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent" />
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Scan QR code with your wallet app to send payment
+                  </p>
+                </div>
+
+                {/* Important notice */}
+                <div className="glass-light rounded-xl p-4 border border-amber-500/15">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="size-4 text-amber-400 mt-0.5 shrink-0" />
+                    <div className="text-xs text-amber-300/80 space-y-1.5">
+                      <p className="font-semibold text-amber-400">Important:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        <li>Send only USDT on the {selectedWallet.network}</li>
+                        <li>Sending on the wrong network may result in permanent loss</li>
+                        <li>Send exactly ${total.toFixed(2)} USDT — no more, no less</li>
+                        <li>Payment typically confirms in {selectedWallet.estimatedTime}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right: Order Summary */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25 }}
+            className="lg:col-span-1"
+          >
+            <div className="glass-card rounded-2xl p-6 sticky top-24 space-y-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                  <Sparkles className="size-4 text-cyan-400" />
+                </div>
+                <h2 className="text-lg font-bold">Order Summary</h2>
+              </div>
+
               {/* Items */}
-              <div className="space-y-3 max-h-64 overflow-y-auto">
+              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {cart.map((item) => (
-                  <div key={item.productId} className="flex items-center gap-3">
-                    <div className="shrink-0 size-10 rounded-md bg-muted flex items-center justify-center text-xs font-bold">
-                      {item.name.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                  <div key={item.productId} className="flex items-center gap-3 glass-light rounded-xl p-3">
+                    <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/15 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center">
+                      <span className="text-cyan-400 font-bold text-xs">₮</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.name.toLowerCase().includes('flash')
+                          ? `${formatUSDT(item.quantity)} USDT`
+                          : `Qty: ${item.quantity}`}
+                      </p>
                     </div>
-                    <span className="text-sm font-medium shrink-0">
-                      {(item.price * item.quantity).toFixed(2)}
+                    <span className="text-sm font-semibold text-gradient-cyan shrink-0">
+                      ${(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <Separator />
+              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
 
               {/* Price breakdown */}
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>{subtotal.toFixed(2)} USDT</span>
+                  <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-emerald-600">Discount</span>
-                    <span className="text-emerald-600">-{couponDiscount.toFixed(2)} USDT</span>
+                    <span className="text-emerald-400">Discount</span>
+                    <span className="text-emerald-400">-${couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Service Fee (1%)</span>
-                  <span>{serviceFee.toFixed(2)} USDT</span>
+                  <span className="font-medium">${serviceFee.toFixed(2)}</span>
                 </div>
               </div>
 
-              <Separator />
+              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
 
               <div className="flex justify-between items-baseline">
-                <span className="font-semibold">Total</span>
-                <span className="text-xl font-bold text-primary">{total.toFixed(2)} USDT</span>
+                <span className="font-semibold text-lg">Total</span>
+                <span className="text-2xl font-bold text-gradient-gold">${total.toFixed(2)} USDT</span>
               </div>
-            </CardContent>
-            <CardFooter className="flex-col gap-3">
+
               <Button
                 size="lg"
-                className="w-full gap-2 font-semibold"
+                className="w-full gap-2 font-semibold glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl h-12 text-base"
                 onClick={handleConfirmPayment}
                 disabled={isExpired || isConfirming}
               >
                 {isConfirming ? (
                   <>
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-5 animate-spin" />
                     Confirming...
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="size-5" />
-                    I&apos;ve Paid — Confirm Payment
+                    I&apos;ve Paid
                   </>
                 )}
               </Button>
-              <Button
-                variant="outline"
-                className="w-full gap-2"
+
+              <button
                 onClick={() => navigate('cart')}
+                className="w-full text-center text-sm text-muted-foreground hover:text-cyan-400 transition-colors py-2 flex items-center justify-center gap-1.5"
               >
-                <ArrowLeft className="size-4" />
+                <ArrowLeft className="size-3.5" />
                 Back to Cart
-              </Button>
-            </CardFooter>
-          </Card>
+              </button>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -1,155 +1,137 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Zap, Shield, Globe, ArrowRight, ChevronDown } from 'lucide-react';
+import { Zap, Shield, Globe, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useStore } from '@/lib/store';
 
-const stats = [
-  { icon: Zap, label: '10,000+', description: 'Users', color: 'text-yellow-400' },
-  { icon: Shield, label: '50,000+', description: 'Orders', color: 'text-emerald-400' },
-  { icon: Globe, label: '99.9%', description: 'Uptime', color: 'text-sky-400' },
+const quickStats = [
+  { icon: Zap, label: 'Instant Delivery', color: 'text-cyan-400' },
+  { icon: Shield, label: 'Secure', color: 'text-emerald-400' },
+  { icon: Globe, label: 'Global', color: 'text-sky-400' },
 ];
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.15, delayChildren: 0.3 },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
 };
 
 const statVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
+  hidden: { opacity: 0, scale: 0.85 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
 export default function HeroBanner() {
   const navigate = useStore((s) => s.navigate);
 
-  const scrollToFeatures = () => {
-    const el = document.getElementById('features-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-emerald-950">
-      {/* Background image overlay */}
-      <div
-        className="absolute inset-0 opacity-15 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/hero-banner.png')" }}
-      />
-      {/* Gradient overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-950/80 via-transparent to-emerald-950/60" />
+    <section className="relative overflow-hidden bg-mesh">
+      {/* Hex pattern overlay */}
+      <div className="absolute inset-0 hex-pattern" />
 
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute -bottom-32 -left-32 w-[30rem] h-[30rem] rounded-full bg-emerald-600/10 blur-3xl"
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute top-1/3 left-1/4 w-64 h-64 rounded-full bg-emerald-400/5 blur-2xl"
-          animate={{ y: [0, -20, 0], opacity: [0.2, 0.35, 0.2] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-        />
+      {/* Floating orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="orb orb-cyan w-[500px] h-[500px] -top-32 -left-32 animate-float-slow" />
+        <div className="orb orb-blue w-[400px] h-[400px] top-1/4 -right-20 animate-float-slow" style={{ animationDelay: '2s' }} />
+        <div className="orb orb-teal w-[350px] h-[350px] -bottom-20 left-1/3 animate-float-slow" style={{ animationDelay: '4s' }} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16"
+          className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16"
         >
           {/* Left: Text content */}
           <div className="flex-1 text-center lg:text-left">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
-              <Zap className="size-3.5" />
-              <span>Powered by USDT Crypto Payments</span>
+            <motion.div
+              variants={itemVariants}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-cyan-400 text-sm font-medium mb-8"
+            >
+              <Zap className="size-4" />
+              <span>Powered by Blockchain Technology</span>
             </motion.div>
 
             <motion.h1
               variants={itemVariants}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight"
+              className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight tracking-tight"
             >
-              Flash Buy —{' '}
-              <span className="bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
-                Instant Crypto
-              </span>{' '}
-              Marketplace
+              <span className="text-gradient-cyan text-glow-cyan">Flash USDT</span>
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="mt-5 text-lg sm:text-xl text-gray-300 max-w-2xl leading-relaxed"
+              className="mt-4 text-xl sm:text-2xl text-slate-300 font-light"
             >
-              Purchase digital products instantly with USDT. Secure, fast, and global.
-              Experience the future of online shopping with blockchain-verified payments.
+              Instant Crypto at Unbeatable Prices
             </motion.p>
 
-            <motion.div variants={itemVariants} className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+            <motion.p
+              variants={itemVariants}
+              className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+            >
+              Get Flash USDT instantly with secure TRC20 &amp; BEP20 transfers.
+              The fastest way to acquire crypto at the best rates — 1000 Flash USDT for just $10.
+            </motion.p>
+
+            {/* Quick stats row */}
+            <motion.div
+              variants={containerVariants}
+              className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3"
+            >
+              {quickStats.map((stat) => (
+                <motion.div
+                  key={stat.label}
+                  variants={statVariants}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-light"
+                >
+                  <stat.icon className={`size-4 ${stat.color}`} />
+                  <span className="text-sm font-medium text-slate-200">{stat.label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* CTA */}
+            <motion.div variants={itemVariants} className="mt-10">
               <Button
                 size="lg"
-                className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-8 h-12 text-base shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40"
+                className="glow-cyan-strong bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 font-bold px-10 h-14 text-base rounded-xl shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-400/40 hover:scale-105"
                 onClick={() => navigate('products')}
               >
-                Shop Now
-                <ArrowRight className="size-4 ml-1" />
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 bg-transparent h-12 text-base px-8"
-                onClick={scrollToFeatures}
-              >
-                Learn More
-                <ChevronDown className="size-4 ml-1" />
+                Buy Flash USDT
+                <ArrowRight className="size-5 ml-2" />
               </Button>
             </motion.div>
           </div>
 
-          {/* Right: Stats */}
+          {/* Right: 3D Coin */}
           <motion.div
-            variants={containerVariants}
-            className="flex flex-row lg:flex-col gap-4 lg:gap-5 w-full lg:w-auto"
+            variants={itemVariants}
+            className="flex-shrink-0"
           >
-            {stats.map((stat) => (
-              <motion.div
-                key={stat.description}
-                variants={statVariants}
-                whileHover={{ scale: 1.03, y: -2 }}
-                className="flex-1 lg:flex-none bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-5 py-4 lg:px-6 lg:py-5 min-w-[160px] transition-colors hover:bg-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg bg-white/5 ${stat.color}`}>
-                    <stat.icon className="size-5" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">{stat.label}</div>
-                    <div className="text-sm text-gray-400">{stat.description}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+            <motion.div
+              className="animate-float"
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <div className="coin-3d animate-spin-coin" />
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 }

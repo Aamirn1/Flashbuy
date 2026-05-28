@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Zap, Mail, Lock, User, Phone, Globe, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { User as UserType } from '@/lib/types';
 
 const COUNTRIES = [
@@ -237,20 +238,28 @@ export default function AuthDialog() {
 
   return (
     <Dialog open={showAuthDialog} onOpenChange={(open) => setShowAuthDialog(open)}>
-      <DialogContent className="sm:max-w-[440px] bg-zinc-950 border-zinc-800 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[440px] glass-strong border-cyan-500/15 p-0 overflow-hidden">
         {/* Header with gradient */}
-        <div className="relative bg-gradient-to-br from-emerald-600/20 via-zinc-900 to-zinc-900 px-6 pt-6 pb-4">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
+        <div className="relative px-6 pt-6 pb-4 overflow-hidden">
+          {/* Background orbs */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 orb orb-cyan opacity-50" />
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 orb orb-teal opacity-30" />
+
           <DialogHeader className="relative">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="flex items-center justify-center size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-lg shadow-emerald-500/20">
-                <Zap className="size-5 text-white fill-white/30" />
-              </div>
+              <motion.div
+                className="flex items-center justify-center size-11 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-lg shadow-cyan-500/30"
+                animate={{ rotateY: [0, 360] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                <Zap className="size-5 text-white fill-white/20" />
+              </motion.div>
             </div>
-            <DialogTitle className="text-center text-xl font-bold text-white">
-              Welcome to Flash Buy
+            <DialogTitle className="text-center text-xl font-bold text-foreground">
+              Welcome to <span className="text-gradient-cyan">Flash Buy</span>
             </DialogTitle>
-            <DialogDescription className="text-center text-zinc-400 text-sm">
+            <DialogDescription className="text-center text-muted-foreground text-sm">
               Sign in to your account or create a new one
             </DialogDescription>
           </DialogHeader>
@@ -262,16 +271,16 @@ export default function AuthDialog() {
           className="w-full"
         >
           <div className="px-6">
-            <TabsList className="w-full bg-zinc-900 border border-zinc-800 h-10">
+            <TabsList className="w-full glass h-10 border-cyan-500/10">
               <TabsTrigger
                 value="login"
-                className="flex-1 data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-600/20 text-zinc-400"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25 text-muted-foreground rounded-lg transition-all duration-300"
               >
                 Sign In
               </TabsTrigger>
               <TabsTrigger
                 value="register"
-                className="flex-1 data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-600/20 text-zinc-400"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25 text-muted-foreground rounded-lg transition-all duration-300"
               >
                 Create Account
               </TabsTrigger>
@@ -281,19 +290,26 @@ export default function AuthDialog() {
           {/* Login Tab */}
           <TabsContent value="login" className="mt-0">
             <form onSubmit={handleLogin} className="px-6 pb-6 pt-4 space-y-4">
-              {serverError && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                  <AlertCircle className="size-4 text-red-400 shrink-0" />
-                  <p className="text-sm text-red-400">{serverError}</p>
-                </div>
-              )}
+              <AnimatePresence>
+                {serverError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20"
+                  >
+                    <AlertCircle className="size-4 text-red-400 shrink-0" />
+                    <p className="text-sm text-red-400">{serverError}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="space-y-2">
-                <Label htmlFor="login-email" className="text-zinc-300 text-sm">
+                <Label htmlFor="login-email" className="text-foreground/80 text-sm">
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                   <Input
                     id="login-email"
                     type="email"
@@ -303,8 +319,8 @@ export default function AuthDialog() {
                       setLoginForm({ ...loginForm, email: e.target.value })
                     }
                     className={cn(
-                      'pl-9 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                      loginErrors.email && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                      'pl-9 h-10 glass-input rounded-xl',
+                      loginErrors.email && '!border-red-500/50 focus:!border-red-500/50'
                     )}
                     autoComplete="email"
                   />
@@ -316,12 +332,12 @@ export default function AuthDialog() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="login-password" className="text-zinc-300 text-sm">
+                  <Label htmlFor="login-password" className="text-foreground/80 text-sm">
                     Password
                   </Label>
                   <button
                     type="button"
-                    className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+                    className="text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors duration-300"
                     onClick={() => {
                       // TODO: implement forgot password
                     }}
@@ -330,7 +346,7 @@ export default function AuthDialog() {
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                   <Input
                     id="login-password"
                     type={showPassword ? 'text' : 'password'}
@@ -340,15 +356,15 @@ export default function AuthDialog() {
                       setLoginForm({ ...loginForm, password: e.target.value })
                     }
                     className={cn(
-                      'pl-9 pr-10 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                      loginErrors.password && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                      'pl-9 pr-10 h-10 glass-input rounded-xl',
+                      loginErrors.password && '!border-red-500/50 focus:!border-red-500/50'
                     )}
                     autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" />
@@ -362,21 +378,23 @@ export default function AuthDialog() {
                 )}
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all"
-              >
-                {isLoading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 rounded-xl glow-cyan"
+                >
+                  {isLoading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    'Sign In'
+                  )}
+                </Button>
+              </motion.div>
 
               <div className="relative">
-                <Separator className="bg-zinc-800" />
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 px-3 text-xs text-zinc-500">
+                <Separator className="bg-cyan-500/10" />
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[rgba(15,23,42,0.65)] px-3 text-xs text-muted-foreground">
                   or continue with
                 </span>
               </div>
@@ -384,7 +402,7 @@ export default function AuthDialog() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-10 border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                className="w-full h-10 glass-input rounded-xl hover:!border-cyan-500/25 hover:!bg-cyan-500/5 transition-all duration-300"
                 onClick={() => {
                   // TODO: implement Google login
                 }}
@@ -415,19 +433,26 @@ export default function AuthDialog() {
           {/* Register Tab */}
           <TabsContent value="register" className="mt-0">
             <form onSubmit={handleRegister} className="px-6 pb-6 pt-4 space-y-4">
-              {serverError && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                  <AlertCircle className="size-4 text-red-400 shrink-0" />
-                  <p className="text-sm text-red-400">{serverError}</p>
-                </div>
-              )}
+              <AnimatePresence>
+                {serverError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20"
+                  >
+                    <AlertCircle className="size-4 text-red-400 shrink-0" />
+                    <p className="text-sm text-red-400">{serverError}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="space-y-2">
-                <Label htmlFor="reg-name" className="text-zinc-300 text-sm">
+                <Label htmlFor="reg-name" className="text-foreground/80 text-sm">
                   Full Name
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                   <Input
                     id="reg-name"
                     type="text"
@@ -437,8 +462,8 @@ export default function AuthDialog() {
                       setRegisterForm({ ...registerForm, name: e.target.value })
                     }
                     className={cn(
-                      'pl-9 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                      registerErrors.name && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                      'pl-9 h-10 glass-input rounded-xl',
+                      registerErrors.name && '!border-red-500/50 focus:!border-red-500/50'
                     )}
                     autoComplete="name"
                   />
@@ -449,11 +474,11 @@ export default function AuthDialog() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reg-email" className="text-zinc-300 text-sm">
+                <Label htmlFor="reg-email" className="text-foreground/80 text-sm">
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                   <Input
                     id="reg-email"
                     type="email"
@@ -463,8 +488,8 @@ export default function AuthDialog() {
                       setRegisterForm({ ...registerForm, email: e.target.value })
                     }
                     className={cn(
-                      'pl-9 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                      registerErrors.email && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                      'pl-9 h-10 glass-input rounded-xl',
+                      registerErrors.email && '!border-red-500/50 focus:!border-red-500/50'
                     )}
                     autoComplete="email"
                   />
@@ -476,11 +501,11 @@ export default function AuthDialog() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label htmlFor="reg-password" className="text-zinc-300 text-sm">
+                  <Label htmlFor="reg-password" className="text-foreground/80 text-sm">
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                     <Input
                       id="reg-password"
                       type={showPassword ? 'text' : 'password'}
@@ -490,15 +515,15 @@ export default function AuthDialog() {
                         setRegisterForm({ ...registerForm, password: e.target.value })
                       }
                       className={cn(
-                        'pl-9 pr-10 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                        registerErrors.password && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                        'pl-9 pr-10 h-10 glass-input rounded-xl',
+                        registerErrors.password && '!border-red-500/50 focus:!border-red-500/50'
                       )}
                       autoComplete="new-password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
                     >
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -509,11 +534,11 @@ export default function AuthDialog() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="reg-confirm" className="text-zinc-300 text-sm">
+                  <Label htmlFor="reg-confirm" className="text-foreground/80 text-sm">
                     Confirm
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                     <Input
                       id="reg-confirm"
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -523,15 +548,15 @@ export default function AuthDialog() {
                         setRegisterForm({ ...registerForm, confirmPassword: e.target.value })
                       }
                       className={cn(
-                        'pl-9 pr-10 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                        registerErrors.confirmPassword && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                        'pl-9 pr-10 h-10 glass-input rounded-xl',
+                        registerErrors.confirmPassword && '!border-red-500/50 focus:!border-red-500/50'
                       )}
                       autoComplete="new-password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
                     >
                       {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -544,7 +569,7 @@ export default function AuthDialog() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label className="text-zinc-300 text-sm">Country</Label>
+                  <Label className="text-foreground/80 text-sm">Country</Label>
                   <Select
                     value={registerForm.country}
                     onValueChange={(value) =>
@@ -553,19 +578,19 @@ export default function AuthDialog() {
                   >
                     <SelectTrigger
                       className={cn(
-                        'h-10 bg-zinc-900 border-zinc-800 text-zinc-200 focus:ring-emerald-500/20 w-full',
-                        registerErrors.country && 'border-red-500/50'
+                        'h-10 glass-input rounded-xl w-full',
+                        registerErrors.country && '!border-red-500/50'
                       )}
                     >
-                      <Globe className="size-4 text-zinc-500 mr-1" />
+                      <Globe className="size-4 text-cyan-400/40 mr-1" />
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent className="bg-zinc-900 border-zinc-800">
+                    <SelectContent className="glass-strong border-cyan-500/10">
                       {COUNTRIES.map((country) => (
                         <SelectItem
                           key={country.value}
                           value={country.value}
-                          className="text-zinc-300 hover:text-white hover:bg-zinc-800 focus:bg-zinc-800 focus:text-white"
+                          className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 transition-colors"
                         >
                           {country.label}
                         </SelectItem>
@@ -578,11 +603,11 @@ export default function AuthDialog() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="reg-phone" className="text-zinc-300 text-sm">
-                    Phone <span className="text-zinc-500 text-xs">(optional)</span>
+                  <Label htmlFor="reg-phone" className="text-foreground/80 text-sm">
+                    Phone <span className="text-muted-foreground text-xs">(optional)</span>
                   </Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
                     <Input
                       id="reg-phone"
                       type="tel"
@@ -592,8 +617,8 @@ export default function AuthDialog() {
                         setRegisterForm({ ...registerForm, phone: e.target.value })
                       }
                       className={cn(
-                        'pl-9 h-10 bg-zinc-900 border-zinc-800 text-zinc-200 placeholder:text-zinc-500 focus-visible:border-emerald-500/50 focus-visible:ring-emerald-500/20',
-                        registerErrors.phone && 'border-red-500/50 focus-visible:border-red-500/50 focus-visible:ring-red-500/20'
+                        'pl-9 h-10 glass-input rounded-xl',
+                        registerErrors.phone && '!border-red-500/50 focus:!border-red-500/50'
                       )}
                       autoComplete="tel"
                     />
@@ -604,25 +629,27 @@ export default function AuthDialog() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all"
-              >
-                {isLoading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  'Create Account'
-                )}
-              </Button>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 rounded-xl glow-cyan"
+                >
+                  {isLoading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    'Create Account'
+                  )}
+                </Button>
+              </motion.div>
 
-              <p className="text-xs text-zinc-500 text-center leading-relaxed">
+              <p className="text-xs text-muted-foreground text-center leading-relaxed">
                 By creating an account, you agree to our{' '}
-                <button type="button" className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+                <button type="button" className="text-cyan-400/80 hover:text-cyan-400 underline underline-offset-2 transition-colors duration-300">
                   Terms of Service
                 </button>{' '}
                 and{' '}
-                <button type="button" className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+                <button type="button" className="text-cyan-400/80 hover:text-cyan-400 underline underline-offset-2 transition-colors duration-300">
                   Privacy Policy
                 </button>
               </p>

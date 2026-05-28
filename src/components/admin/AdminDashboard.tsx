@@ -1,13 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import type { Page, DashboardStats, Order } from '@/lib/types';
-import { ORDER_STATUS_COLORS } from '@/lib/constants';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -24,6 +22,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Eye,
+  Zap,
 } from 'lucide-react';
 import {
   LineChart,
@@ -52,7 +51,6 @@ const NAV_ITEMS: { page: Page; label: string; icon: React.ReactNode }[] = [
   { page: 'admin-settings', label: 'Settings', icon: <Settings className="h-4 w-4" /> },
 ];
 
-// Demo chart data
 const demoDailyRevenue = [
   { date: 'Jan 1', revenue: 1200 },
   { date: 'Jan 2', revenue: 1800 },
@@ -87,6 +85,28 @@ const demoRecentUsers = [
   { id: '4', name: 'Emma Lee', email: 'emma@example.com', joined: '2024-01-12', orders: 2 },
 ];
 
+const GLASS_STATUS_COLORS: Record<string, string> = {
+  pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+  payment_waiting: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
+  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
+  completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+  cancelled: 'bg-red-500/20 text-red-400 border border-red-500/30',
+  refunded: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
+};
+
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-strong rounded-lg px-3 py-2 border border-cyan-500/20">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm font-semibold text-gradient-gold">${payload[0].value.toLocaleString()}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export function AdminDashboard() {
   const { currentPage, navigate, logout } = useStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -99,7 +119,7 @@ export function AdminDashboard() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/stats');
+      const res = await fetch('/api/admin/dashboard');
       if (res.ok) {
         const data = await res.json();
         setStats(data);
@@ -111,24 +131,17 @@ export function AdminDashboard() {
     }
   };
 
-  const handleNavClick = (page: Page) => {
-    navigate(page);
-  };
+  const handleNavClick = (page: Page) => navigate(page);
 
-  const getStatusLabel = (status: string) => {
-    return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  };
+  const getStatusLabel = (status: string) =>
+    status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
   const renderContent = () => {
     switch (currentPage) {
-      case 'admin-products':
-        return <AdminProducts />;
-      case 'admin-orders':
-        return <AdminOrders />;
-      case 'admin-users':
-        return <AdminUsers />;
-      default:
-        return <OverviewContent />;
+      case 'admin-products': return <AdminProducts />;
+      case 'admin-orders': return <AdminOrders />;
+      case 'admin-users': return <AdminUsers />;
+      default: return <OverviewContent />;
     }
   };
 
@@ -136,160 +149,124 @@ export function AdminDashboard() {
     <div className="space-y-6">
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
+        {[
+          { label: 'Total Revenue', value: `$${stats?.totalRevenue?.toLocaleString() || '32,450'}`, trend: '+12.5%', up: true, icon: DollarSign, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
+          { label: 'Total Orders', value: stats?.totalOrders?.toLocaleString() || '284', trend: '+8.2%', up: true, icon: ShoppingCart, iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400' },
+          { label: 'Total Users', value: stats?.totalUsers?.toLocaleString() || '1,429', trend: '+15.3%', up: true, icon: Users, iconBg: 'bg-cyan-500/20', iconColor: 'text-cyan-400' },
+          { label: 'Total Products', value: stats?.totalProducts?.toLocaleString() || '56', trend: '-2', up: false, icon: Package, iconBg: 'bg-violet-500/20', iconColor: 'text-violet-400' },
+        ].map((stat, idx) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="glass-card glass-card-hover rounded-xl p-6 border border-cyan-500/10"
+          >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold mt-1">${stats?.totalRevenue?.toLocaleString() || '32,450'}</p>
-                <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-                  <ArrowUpRight className="h-3 w-3" /> +12.5% from last month
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-2xl font-bold mt-1 text-gradient-gold">{stat.value}</p>
+                <p className={`text-xs flex items-center gap-1 mt-1 ${stat.up ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {stat.up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                  {stat.trend} from last month
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className={`h-12 w-12 rounded-xl ${stat.iconBg} flex items-center justify-center border border-current/20`}>
+                <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-2xl font-bold mt-1">{stats?.totalOrders?.toLocaleString() || '284'}</p>
-                <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-                  <ArrowUpRight className="h-3 w-3" /> +8.2% from last month
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
-                <ShoppingCart className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Users</p>
-                <p className="text-2xl font-bold mt-1">{stats?.totalUsers?.toLocaleString() || '1,429'}</p>
-                <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
-                  <ArrowUpRight className="h-3 w-3" /> +15.3% from last month
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Products</p>
-                <p className="text-2xl font-bold mt-1">{stats?.totalProducts?.toLocaleString() || '56'}</p>
-                <p className="text-xs text-red-600 flex items-center gap-1 mt-1">
-                  <ArrowDownRight className="h-3 w-3" /> -2 this month
-                </p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <Package className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue Line Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Daily Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats?.dailyRevenue || demoDailyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="date" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                  <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                    }}
-                    formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-card rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-glow-cyan mb-4">Daily Revenue</h3>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats?.dailyRevenue || demoDailyRevenue}>
+                <defs>
+                  <linearGradient id="cyanGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
+                <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#22d3ee"
+                  strokeWidth={2}
+                  fill="url(#cyanGradient)"
+                  dot={{ fill: '#22d3ee', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: '#22d3ee', stroke: '#050a15', strokeWidth: 2 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
 
-        {/* Monthly Revenue Bar Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Monthly Revenue</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats?.monthlyRevenue || demoMonthlyRevenue}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                  <YAxis className="text-xs" tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                    }}
-                    formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
-                  />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 }}
+          className="glass-card rounded-xl p-6"
+        >
+          <h3 className="text-lg font-semibold text-glow-cyan mb-4">Monthly Revenue</h3>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats?.monthlyRevenue || demoMonthlyRevenue}>
+                <defs>
+                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#0891b2" stopOpacity={0.4} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
+                <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="revenue" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
       </div>
 
       {/* Recent Orders & Recent Users */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Orders */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Recent Orders</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => handleNavClick('admin-orders')}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="glass-card rounded-xl"
+        >
+          <div className="flex items-center justify-between p-6 pb-0">
+            <h3 className="text-lg font-semibold text-glow-cyan">Recent Orders</h3>
+            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleNavClick('admin-orders')}>
               View All <ArrowUpRight className="h-4 w-4 ml-1" />
             </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
+          </div>
+          <div className="p-4 space-y-2">
             {(stats?.recentOrders || demoRecentOrders).map((order) => (
               <div
                 key={order.id}
-                className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
                 onClick={() => navigate('admin-orders')}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm">{order.orderNumber}</p>
-                    <Badge variant="secondary" className={`${ORDER_STATUS_COLORS[order.status] || ''} text-xs`}>
+                    <p className="font-medium text-sm text-cyan-400 font-mono">{order.orderNumber}</p>
+                    <Badge className={`${GLASS_STATUS_COLORS[order.status] || ''} text-xs`}>
                       {getStatusLabel(order.status)}
                     </Badge>
                   </div>
@@ -297,134 +274,150 @@ export function AdminDashboard() {
                     {(order as Order & { customerName?: string }).customerName || 'Customer'} · {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <p className="font-semibold text-sm">${order.total.toFixed(2)}</p>
+                <p className="font-semibold text-sm text-gradient-gold">${order.total.toFixed(2)}</p>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
-        {/* Recent Users */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Recent Users</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => handleNavClick('admin-users')}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="glass-card rounded-xl"
+        >
+          <div className="flex items-center justify-between p-6 pb-0">
+            <h3 className="text-lg font-semibold text-glow-cyan">Recent Users</h3>
+            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleNavClick('admin-users')}>
               View All <ArrowUpRight className="h-4 w-4 ml-1" />
             </Button>
-          </CardHeader>
-          <CardContent className="space-y-3">
+          </div>
+          <div className="p-4 space-y-2">
             {demoRecentUsers.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
                 onClick={() => handleNavClick('admin-users')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                  <div className="h-8 w-8 rounded-full bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20">
+                    <Users className="h-4 w-4 text-cyan-400" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{u.name}</p>
+                    <p className="font-medium text-sm text-foreground">{u.name}</p>
                     <p className="text-xs text-muted-foreground">{u.email}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-medium">{u.orders} orders</p>
+                  <p className="text-sm font-medium text-foreground">{u.orders} orders</p>
                   <p className="text-xs text-muted-foreground">{new Date(u.joined).toLocaleDateString()}</p>
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => handleNavClick('admin-products')}>
-              <Package className="h-5 w-5" />
-              <span className="text-xs">Add Product</span>
-            </Button>
-            <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => handleNavClick('admin-orders')}>
-              <ShoppingCart className="h-5 w-5" />
-              <span className="text-xs">Manage Orders</span>
-            </Button>
-            <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => handleNavClick('admin-users')}>
-              <Users className="h-5 w-5" />
-              <span className="text-xs">Manage Users</span>
-            </Button>
-            <Button variant="outline" className="h-auto py-4 flex-col gap-2" onClick={() => handleNavClick('admin-analytics')}>
-              <BarChart3 className="h-5 w-5" />
-              <span className="text-xs">View Analytics</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="glass-card rounded-xl p-6"
+      >
+        <h3 className="text-lg font-semibold text-glow-cyan mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { icon: <Package className="h-5 w-5" />, label: 'Add Product', action: () => handleNavClick('admin-products') },
+            { icon: <ShoppingCart className="h-5 w-5" />, label: 'Manage Orders', action: () => handleNavClick('admin-orders') },
+            { icon: <Users className="h-5 w-5" />, label: 'Manage Users', action: () => handleNavClick('admin-users') },
+            { icon: <BarChart3 className="h-5 w-5" />, label: 'View Analytics', action: () => handleNavClick('admin-analytics') },
+          ].map((action) => (
+            <button
+              key={action.label}
+              onClick={action.action}
+              className="flex flex-col items-center gap-2 h-auto py-4 rounded-xl glass-light glass-card-hover text-cyan-400 text-xs font-medium transition-all hover:border-cyan-500/30"
+            >
+              {action.icon}
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-mesh">
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <div className="border-b bg-card px-4 py-3">
+        <div className="glass border-b border-cyan-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="font-bold text-lg">Admin Panel</h1>
-            <Button variant="ghost" size="sm" onClick={logout}>
+            <h1 className="font-bold text-lg text-gradient-cyan flex items-center gap-2">
+              <Zap className="h-5 w-5 text-cyan-400" /> Admin Panel
+            </h1>
+            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <Tabs value={currentPage} onValueChange={(v) => handleNavClick(v as Page)}>
-            <TabsList className="w-full overflow-x-auto">
-              {NAV_ITEMS.map((item) => (
-                <TabsTrigger key={item.page} value={item.page} className="flex-1 gap-1 text-xs px-1 min-w-fit">
-                  {item.icon}
-                  <span className="hidden sm:inline">{item.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <div className="flex gap-1 overflow-x-auto pb-1">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.page}
+                onClick={() => handleNavClick(item.page)}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
+                  currentPage === item.page
+                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                }`}
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="p-4">{renderContent()}</div>
       </div>
 
       {/* Desktop Layout */}
       <div className="hidden lg:flex lg:min-h-screen">
-        {/* Sidebar */}
-        <aside className="w-64 border-r bg-card flex flex-col">
-          <div className="p-6 border-b">
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              <LayoutDashboard className="h-5 w-5" /> Admin Panel
+        {/* Glass Sidebar */}
+        <aside className="w-64 glass-strong flex flex-col border-r border-cyan-500/10">
+          <div className="p-6 border-b border-cyan-500/10">
+            <h1 className="text-xl font-bold flex items-center gap-2 text-gradient-cyan">
+              <Zap className="h-5 w-5 text-cyan-400" /> Admin Panel
             </h1>
           </div>
 
           <ScrollArea className="flex-1 py-4">
             <nav className="space-y-1 px-3">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.page}
-                  onClick={() => handleNavClick(item.page)}
-                  className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                    currentPage === item.page
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const isActive = currentPage === item.page;
+                return (
+                  <button
+                    key={item.page}
+                    onClick={() => handleNavClick(item.page)}
+                    className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 glow-cyan'
+                        : 'text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent'
+                    }`}
+                  >
+                    {item.icon}
+                    {item.label}
+                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                  </button>
+                );
+              })}
             </nav>
           </ScrollArea>
 
-          <div className="p-3 border-t">
-            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={() => navigate('home')}>
+          <div className="p-3 border-t border-cyan-500/10 space-y-1">
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={() => navigate('home')}>
               <Eye className="h-4 w-4" /> View Store
             </Button>
-            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground" onClick={logout}>
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={logout}>
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>
           </div>

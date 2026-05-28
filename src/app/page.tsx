@@ -5,9 +5,9 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AuthDialog from '@/components/auth/AuthDialog';
 import HeroBanner from '@/components/home/HeroBanner';
-import FeaturedProducts from '@/components/home/FeaturedProducts';
+import FlashUSDTProduct from '@/components/home/FlashUSDTProduct';
+import HowItWorks from '@/components/home/HowItWorks';
 import FeaturesSection from '@/components/home/FeaturesSection';
-import CustomerReviews from '@/components/home/CustomerReviews';
 import FAQSection from '@/components/home/FAQSection';
 import CTASection from '@/components/home/CTASection';
 import ProductGrid from '@/components/products/ProductGrid';
@@ -53,9 +53,9 @@ function PageRouter() {
       return (
         <>
           <HeroBanner />
-          <FeaturedProducts />
+          <FlashUSDTProduct />
+          <HowItWorks />
           <FeaturesSection />
-          <CustomerReviews />
           <FAQSection />
           <CTASection />
         </>
@@ -109,9 +109,9 @@ function PageRouter() {
       return (
         <>
           <HeroBanner />
-          <FeaturedProducts />
+          <FlashUSDTProduct />
+          <HowItWorks />
           <FeaturesSection />
-          <CustomerReviews />
           <FAQSection />
           <CTASection />
         </>

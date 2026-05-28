@@ -1,6 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Page, CartItem, User, Product } from './types';
+import type { Page, CartItem, User } from './types';
+
+// Flash USDT Pricing: 1000 Flash USDT = $10
+export const FLASH_USDT_RATE = 0.01; // $0.01 per Flash USDT
+export const FLASH_USDT_UNIT = 1000; // Step size
+export const FLASH_USDT_MIN = 1000;
+export const FLASH_USDT_MAX = 10000000;
+
+export function calculatePrice(quantity: number): number {
+  return parseFloat((quantity * FLASH_USDT_RATE).toFixed(2));
+}
+
+export function formatUSDT(quantity: number): string {
+  if (quantity >= 1000000) return `${(quantity / 1000000).toFixed(1)}M`;
+  if (quantity >= 1000) return `${(quantity / 1000).toFixed(quantity % 1000 === 0 ? 0 : 1)}K`;
+  return quantity.toString();
+}
 
 interface AppState {
   // Navigation
@@ -15,6 +31,9 @@ interface AppState {
   isAuthenticated: boolean;
   showAuthDialog: boolean;
   authMode: 'login' | 'register';
+  
+  // Flash USDT
+  flashQuantity: number;
   
   // Cart
   cart: CartItem[];
@@ -34,6 +53,9 @@ interface AppState {
   setUser: (user: User | null) => void;
   logout: () => void;
   setShowAuthDialog: (show: boolean, mode?: 'login' | 'register') => void;
+  setFlashQuantity: (qty: number) => void;
+  incrementFlash: (step?: number) => void;
+  decrementFlash: (step?: number) => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
   updateCartQuantity: (productId: string, quantity: number) => void;
@@ -65,6 +87,9 @@ export const useStore = create<AppState>()(
       isAuthenticated: false,
       showAuthDialog: false,
       authMode: 'login',
+      
+      // Flash USDT
+      flashQuantity: 1000,
       
       // Cart
       cart: [],
@@ -104,6 +129,16 @@ export const useStore = create<AppState>()(
         showAuthDialog: show, 
         authMode: mode || 'login' 
       }),
+      
+      setFlashQuantity: (qty) => set({ flashQuantity: Math.max(FLASH_USDT_MIN, Math.min(FLASH_USDT_MAX, qty)) }),
+      
+      incrementFlash: (step = 1000) => set((state) => ({
+        flashQuantity: Math.min(FLASH_USDT_MAX, state.flashQuantity + step),
+      })),
+      
+      decrementFlash: (step = 1000) => set((state) => ({
+        flashQuantity: Math.max(FLASH_USDT_MIN, state.flashQuantity - step),
+      })),
       
       addToCart: (item) => set((state) => {
         const existing = state.cart.find(c => c.productId === item.productId);
@@ -175,6 +210,7 @@ export const useStore = create<AppState>()(
         cart: state.cart,
         couponCode: state.couponCode,
         couponDiscount: state.couponDiscount,
+        flashQuantity: state.flashQuantity,
       }),
     }
   )
