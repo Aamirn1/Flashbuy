@@ -34,11 +34,11 @@ export default function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
             Why Choose{' '}
             <span className="text-gradient-cyan">Flash Buy</span>
           </h2>
-          <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
+          <p className="mt-2 sm:mt-3 text-slate-400 text-base sm:text-lg max-w-2xl mx-auto">
             We combine the power of blockchain payments with a seamless shopping experience.
           </p>
         </motion.div>

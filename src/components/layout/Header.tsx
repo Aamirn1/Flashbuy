@@ -80,7 +80,6 @@ export default function Header() {
 
   const navItems = [
     { label: 'Home', page: 'home' as Page, icon: Home },
-    { label: 'Products', page: 'products' as Page, icon: ShoppingBag },
   ];
 
   return (
@@ -106,9 +105,8 @@ export default function Header() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="relative flex items-center justify-center size-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-shadow duration-300">
-              <Zap className="size-5 text-white fill-white/20" />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
+            <div className="relative flex items-center justify-center size-9 rounded-xl border border-emerald-500/30 bg-transparent group-hover:border-emerald-500/50 transition-all duration-300">
+              <Zap className="size-5 text-emerald-400" />
             </div>
             <span className="text-xl font-bold tracking-tight hidden sm:inline">
               <span className="text-gradient-cyan">Flash</span>
@@ -176,7 +174,7 @@ export default function Header() {
                   >
                     <Avatar className="size-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
+                      <AvatarFallback className="border border-emerald-500/30 bg-black text-emerald-400 text-xs font-semibold">
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
@@ -184,7 +182,7 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 glass-strong border-emerald-500/10"
+                  className="w-56 bg-black/95 border-emerald-500/10 backdrop-blur-xl"
                 >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
@@ -285,12 +283,12 @@ export default function Header() {
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent
           side="left"
-          className="glass-strong border-emerald-500/10 w-80 p-0"
+          className="bg-black/95 border-emerald-500/10 w-80 p-0 backdrop-blur-xl"
         >
           <SheetHeader className="p-4 pb-0">
             <SheetTitle className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/25">
-                <Zap className="size-4 text-white fill-white/20" />
+              <div className="flex items-center justify-center size-8 rounded-lg border border-emerald-500/30 bg-transparent">
+                <Zap className="size-4 text-emerald-400" />
               </div>
               <span className="text-lg font-bold">
                 <span className="text-gradient-cyan">Flash</span>
@@ -330,7 +328,7 @@ export default function Header() {
               <div className="flex items-center gap-3 px-3 py-2 mb-2">
                 <Avatar className="size-8">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
+                  <AvatarFallback className="border border-emerald-500/30 bg-black text-emerald-400 text-xs font-semibold">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>

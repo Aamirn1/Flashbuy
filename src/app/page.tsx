@@ -64,11 +64,11 @@ function PageRouter() {
         </>
       );
 
-    // Products
+    // Products - Single product only
     case 'products':
-      return <ProductGrid />;
+      return <FlashUSDTProduct />;
     case 'product-detail':
-      return <ProductDetail />;
+      return <FlashUSDTProduct />;
 
     // Cart & Checkout
     case 'cart':

@@ -9,7 +9,7 @@ import type { Page } from '@/lib/types';
 
 const QUICK_LINKS = [
   { label: 'Home', page: 'home' as Page },
-  { label: 'Products', page: 'products' as Page },
+  { label: 'Buy Flash USDT', page: 'products' as Page },
   { label: 'FAQ', page: 'home' as Page },
 ];
 
@@ -33,9 +33,8 @@ export default function Footer() {
               onClick={() => navigate('home')}
               className="flex items-center gap-2.5 mb-4 group"
             >
-              <div className="relative flex items-center justify-center size-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-shadow duration-300">
-                <Zap className="size-5 text-white fill-white/20" />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
+              <div className="flex items-center justify-center size-9 rounded-xl border border-emerald-500/30 bg-transparent">
+                <Zap className="size-5 text-emerald-400" />
               </div>
               <span className="text-xl font-bold tracking-tight">
                 <span className="text-gradient-cyan">Flash</span>

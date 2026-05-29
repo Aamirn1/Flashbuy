@@ -58,13 +58,13 @@ export default function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          className="text-center mb-8 sm:mb-14"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
             How It{' '}
             <span className="text-gradient-cyan">Works</span>
           </h2>
-          <p className="mt-3 text-slate-400 text-lg max-w-xl mx-auto">
+          <p className="mt-2 sm:mt-3 text-slate-400 text-base sm:text-lg max-w-xl mx-auto">
             Get your Flash USDT in three simple steps.
           </p>
         </motion.div>

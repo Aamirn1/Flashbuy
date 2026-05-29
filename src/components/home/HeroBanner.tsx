@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Zap, Shield, Globe, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/lib/store';
 
 const quickStats = [
   { icon: Zap, label: 'Instant Delivery', color: 'text-emerald-400' },
@@ -30,8 +29,6 @@ const statVariants = {
 };
 
 export default function HeroBanner() {
-  const navigate = useStore((s) => s.navigate);
-
   return (
     <section className="relative overflow-hidden bg-mesh">
       {/* Hex pattern overlay */}
@@ -39,46 +36,46 @@ export default function HeroBanner() {
 
       {/* Floating orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb orb-cyan w-[500px] h-[500px] -top-32 -left-32 animate-float-slow" />
-        <div className="orb orb-blue w-[400px] h-[400px] top-1/4 -right-20 animate-float-slow" style={{ animationDelay: '2s' }} />
-        <div className="orb orb-teal w-[350px] h-[350px] -bottom-20 left-1/3 animate-float-slow" style={{ animationDelay: '4s' }} />
+        <div className="orb orb-cyan w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] -top-20 sm:-top-32 -left-20 sm:-left-32 animate-float-slow" />
+        <div className="orb orb-blue w-[250px] h-[250px] sm:w-[400px] sm:h-[400px] top-1/4 -right-10 sm:-right-20 animate-float-slow" style={{ animationDelay: '2s' }} />
+        <div className="orb orb-teal w-[200px] h-[200px] sm:w-[350px] sm:h-[350px] -bottom-10 sm:-bottom-20 left-1/3 animate-float-slow" style={{ animationDelay: '4s' }} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-36">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16"
+          className="flex flex-col lg:flex-row items-center gap-8 sm:gap-12 lg:gap-16"
         >
           {/* Left: Text content */}
           <div className="flex-1 text-center lg:text-left">
             <motion.div
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-emerald-400 text-sm font-medium mb-8"
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full glass-light text-emerald-400 text-xs sm:text-sm font-medium mb-6 sm:mb-8"
             >
-              <Zap className="size-4" />
+              <Zap className="size-3.5 sm:size-4" />
               <span>Powered by Blockchain Technology</span>
             </motion.div>
 
             <motion.h1
               variants={itemVariants}
-              className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-7xl font-black leading-tight tracking-tight"
             >
-              <span className="text-gradient-cyan text-glow-cyan">Flash USDT</span>
+              <span className="text-gradient-cyan">Flash USDT</span>
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="mt-4 text-xl sm:text-2xl text-slate-300 font-light"
+              className="mt-3 sm:mt-4 text-lg sm:text-xl lg:text-2xl text-slate-300 font-light"
             >
               Instant Crypto at Unbeatable Prices
             </motion.p>
 
             <motion.p
               variants={itemVariants}
-              className="mt-4 text-base sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed"
+              className="mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed"
             >
               Get Flash USDT instantly with secure TRC20 &amp; BEP20 transfers.
               The fastest way to acquire crypto at the best rates — 1000 Flash USDT for just $10.
@@ -87,29 +84,32 @@ export default function HeroBanner() {
             {/* Quick stats row */}
             <motion.div
               variants={containerVariants}
-              className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3"
+              className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-2 sm:gap-3"
             >
               {quickStats.map((stat) => (
                 <motion.div
                   key={stat.label}
                   variants={statVariants}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-light"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl glass-light"
                 >
-                  <stat.icon className={`size-4 ${stat.color}`} />
-                  <span className="text-sm font-medium text-slate-200">{stat.label}</span>
+                  <stat.icon className={`size-3.5 sm:size-4 ${stat.color}`} />
+                  <span className="text-xs sm:text-sm font-medium text-slate-200">{stat.label}</span>
                 </motion.div>
               ))}
             </motion.div>
 
             {/* CTA */}
-            <motion.div variants={itemVariants} className="mt-10">
+            <motion.div variants={itemVariants} className="mt-8 sm:mt-10">
               <Button
                 size="lg"
-                className="glow-cyan-strong bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-bold px-10 h-14 text-base rounded-xl shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-400/40 hover:scale-105"
-                onClick={() => navigate('products')}
+                className="glow-cyan-strong bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-bold px-8 sm:px-10 h-12 sm:h-14 text-sm sm:text-base rounded-xl shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-400/40 hover:scale-105"
+                onClick={() => {
+                  const el = document.getElementById('buy-flash-usdt');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
               >
                 Buy Flash USDT
-                <ArrowRight className="size-5 ml-2" />
+                <ArrowRight className="size-4 sm:size-5 ml-2" />
               </Button>
             </motion.div>
           </div>
@@ -124,14 +124,15 @@ export default function HeroBanner() {
               animate={{ y: [0, -12, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <div className="coin-3d animate-spin-coin" />
+              <div className="coin-3d animate-spin-coin" style={{ width: 140, height: 140 }} />
+              <style>{`.coin-3d[style*="140px"]::after { font-size: 56px; inset: 7px; }`}</style>
             </motion.div>
           </motion.div>
         </motion.div>
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 }

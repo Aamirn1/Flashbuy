@@ -238,7 +238,7 @@ export default function AuthDialog() {
 
   return (
     <Dialog open={showAuthDialog} onOpenChange={(open) => setShowAuthDialog(open)}>
-      <DialogContent className="sm:max-w-[440px] glass-strong border-emerald-500/15 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[440px] bg-black/95 border-emerald-500/15 backdrop-blur-xl p-0 overflow-hidden">
         {/* Header with gradient */}
         <div className="relative px-6 pt-6 pb-4 overflow-hidden">
           {/* Background orbs */}
@@ -248,12 +248,12 @@ export default function AuthDialog() {
           <DialogHeader className="relative">
             <div className="flex items-center justify-center gap-2 mb-2">
               <motion.div
-                className="flex items-center justify-center size-11 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30"
+                className="flex items-center justify-center size-11 rounded-xl border border-emerald-500/30 bg-transparent"
                 animate={{ rotateY: [0, 360] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <Zap className="size-5 text-white fill-white/20" />
+                <Zap className="size-5 text-emerald-400" />
               </motion.div>
             </div>
             <DialogTitle className="text-center text-xl font-bold text-foreground">
@@ -394,7 +394,7 @@ export default function AuthDialog() {
 
               <div className="relative">
                 <Separator className="bg-emerald-500/10" />
-                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[rgba(15,23,42,0.65)] px-3 text-xs text-muted-foreground">
+                <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/95 px-3 text-xs text-muted-foreground">
                   or continue with
                 </span>
               </div>
@@ -585,7 +585,7 @@ export default function AuthDialog() {
                       <Globe className="size-4 text-emerald-400/40 mr-1" />
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent className="glass-strong border-emerald-500/10">
+                    <SelectContent className="bg-black/95 border-emerald-500/10 backdrop-blur-xl">
                       {COUNTRIES.map((country) => (
                         <SelectItem
                           key={country.value}

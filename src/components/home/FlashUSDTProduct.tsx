@@ -68,140 +68,138 @@ export default function FlashUSDTProduct() {
   };
 
   return (
-    <section className="relative py-16 sm:py-24 overflow-hidden">
+    <section id="buy-flash-usdt" className="relative py-10 sm:py-16 lg:py-24 overflow-hidden">
       {/* Background orbs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="orb orb-cyan w-[400px] h-[400px] top-0 left-1/4 animate-float-slow" />
-        <div className="orb orb-teal w-[300px] h-[300px] bottom-0 right-1/4 animate-float-slow" style={{ animationDelay: '3s' }} />
+        <div className="orb orb-cyan w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] top-0 left-1/4 animate-float-slow" />
+        <div className="orb orb-teal w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] bottom-0 right-1/4 animate-float-slow" style={{ animationDelay: '3s' }} />
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6">
+      <div className="relative z-10 max-w-xl mx-auto px-3 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          {/* Product Card with 3D effect */}
-          <div className="card-3d">
-            <div className="card-3d-inner glass-card rounded-2xl p-6 sm:p-8 animate-pulse-glow">
-              {/* 3D Coin */}
-              <div className="flex justify-center mb-6">
+          {/* Product Card */}
+          <div className="glass-card rounded-2xl p-4 sm:p-6 lg:p-8 animate-pulse-glow">
+            {/* 3D Coin */}
+            <div className="flex justify-center mb-4 sm:mb-6">
+              <motion.div
+                initial={{ scale: 0, rotateY: -180 }}
+                animate={{ scale: 1, rotateY: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <div className="coin-3d animate-spin-coin" style={{ width: 90, height: 90 }} />
+                <style>{`.coin-3d[style*="90px"]::after { font-size: 36px; inset: 5px; }`}</style>
+              </motion.div>
+            </div>
+
+            {/* Title */}
+            <div className="text-center mb-4 sm:mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gradient-cyan">
+                Flash USDT
+              </h2>
+              <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-400">
+                Instant Transfer &bull; TRC20 / BEP20
+              </p>
+            </div>
+
+            {/* Quantity Selector */}
+            <div className="mb-4 sm:mb-6">
+              <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 sm:mb-3">
+                Quantity
+              </label>
+              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <button
+                  className="qty-btn shrink-0"
+                  onClick={() => decrementFlash(FLASH_USDT_UNIT)}
+                  disabled={flashQuantity <= FLASH_USDT_MIN}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="size-4 sm:size-5" />
+                </button>
+
                 <motion.div
-                  initial={{ scale: 0, rotateY: -180 }}
-                  animate={{ scale: 1, rotateY: 0 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  key={flashQuantity}
+                  initial={{ scale: 1.1, opacity: 0.7 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="min-w-[100px] sm:min-w-[140px] text-center"
                 >
-                  <div className="coin-3d animate-spin-coin" style={{ width: 120, height: 120 }} />
-                  <style>{`.coin-3d[style*="120px"]::after { font-size: 48px; inset: 6px; }`}</style>
-                </motion.div>
-              </div>
-
-              {/* Title */}
-              <div className="text-center mb-6">
-                <h2 className="text-3xl sm:text-4xl font-black text-gradient-cyan">
-                  Flash USDT
-                </h2>
-                <p className="mt-2 text-sm text-slate-400">
-                  Instant Transfer &bull; TRC20 / BEP20
-                </p>
-              </div>
-
-              {/* Quantity Selector */}
-              <div className="mb-6">
-                <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">
-                  Quantity
-                </label>
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <button
-                    className="qty-btn"
-                    onClick={() => decrementFlash(FLASH_USDT_UNIT)}
-                    disabled={flashQuantity <= FLASH_USDT_MIN}
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus className="size-5" />
-                  </button>
-
-                  <motion.div
-                    key={flashQuantity}
-                    initial={{ scale: 1.1, opacity: 0.7 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                    className="min-w-[140px] text-center"
-                  >
-                    <span className="text-3xl sm:text-4xl font-black text-gradient-gold">
-                      {formatQuantityDisplay(flashQuantity)}
-                    </span>
-                  </motion.div>
-
-                  <button
-                    className="qty-btn"
-                    onClick={() => incrementFlash(FLASH_USDT_UNIT)}
-                    disabled={flashQuantity >= FLASH_USDT_MAX}
-                    aria-label="Increase quantity"
-                  >
-                    <Plus className="size-5" />
-                  </button>
-                </div>
-
-                {/* Quick select buttons */}
-                <div className="flex flex-wrap justify-center gap-2">
-                  {quickSelects.map((qs) => (
-                    <button
-                      key={qs.value}
-                      onClick={() => setFlashQuantity(qs.value)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                        flashQuantity === qs.value
-                          ? 'bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 glow-cyan'
-                          : 'glass-light text-slate-400 hover:text-emerald-300 hover:border-emerald-400/30'
-                      }`}
-                    >
-                      {qs.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent my-6" />
-
-              {/* Price Display */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-slate-400">Price</span>
-                  <span className="text-xs text-slate-500">
-                    Rate: 1000 Flash USDT = $10.00
-                  </span>
-                </div>
-                <motion.div className="text-right">
-                  <span className="text-4xl sm:text-5xl font-black text-gradient-cyan">
-                    ${displayPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-gradient-gold">
+                    {formatQuantityDisplay(flashQuantity)}
                   </span>
                 </motion.div>
+
+                <button
+                  className="qty-btn shrink-0"
+                  onClick={() => incrementFlash(FLASH_USDT_UNIT)}
+                  disabled={flashQuantity >= FLASH_USDT_MAX}
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="size-4 sm:size-5" />
+                </button>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleAddToCart}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl glass-card glow-cyan text-emerald-300 font-bold text-base transition-all hover:text-white hover:border-emerald-400/40"
-                >
-                  <ShoppingCart className="size-5" />
-                  Add to Cart
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleBuyNow}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 glow-cyan-strong text-gray-950 font-bold text-base transition-all hover:from-emerald-400 hover:to-emerald-300"
-                >
-                  <Zap className="size-5" />
-                  Buy Now
-                </motion.button>
+              {/* Quick select buttons */}
+              <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
+                {quickSelects.map((qs) => (
+                  <button
+                    key={qs.value}
+                    onClick={() => setFlashQuantity(qs.value)}
+                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all duration-200 ${
+                      flashQuantity === qs.value
+                        ? 'bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 glow-cyan'
+                        : 'glass-light text-slate-400 hover:text-emerald-300 hover:border-emerald-400/30'
+                    }`}
+                  >
+                    {qs.label}
+                  </button>
+                ))}
               </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent my-4 sm:my-6" />
+
+            {/* Price Display */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs sm:text-sm text-slate-400">Price</span>
+                <span className="text-[10px] sm:text-xs text-slate-500">
+                  Rate: 1000 Flash USDT = $10.00
+                </span>
+              </div>
+              <motion.div className="text-right">
+                <span className="text-2xl sm:text-4xl lg:text-5xl font-black text-gradient-cyan">
+                  ${displayPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </motion.div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2.5 sm:gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleAddToCart}
+                className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl glass-card glow-cyan text-emerald-300 font-bold text-sm sm:text-base transition-all hover:text-white hover:border-emerald-400/40"
+              >
+                <ShoppingCart className="size-4 sm:size-5" />
+                Add to Cart
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleBuyNow}
+                className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 glow-cyan-strong text-gray-950 font-bold text-sm sm:text-base transition-all hover:from-emerald-400 hover:to-emerald-300"
+              >
+                <Zap className="size-4 sm:size-5" />
+                Buy Now
+              </motion.button>
             </div>
           </div>
         </motion.div>
