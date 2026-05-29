@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useStore, formatUSDT } from '@/lib/store';
 import { CRYPTO_WALLETS } from '@/lib/constants';
 
@@ -41,6 +42,7 @@ export default function CheckoutView() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const serviceFee = subtotal > 0 ? parseFloat((subtotal * 0.01).toFixed(2)) : 0;
@@ -554,16 +556,39 @@ export default function CheckoutView() {
                 <span className="text-2xl font-bold text-gradient-gold">${total.toFixed(2)} USDT</span>
               </div>
 
+              {/* Disclaimer Checkbox */}
+              <div className="rounded-xl p-4 border border-amber-500/20 bg-amber-500/5">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="disclaimer"
+                    checked={disclaimerAccepted}
+                    onCheckedChange={(checked) => setDisclaimerAccepted(checked === true)}
+                    className="mt-0.5 border-amber-500/40 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+                  />
+                  <Label
+                    htmlFor="disclaimer"
+                    className="text-xs text-amber-200/80 leading-relaxed cursor-pointer select-none"
+                  >
+                    I understand that these Flash USDT are <strong className="text-amber-400">only for trading purposes</strong> and should not be used for any other purpose. I acknowledge that Flash USDT may have limitations in certain wallets or exchanges and I accept full responsibility for my purchase.
+                  </Label>
+                </div>
+              </div>
+
               <Button
                 size="lg"
                 className="w-full gap-2 font-semibold glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl h-12 text-base"
                 onClick={handleConfirmPayment}
-                disabled={isExpired || isConfirming}
+                disabled={isExpired || isConfirming || !disclaimerAccepted}
               >
                 {isConfirming ? (
                   <>
                     <Loader2 className="size-5 animate-spin" />
                     Confirming...
+                  </>
+                ) : !disclaimerAccepted ? (
+                  <>
+                    <Shield className="size-5" />
+                    Accept Disclaimer to Continue
                   </>
                 ) : (
                   <>
