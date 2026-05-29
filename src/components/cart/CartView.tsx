@@ -32,6 +32,8 @@ export default function CartView() {
   const applyCoupon = useStore((s) => s.applyCoupon);
   const removeCoupon = useStore((s) => s.removeCoupon);
   const navigate = useStore((s) => s.navigate);
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const setShowAuthDialog = useStore((s) => s.setShowAuthDialog);
 
   const [couponInput, setCouponInput] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
@@ -266,9 +268,15 @@ export default function CartView() {
               <Button
                 size="lg"
                 className="w-full gap-2 font-semibold glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl h-12 text-base"
-                onClick={() => navigate('checkout')}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setShowAuthDialog(true, 'register');
+                  } else {
+                    navigate('checkout');
+                  }
+                }}
               >
-                Proceed to Checkout
+                {isAuthenticated ? 'Proceed to Checkout' : 'Sign Up to Checkout'}
                 <ArrowRight className="size-5" />
               </Button>
 
@@ -312,13 +320,13 @@ function CartItemRow({
       exit={{ opacity: 0, x: -100, scale: 0.9 }}
       transition={{ delay: index * 0.05 }}
     >
-      <div className="glass-card glass-card-hover rounded-2xl p-5 group">
-        <div className="flex gap-4">
+      <div className="glass-card glass-card-hover rounded-2xl p-4 sm:p-5 group">
+        <div className="flex gap-3 sm:gap-4">
           {/* Coin Icon */}
           <div className="shrink-0">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border border-emerald-500/15 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <span className="text-white font-bold text-sm">₮</span>
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border border-emerald-500/15 flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                <span className="text-white font-bold text-xs sm:text-sm">₮</span>
               </div>
             </div>
           </div>
@@ -355,31 +363,31 @@ function CartItemRow({
             </div>
 
             {/* Quantity & Price */}
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="qty-btn"
+                  className="qty-btn shrink-0"
                   onClick={() => onUpdateQuantity(item.quantity - 1000)}
                   disabled={item.quantity <= 1000}
                 >
                   <Minus className="size-4" />
                 </motion.button>
-                <span className="text-sm font-semibold min-w-[140px] text-center">
+                <span className="text-sm font-semibold min-w-[80px] sm:min-w-[140px] text-center">
                   {displayQuantity}
                 </span>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="qty-btn"
+                  className="qty-btn shrink-0"
                   onClick={() => onUpdateQuantity(item.quantity + 1000)}
                   disabled={item.quantity >= item.stock}
                 >
                   <Plus className="size-4" />
                 </motion.button>
               </div>
-              <span className="text-lg font-bold text-gradient-cyan">
+              <span className="text-lg font-bold text-gradient-cyan sm:text-right">
                 ${itemSubtotal.toFixed(2)}
               </span>
             </div>
