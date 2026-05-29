@@ -68,15 +68,29 @@ export default function CheckoutView() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
 
-  // Scroll to top when order is complete
+  // Scroll to top when order is complete - MUST scroll to top!
   useEffect(() => {
     if (orderComplete) {
-      // Use requestAnimationFrame to ensure DOM has updated before scrolling
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
+      // Multiple attempts to ensure scroll-to-top works on all browsers
+      const scrollToTop = () => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
+        if (document.scrollingElement) {
+          document.scrollingElement.scrollTop = 0;
+        }
+      };
+      // Immediate attempt
+      scrollToTop();
+      // RAF attempt (after DOM update)
+      requestAnimationFrame(() => {
+        scrollToTop();
+        // Double RAF for safety
+        requestAnimationFrame(scrollToTop);
       });
+      // Delayed attempt as final fallback
+      setTimeout(scrollToTop, 100);
+      setTimeout(scrollToTop, 300);
     }
   }, [orderComplete]);
   const [orderNumber, setOrderNumber] = useState('');

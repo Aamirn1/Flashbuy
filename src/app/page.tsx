@@ -63,13 +63,22 @@ function PageRouter() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Scroll to top on every page navigation
+  // Scroll to top on every page navigation - robust multi-attempt approach
   useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
+      if (document.scrollingElement) {
+        document.scrollingElement.scrollTop = 0;
+      }
+    };
+    scrollToTop();
+    requestAnimationFrame(() => {
+      scrollToTop();
+      requestAnimationFrame(scrollToTop);
     });
+    setTimeout(scrollToTop, 50);
   }, [currentPage]);
 
   // Redirect to home if trying to access protected pages without auth

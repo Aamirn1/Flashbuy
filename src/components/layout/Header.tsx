@@ -136,7 +136,7 @@ export default function Header() {
           </nav>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Admin Shield - visible only for admin users */}
             {isAuthenticated && user?.role === 'admin' && (
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -144,14 +144,13 @@ export default function Header() {
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "relative text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl",
+                    "relative text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl h-9 w-9",
                     currentPage.startsWith('admin') && "bg-emerald-500/15 text-emerald-300"
                   )}
                   onClick={() => handleNavClick('admin')}
                   aria-label="Admin Panel"
                 >
-                  <ShieldCheck className="size-5" />
-                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-400/70">Admin</span>
+                  <ShieldCheck className="h-[18px] w-[18px]" />
                 </Button>
               </motion.div>
             )}
@@ -161,11 +160,11 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl"
+                className="relative text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl h-9 w-9"
                 onClick={() => handleNavClick('cart')}
                 aria-label="Shopping cart"
               >
-                <ShoppingCart className="size-5" />
+                <ShoppingCart className="h-[18px] w-[18px]" />
                 <AnimatePresence>
                   {cartCount > 0 && (
                     <motion.div
@@ -174,7 +173,7 @@ export default function Header() {
                       exit={{ scale: 0 }}
                       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                     >
-                      <Badge className="absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-400 text-[10px] font-bold border-0 text-background hover:from-emerald-500 hover:to-emerald-400">
+                      <Badge className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] p-0 flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-400 text-[9px] font-bold border-0 text-background hover:from-emerald-500 hover:to-emerald-400">
                         {cartCount > 99 ? '99+' : cartCount}
                       </Badge>
                     </motion.div>
@@ -189,7 +188,7 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full hover:bg-white/5 transition-all duration-300"
+                    className="relative h-9 w-9 rounded-full hover:bg-white/5 transition-all duration-300 p-0"
                   >
                     <Avatar className="size-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
