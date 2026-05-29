@@ -19,7 +19,9 @@ export type Page =
   | 'admin-users'
   | 'admin-analytics'
   | 'admin-coupons'
-  | 'admin-settings';
+  | 'admin-settings'
+  | 'admin-tickets'
+  | 'admin-payment-methods';
 
 export type UserRole = 'customer' | 'admin' | 'support';
 
@@ -104,6 +106,11 @@ export interface Order {
   paymentStatus: string;
   deliveryStatus: string;
   notes?: string;
+  deliveryWalletAddress?: string;
+  deliveryWalletNetwork?: string;
+  paymentTxHash?: string;
+  paymentScreenshot?: string;
+  flashUsdtAmount?: number;
   createdAt: string;
   items: OrderItem[];
 }
@@ -160,6 +167,34 @@ export interface TicketMessage {
   message: string;
   timestamp: string;
   isAdmin: boolean;
+}
+
+export interface PaymentMethodConfig {
+  id: string;
+  name: string;
+  network?: string;
+  walletAddress?: string;
+  icon?: string;
+  isActive: boolean;
+  sortOrder: number;
+  requireTxId: boolean;
+  requireScreenshot: boolean;
+  estimatedTime: string;
+  confirmations: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminTicket extends Ticket {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  _count?: {
+    messages: number;
+  };
 }
 
 export interface Review {

@@ -203,22 +203,27 @@ model Product {
 }
 
 model Order {
-  id             String        @id @default(cuid())
-  orderNumber    String        @unique
-  userId         String
-  status         OrderStatus   @default(pending)
-  itemsPrice     Decimal       @db.Decimal(12, 2)
-  discount       Decimal       @default(0) @db.Decimal(12, 2)
-  fee            Decimal       @default(0) @db.Decimal(12, 2)
-  total          Decimal       @db.Decimal(12, 2)
-  couponId       String?
-  paymentMethod  PaymentMethod?
-  paymentStatus  PaymentStatus @default(pending)
-  paymentId      String?
-  deliveryStatus DeliveryStatus @default(pending)
-  notes          String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id                    String        @id @default(cuid())
+  orderNumber           String        @unique
+  userId                String
+  status                OrderStatus   @default(pending)
+  itemsPrice            Decimal       @db.Decimal(12, 2)
+  discount              Decimal       @default(0) @db.Decimal(12, 2)
+  fee                   Decimal       @default(0) @db.Decimal(12, 2)
+  total                 Decimal       @db.Decimal(12, 2)
+  couponId              String?
+  paymentMethod         PaymentMethod?
+  paymentStatus         PaymentStatus @default(pending)
+  paymentId             String?
+  deliveryStatus        DeliveryStatus @default(pending)
+  deliveryWalletAddress String?       // User's wallet where they want to receive FlashUSDT
+  deliveryWalletNetwork String?       // Network for delivery wallet (usdt_trc20 / usdt_bep20)
+  paymentTxHash         String?       // Transaction hash from user's payment
+  paymentScreenshot     String?       // Screenshot URL of payment proof
+  flashUsdtAmount       Int?          // Quantity of FlashUSDT ordered
+  notes                 String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   user    User        @relation(fields: [userId], references: [id])
   items   OrderItem[]
@@ -424,4 +429,23 @@ model SiteSetting {
   value String
 
   @@index([key])
+}
+
+model PaymentMethodConfig {
+  id               String  @id @default(cuid())
+  name             String  @unique  // e.g. "USDT TRC20", "Easypaisa", "JazzCash"
+  network          String? // e.g. "TRC20", "BEP20", "local"
+  walletAddress    String? // Wallet address to receive payment
+  icon             String? // Emoji or icon class
+  isActive         Boolean @default(true)
+  sortOrder        Int     @default(0)
+  requireTxId      Boolean @default(false) // Whether to require transaction ID from user
+  requireScreenshot Boolean @default(false) // Whether to require payment screenshot from user
+  estimatedTime    String  @default("3-5 minutes")
+  confirmations    Int     @default(20)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
 }

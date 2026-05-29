@@ -106,18 +106,33 @@ export const useStore = create<AppState>()(
       notifications: [],
       
       // Actions
-      navigate: (page, id) => set((state) => ({
-        previousPage: state.currentPage,
-        currentPage: page,
-        selectedProductId: page === 'product-detail' ? (id || state.selectedProductId) : state.selectedProductId,
-        selectedOrderId: page === 'order-detail' ? (id || state.selectedOrderId) : state.selectedOrderId,
-        selectedTicketId: page === 'ticket-detail' ? (id || state.selectedTicketId) : state.selectedTicketId,
-      })),
+      navigate: (page, id) => {
+        // Push current state to browser history before navigating
+        if (typeof window !== 'undefined') {
+          const state = get();
+          // Only push if page actually changes
+          if (state.currentPage !== page) {
+            window.history.pushState({ page: state.currentPage }, '');
+          }
+        }
+        set((state) => ({
+          previousPage: state.currentPage,
+          currentPage: page,
+          selectedProductId: page === 'product-detail' ? (id || state.selectedProductId) : state.selectedProductId,
+          selectedOrderId: page === 'order-detail' ? (id || state.selectedOrderId) : state.selectedOrderId,
+          selectedTicketId: page === 'ticket-detail' ? (id || state.selectedTicketId) : state.selectedTicketId,
+        }));
+      },
       
-      goBack: () => set((state) => ({
-        currentPage: state.previousPage || 'home',
-        previousPage: null,
-      })),
+      goBack: () => {
+        if (typeof window !== 'undefined') {
+          window.history.back();
+        }
+        set((state) => ({
+          currentPage: state.previousPage || 'home',
+          previousPage: null,
+        }));
+      },
       
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       

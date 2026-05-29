@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal, deliveryWalletAddress, deliveryWalletNetwork } = body;
+    const { items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal, deliveryWalletAddress, deliveryWalletNetwork, paymentTxHash, paymentScreenshot } = body;
     const userId = authUser.id;
 
     if (!items || !items.length) {
@@ -199,6 +199,9 @@ export async function POST(request: NextRequest) {
     const orderNumber = `FB-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
     // Create order with items
+    // Calculate total FlashUSDT amount
+    const totalFlashUsdt = flashItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+
     const order = await db.order.create({
       data: {
         orderNumber,
@@ -212,9 +215,12 @@ export async function POST(request: NextRequest) {
         paymentMethod: paymentMethod || null,
         paymentStatus: 'pending',
         deliveryStatus: 'pending',
-        notes: deliveryWalletAddress
-          ? `Delivery Wallet: ${deliveryWalletAddress}${deliveryWalletNetwork ? ` (${deliveryWalletNetwork})` : ''}`
-          : null,
+        deliveryWalletAddress: deliveryWalletAddress || null,
+        deliveryWalletNetwork: deliveryWalletNetwork || null,
+        paymentTxHash: paymentTxHash || null,
+        paymentScreenshot: paymentScreenshot || null,
+        flashUsdtAmount: totalFlashUsdt > 0 ? totalFlashUsdt : null,
+        notes: null,
         items: {
           create: orderItems.map((item) => ({
             productId: item.productId,

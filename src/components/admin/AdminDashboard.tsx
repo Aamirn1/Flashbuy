@@ -23,6 +23,8 @@ import {
   ArrowDownRight,
   Eye,
   Zap,
+  CreditCard,
+  Headphones,
 } from 'lucide-react';
 import {
   LineChart,
@@ -40,12 +42,16 @@ import {
 import { AdminProducts } from './AdminProducts';
 import { AdminOrders } from './AdminOrders';
 import { AdminUsers } from './AdminUsers';
+import { AdminPaymentMethods } from './AdminPaymentMethods';
+import { AdminTickets } from './AdminTickets';
 
 const NAV_ITEMS: { page: Page; label: string; icon: React.ReactNode }[] = [
   { page: 'admin', label: 'Overview', icon: <LayoutDashboard className="h-4 w-4" /> },
   { page: 'admin-products', label: 'Products', icon: <Package className="h-4 w-4" /> },
   { page: 'admin-orders', label: 'Orders', icon: <ShoppingCart className="h-4 w-4" /> },
   { page: 'admin-users', label: 'Users', icon: <Users className="h-4 w-4" /> },
+  { page: 'admin-payment-methods', label: 'Payments', icon: <CreditCard className="h-4 w-4" /> },
+  { page: 'admin-tickets', label: 'Tickets', icon: <Headphones className="h-4 w-4" /> },
   { page: 'admin-coupons', label: 'Coupons', icon: <Tag className="h-4 w-4" /> },
   { page: 'admin-analytics', label: 'Analytics', icon: <BarChart3 className="h-4 w-4" /> },
   { page: 'admin-settings', label: 'Settings', icon: <Settings className="h-4 w-4" /> },
@@ -141,6 +147,8 @@ export function AdminDashboard() {
       case 'admin-products': return <AdminProducts />;
       case 'admin-orders': return <AdminOrders />;
       case 'admin-users': return <AdminUsers />;
+      case 'admin-tickets': return <AdminTickets />;
+      case 'admin-payment-methods': return <AdminPaymentMethods />;
       default: return <OverviewContent />;
     }
   };

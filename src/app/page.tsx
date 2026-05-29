@@ -28,6 +28,8 @@ import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { AdminProducts } from '@/components/admin/AdminProducts';
 import { AdminOrders } from '@/components/admin/AdminOrders';
 import { AdminUsers } from '@/components/admin/AdminUsers';
+import { AdminTickets } from '@/components/admin/AdminTickets';
+import { AdminPaymentMethods } from '@/components/admin/AdminPaymentMethods';
 import { useEffect } from 'react';
 
 function PageRouter() {
@@ -39,6 +41,25 @@ function PageRouter() {
     cleanupCart(); // Clean up stale/duplicate cart items from localStorage
   }, [checkAuth, cleanupCart]);
 
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = () => {
+      const state = useStore.getState();
+      if (state.previousPage) {
+        useStore.setState({
+          currentPage: state.previousPage,
+          previousPage: null,
+        });
+      } else {
+        useStore.setState({ currentPage: 'home' });
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    // Push initial state
+    window.history.replaceState({ page: 'home' }, '');
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Scroll to top on every page navigation
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
@@ -46,7 +67,7 @@ function PageRouter() {
 
   // Redirect to home if trying to access protected pages without auth
   useEffect(() => {
-    const protectedPages = ['dashboard', 'orders', 'order-detail', 'wallet', 'tickets', 'ticket-detail', 'referrals', 'admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-analytics', 'admin-coupons', 'admin-settings'];
+    const protectedPages = ['dashboard', 'orders', 'order-detail', 'wallet', 'tickets', 'ticket-detail', 'referrals', 'admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-analytics', 'admin-coupons', 'admin-settings', 'admin-tickets', 'admin-payment-methods'];
     if (protectedPages.includes(currentPage) && !user) {
       useStore.getState().setShowAuthDialog(true, 'login');
       useStore.getState().navigate('home');
@@ -55,7 +76,7 @@ function PageRouter() {
 
   // Redirect non-admin users from admin pages
   useEffect(() => {
-    const adminPages = ['admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-analytics', 'admin-coupons', 'admin-settings'];
+    const adminPages = ['admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-analytics', 'admin-coupons', 'admin-settings', 'admin-tickets', 'admin-payment-methods'];
     if (adminPages.includes(currentPage) && user?.role !== 'admin') {
       useStore.getState().navigate('home');
     }
@@ -114,6 +135,10 @@ function PageRouter() {
       return <AdminOrders />;
     case 'admin-users':
       return <AdminUsers />;
+    case 'admin-tickets':
+      return <AdminTickets />;
+    case 'admin-payment-methods':
+      return <AdminPaymentMethods />;
     case 'admin-analytics':
       return <AdminDashboard />;
     case 'admin-coupons':

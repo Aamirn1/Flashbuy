@@ -286,6 +286,18 @@ export function OrderDetail() {
                 <span className="text-muted-foreground">Amount</span>
                 <span className="font-medium text-gradient-gold">${safeNum(order.total).toFixed(2)}</span>
               </div>
+              {(order as Record<string, unknown>).flashUsdtAmount ? (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Flash USDT Amount</span>
+                  <span className="font-medium text-emerald-400">{Number((order as Record<string, unknown>).flashUsdtAmount).toLocaleString()} Flash USDT</span>
+                </div>
+              ) : null}
+              {(order as Record<string, unknown>).paymentTxHash ? (
+                <div className="p-3 rounded-lg glass-light">
+                  <p className="text-xs text-muted-foreground mb-1">Transaction Hash</p>
+                  <p className="text-xs font-mono text-emerald-400 break-all">{String((order as Record<string, unknown>).paymentTxHash)}</p>
+                </div>
+              ) : null}
               <div className="flex justify-between text-sm items-center">
                 <span className="text-muted-foreground">Payment Status</span>
                 <Badge
@@ -314,6 +326,17 @@ export function OrderDetail() {
           >
             <h3 className="text-lg font-semibold text-glow-cyan mb-4">Delivery Information</h3>
             <div className="space-y-3">
+              {(order as Record<string, unknown>).deliveryWalletAddress ? (
+                <div className="p-3 rounded-lg glass-light border border-emerald-500/15">
+                  <p className="text-xs text-muted-foreground mb-1">Delivery Wallet Address</p>
+                  <p className="text-sm font-mono text-emerald-400 break-all">{String((order as Record<string, unknown>).deliveryWalletAddress)}</p>
+                  {(order as Record<string, unknown>).deliveryWalletNetwork && (
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] mt-1">
+                      {String((order as Record<string, unknown>).deliveryWalletNetwork)}
+                    </Badge>
+                  )}
+                </div>
+              ) : null}
               <div className="flex justify-between text-sm items-center">
                 <span className="text-muted-foreground">Delivery Type</span>
                 <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">

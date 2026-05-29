@@ -46,6 +46,10 @@ export default function CheckoutView() {
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes
 
+  // Payment proof fields
+  const [paymentTxHash, setPaymentTxHash] = useState('');
+  const [paymentScreenshot, setPaymentScreenshot] = useState('');
+
   // Wallet selection for Flash USDT delivery
   const [deliveryWallet, setDeliveryWallet] = useState<'profile' | 'custom'>(
     user?.walletAddress ? 'profile' : 'custom'
@@ -167,6 +171,8 @@ export default function CheckoutView() {
           total: currentTotal,
           deliveryWalletAddress: walletAddr,
           deliveryWalletNetwork: deliveryWallet === 'profile' ? paymentMethod : customWalletNetwork,
+          paymentTxHash: paymentTxHash.trim() || undefined,
+          paymentScreenshot: paymentScreenshot.trim() || undefined,
         }),
       });
 
@@ -642,6 +648,53 @@ export default function CheckoutView() {
                         <li>Payment typically confirms in {selectedWallet.estimatedTime}</li>
                       </ul>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Payment Proof */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22 }}
+            >
+              <div className="glass-card rounded-2xl p-6 space-y-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <CheckCircle2 className="size-4 text-emerald-400" />
+                  </div>
+                  <h2 className="text-lg font-bold">Payment Proof</h2>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Provide your transaction details to speed up verification.
+                </p>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-foreground text-sm font-medium">Transaction Hash / ID</Label>
+                    <Input
+                      placeholder="Enter your transaction hash (e.g. 0x...)"
+                      value={paymentTxHash}
+                      onChange={(e) => setPaymentTxHash(e.target.value)}
+                      className="glass-input font-mono text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Find this in your wallet app after sending the payment
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-foreground text-sm font-medium">Payment Screenshot URL <span className="text-muted-foreground">(optional)</span></Label>
+                    <Input
+                      placeholder="https://example.com/screenshot.png"
+                      value={paymentScreenshot}
+                      onChange={(e) => setPaymentScreenshot(e.target.value)}
+                      className="glass-input text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Upload your payment screenshot to an image host and paste the URL
+                    </p>
                   </div>
                 </div>
               </div>

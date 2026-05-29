@@ -137,6 +137,25 @@ export default function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Admin Shield - visible only for admin users */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "relative text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl",
+                    currentPage.startsWith('admin') && "bg-emerald-500/15 text-emerald-300"
+                  )}
+                  onClick={() => handleNavClick('admin')}
+                  aria-label="Admin Panel"
+                >
+                  <ShieldCheck className="size-5" />
+                  <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-emerald-400/70">Admin</span>
+                </Button>
+              </motion.div>
+            )}
+
             {/* Cart */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
