@@ -34,7 +34,7 @@ export default function FlashUSDTProduct() {
   useEffect(() => {
     const controls = animate(motionPrice, calculatePrice(flashQuantity), {
       duration: 0.4,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
       onUpdate: (v) => setDisplayPrice(Math.round(v * 100) / 100),
     });
     return () => controls.stop();

@@ -26,7 +26,7 @@ export function parseJsonField<T = unknown>(value: unknown, fallback: T = [] as 
 export function decimalToNumber<T>(obj: T): T {
   if (obj === null || obj === undefined) return obj;
   if (typeof obj === 'object' && 'toNumber' in (obj as object)) {
-    return (obj as { toNumber: () => number }).toNumber() as T;
+    return (obj as unknown as { toNumber: () => number }).toNumber() as T;
   }
   return obj;
 }
@@ -37,8 +37,8 @@ export function serializeData<T>(obj: T): T {
   if (Array.isArray(obj)) return obj.map(serializeData) as T;
   if (typeof obj === 'object') {
     // Check if it's a Prisma Decimal (has toNumber method)
-    if ('toNumber' in (obj as object) && typeof (obj as { toNumber: unknown }).toNumber === 'function') {
-      return (obj as { toNumber: () => number }).toNumber() as T;
+    if ('toNumber' in (obj as object) && typeof (obj as unknown as { toNumber: unknown }).toNumber === 'function') {
+      return (obj as unknown as { toNumber: () => number }).toNumber() as T;
     }
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {

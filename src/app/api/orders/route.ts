@@ -154,12 +154,12 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      const itemTotal = product.price * item.quantity;
+      const itemTotal = Number(product.price) * item.quantity;
       itemsPrice += itemTotal;
       orderItems.push({
         productId: item.productId,
         quantity: item.quantity,
-        price: product.price,
+        price: Number(product.price),
         total: itemTotal,
       });
     }
@@ -175,16 +175,16 @@ export async function POST(request: NextRequest) {
         const now = new Date();
         const isExpired = coupon.expiresAt && coupon.expiresAt < now;
         const isOverLimit = coupon.usageLimit && coupon.usedCount >= coupon.usageLimit;
-        const isMinNotMet = itemsPrice < coupon.minOrder;
+        const isMinNotMet = itemsPrice < Number(coupon.minOrder);
 
         if (!isExpired && !isOverLimit && !isMinNotMet) {
           if (coupon.type === 'percentage') {
-            discount = itemsPrice * (coupon.value / 100);
-            if (coupon.maxDiscount && discount > coupon.maxDiscount) {
-              discount = coupon.maxDiscount;
+            discount = itemsPrice * (Number(coupon.value) / 100);
+            if (coupon.maxDiscount && discount > Number(coupon.maxDiscount)) {
+              discount = Number(coupon.maxDiscount);
             }
           } else {
-            discount = coupon.value;
+            discount = Number(coupon.value);
           }
           couponId = coupon.id;
         }

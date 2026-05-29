@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (type === 'withdrawal' && user.balance < amount) {
+    if (type === 'withdrawal' && Number(user.balance) < amount) {
       return NextResponse.json(
         { error: 'Insufficient balance' },
         { status: 400 }

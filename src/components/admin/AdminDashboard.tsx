@@ -25,6 +25,7 @@ import {
   CreditCard,
   Headphones,
   ArrowLeft,
+  ShieldCheck,
 } from 'lucide-react';
 import { AdminProducts } from './AdminProducts';
 import { AdminOrders } from './AdminOrders';
@@ -549,12 +550,17 @@ export function AdminDashboard() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <h1 className="font-bold text-lg text-gradient-cyan flex items-center gap-2">
-                <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
+                <ShieldCheck className="h-5 w-5 text-emerald-400" /> Admin Panel
               </h1>
             </div>
-            <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={logout}>
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={() => navigate('cart')} aria-label="Cart">
+                <ShoppingCart className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={logout} aria-label="Sign out">
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {NAV_ITEMS.map((item) => (
@@ -582,7 +588,7 @@ export function AdminDashboard() {
         <aside className="w-64 glass-strong flex flex-col border-r border-emerald-500/10">
           <div className="p-6 border-b border-emerald-500/10">
             <h1 className="text-xl font-bold flex items-center gap-2 text-gradient-cyan">
-              <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
+              <ShieldCheck className="h-5 w-5 text-emerald-400" /> Admin Panel
             </h1>
           </div>
 
@@ -612,6 +618,9 @@ export function AdminDashboard() {
           <div className="p-3 border-t border-emerald-500/10 space-y-1">
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={goBack}>
               <ArrowLeft className="h-4 w-4" /> Back to Store
+            </Button>
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={() => navigate('cart')}>
+              <ShoppingCart className="h-4 w-4" /> Cart
             </Button>
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={() => navigate('home')}>
               <Eye className="h-4 w-4" /> View Store

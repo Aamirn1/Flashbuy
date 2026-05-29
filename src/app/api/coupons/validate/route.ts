@@ -50,9 +50,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check minimum order
-    if (orderTotal < coupon.minOrder) {
+    if (orderTotal < Number(coupon.minOrder)) {
       return NextResponse.json(
-        { valid: false, error: `Minimum order amount is $${coupon.minOrder}` },
+        { valid: false, error: `Minimum order amount is $${Number(coupon.minOrder)}` },
         { status: 200 }
       );
     }
@@ -60,12 +60,12 @@ export async function POST(request: NextRequest) {
     // Calculate discount
     let discount = 0;
     if (coupon.type === 'percentage') {
-      discount = orderTotal * (coupon.value / 100);
-      if (coupon.maxDiscount && discount > coupon.maxDiscount) {
-        discount = coupon.maxDiscount;
+      discount = orderTotal * (Number(coupon.value) / 100);
+      if (coupon.maxDiscount && discount > Number(coupon.maxDiscount)) {
+        discount = Number(coupon.maxDiscount);
       }
     } else {
-      discount = coupon.value;
+      discount = Number(coupon.value);
     }
 
     return NextResponse.json(serializeData({

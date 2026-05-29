@@ -132,12 +132,12 @@ export async function PATCH(
       }
 
       // Unlock welcome bonus if order total >= $10 and bonus not yet unlocked
-      if (updatedOrder.total >= 10) {
+      if (Number(updatedOrder.total) >= 10) {
         const orderUser = await db.user.findUnique({
           where: { id: updatedOrder.userId },
           select: { welcomeBonus: true, welcomeBonusUnlocked: true },
         });
-        if (orderUser && !orderUser.welcomeBonusUnlocked && orderUser.welcomeBonus > 0) {
+        if (orderUser && !orderUser.welcomeBonusUnlocked && Number(orderUser.welcomeBonus) > 0) {
           // Add bonus to balance and mark as unlocked
           await db.user.update({
             where: { id: updatedOrder.userId },
@@ -153,7 +153,7 @@ export async function PATCH(
               type: 'welcome_bonus',
               amount: orderUser.welcomeBonus,
               status: 'completed',
-              description: `$${orderUser.welcomeBonus.toFixed(0)} Welcome Bonus unlocked — Order #${updatedOrder.orderNumber}`,
+              description: `$${Number(orderUser.welcomeBonus).toFixed(0)} Welcome Bonus unlocked — Order #${updatedOrder.orderNumber}`,
             },
           });
         }

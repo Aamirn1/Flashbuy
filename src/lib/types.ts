@@ -155,6 +155,7 @@ export interface Ticket {
   subject: string;
   category: string;
   description: string;
+  screenshot?: string;
   status: TicketStatus;
   priority: string;
   messages: TicketMessage[];

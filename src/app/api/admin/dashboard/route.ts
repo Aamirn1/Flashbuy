@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       where: { status: 'completed' },
       select: { total: true },
     });
-    const totalRevenue = completedOrders.reduce((sum, o) => sum + o.total, 0);
+    const totalRevenue = completedOrders.reduce((sum, o) => sum + Number(o.total), 0);
 
     // Total counts
     const [totalOrders, totalUsers, totalProducts] = await Promise.all([
@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
     const dailyRevenueMap = new Map<string, number>();
     for (const order of dailyOrders) {
       const dateKey = order.createdAt.toISOString().split('T')[0];
-      dailyRevenueMap.set(dateKey, (dailyRevenueMap.get(dateKey) || 0) + order.total);
+      dailyRevenueMap.set(dateKey, (dailyRevenueMap.get(dateKey) || 0) + Number(order.total));
     }
 
-    const dailyRevenue = [];
+    const dailyRevenue: { date: string; revenue: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -66,10 +66,10 @@ export async function GET(request: NextRequest) {
     const monthlyRevenueMap = new Map<string, number>();
     for (const order of monthlyOrders) {
       const monthKey = order.createdAt.toISOString().substring(0, 7);
-      monthlyRevenueMap.set(monthKey, (monthlyRevenueMap.get(monthKey) || 0) + order.total);
+      monthlyRevenueMap.set(monthKey, (monthlyRevenueMap.get(monthKey) || 0) + Number(order.total));
     }
 
-    const monthlyRevenue = [];
+    const monthlyRevenue: { month: string; revenue: number }[] = [];
     for (let i = 11; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       userGrowthMap.set(dateKey, (userGrowthMap.get(dateKey) || 0) + 1);
     }
 
-    const userGrowth = [];
+    const userGrowth: { date: string; users: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     const topProductsWithRevenue = topProducts.map((p) => ({
       name: p.name,
       sold: p.soldCount,
-      revenue: Math.round(p.soldCount * p.price * 100) / 100,
+      revenue: Math.round(p.soldCount * Number(p.price) * 100) / 100,
     }));
 
     // Recent 5 orders

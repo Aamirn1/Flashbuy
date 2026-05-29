@@ -71,26 +71,33 @@ export default function CheckoutView() {
   // Scroll to top when order is complete - MUST scroll to top!
   useEffect(() => {
     if (orderComplete) {
-      // Multiple attempts to ensure scroll-to-top works on all browsers
       const scrollToTop = () => {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
-        if (document.scrollingElement) {
-          document.scrollingElement.scrollTop = 0;
+        try {
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+          if (document.scrollingElement) {
+            document.scrollingElement.scrollTop = 0;
+          }
+          // Also try scrolling any parent containers
+          const mainEl = document.querySelector('main');
+          if (mainEl) mainEl.scrollTop = 0;
+        } catch (e) {
+          // Silent fallback
         }
       };
       // Immediate attempt
       scrollToTop();
-      // RAF attempt (after DOM update)
+      // RAF attempts (after DOM update)
       requestAnimationFrame(() => {
         scrollToTop();
-        // Double RAF for safety
         requestAnimationFrame(scrollToTop);
       });
-      // Delayed attempt as final fallback
-      setTimeout(scrollToTop, 100);
+      // Delayed attempts for slow renders
+      setTimeout(scrollToTop, 50);
+      setTimeout(scrollToTop, 150);
       setTimeout(scrollToTop, 300);
+      setTimeout(scrollToTop, 500);
     }
   }, [orderComplete]);
   const [orderNumber, setOrderNumber] = useState('');
@@ -227,7 +234,7 @@ export default function CheckoutView() {
   // Order Complete State
   if (orderComplete) {
     return (
-      <div className="relative bg-mesh min-h-screen overflow-hidden">
+      <div className="relative bg-mesh min-h-screen overflow-x-hidden">
         {/* Animated Orbs */}
         <div className="orb orb-cyan w-[600px] h-[600px] -top-60 -right-60 animate-float-slow" />
         <div className="orb orb-teal w-[400px] h-[400px] bottom-20 -left-32 animate-float" />

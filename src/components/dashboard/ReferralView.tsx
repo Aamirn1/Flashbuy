@@ -139,7 +139,7 @@ export function ReferralView() {
           </div>
           <div className="flex items-center gap-2">
             <div className="flex-1 glass-light rounded-xl px-4 py-2.5 border border-emerald-500/15 overflow-hidden">
-              <p className="text-xs sm:text-sm text-foreground/70 truncate">{referralLink}</p>
+              <p className="text-xs sm:text-sm text-foreground/70 break-all">{referralLink}</p>
             </div>
             <Button
               variant="ghost"
