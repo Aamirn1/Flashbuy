@@ -19,6 +19,7 @@ import {
   Clock,
   TrendingUp,
   ArrowRight,
+  ArrowLeft,
   LogOut,
   Zap,
   Gift,
@@ -57,7 +58,7 @@ const safeNum = (val: unknown): number => {
 };
 
 export function UserDashboard() {
-  const { user, currentPage, navigate, logout, setUser } = useStore();
+  const { user, currentPage, navigate, logout, setUser, goBack } = useStore();
   const [stats, setStats] = useState({
     totalOrders: 0,
     activeTickets: 0,
@@ -353,7 +354,10 @@ export function UserDashboard() {
       <div className="lg:hidden">
         <div className="glass border-b border-emerald-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={goBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
               <Avatar className="h-9 w-9 ring-1 ring-emerald-500/30">
                 <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-sm font-bold">
                   {user ? getInitials(user.name) : 'U'}
@@ -435,6 +439,10 @@ export function UserDashboard() {
           </ScrollArea>
 
           <div className="p-3 border-t border-emerald-500/10">
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={goBack}>
+              <ArrowLeft className="h-4 w-4" />
+              Back to Store
+            </Button>
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={logout}>
               <LogOut className="h-4 w-4" />
               Sign Out

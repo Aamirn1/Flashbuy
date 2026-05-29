@@ -24,6 +24,7 @@ import {
   Zap,
   CreditCard,
   Headphones,
+  ArrowLeft,
 } from 'lucide-react';
 import { AdminProducts } from './AdminProducts';
 import { AdminOrders } from './AdminOrders';
@@ -323,7 +324,7 @@ function CSSLineChart({
 /* ------------------------------------------------------------------ */
 
 export function AdminDashboard() {
-  const { currentPage, navigate, logout } = useStore();
+  const { currentPage, navigate, logout, goBack } = useStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -358,6 +359,9 @@ export function AdminDashboard() {
       case 'admin-users': return <AdminUsers />;
       case 'admin-tickets': return <AdminTickets />;
       case 'admin-payment-methods': return <AdminPaymentMethods />;
+      case 'admin-analytics': return <OverviewContent />;
+      case 'admin-coupons': return <OverviewContent />;
+      case 'admin-settings': return <OverviewContent />;
       default: return <OverviewContent />;
     }
   };
@@ -540,9 +544,14 @@ export function AdminDashboard() {
       <div className="lg:hidden">
         <div className="glass border-b border-emerald-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="font-bold text-lg text-gradient-cyan flex items-center gap-2">
-              <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
-            </h1>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={goBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h1 className="font-bold text-lg text-gradient-cyan flex items-center gap-2">
+                <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
+              </h1>
+            </div>
             <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
@@ -601,6 +610,9 @@ export function AdminDashboard() {
           </ScrollArea>
 
           <div className="p-3 border-t border-emerald-500/10 space-y-1">
+            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={goBack}>
+              <ArrowLeft className="h-4 w-4" /> Back to Store
+            </Button>
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={() => navigate('home')}>
               <Eye className="h-4 w-4" /> View Store
             </Button>

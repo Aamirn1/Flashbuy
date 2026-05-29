@@ -13,24 +13,12 @@ import FAQSection from '@/components/home/FAQSection';
 import CTASection from '@/components/home/CTASection';
 import WelcomeBonusBanner from '@/components/home/WelcomeBonusBanner';
 import CustomerReviews from '@/components/home/CustomerReviews';
-import ProductGrid from '@/components/products/ProductGrid';
-import ProductDetail from '@/components/products/ProductDetail';
 import CartView from '@/components/cart/CartView';
 import CheckoutView from '@/components/checkout/CheckoutView';
 import { UserDashboard } from '@/components/dashboard/UserDashboard';
-import { OrderHistory } from '@/components/dashboard/OrderHistory';
-import { OrderDetail } from '@/components/dashboard/OrderDetail';
-import { WalletView } from '@/components/dashboard/WalletView';
-import { TicketList } from '@/components/dashboard/TicketList';
-import { TicketDetail } from '@/components/dashboard/TicketDetail';
-import { ReferralView } from '@/components/dashboard/ReferralView';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
-import { AdminProducts } from '@/components/admin/AdminProducts';
-import { AdminOrders } from '@/components/admin/AdminOrders';
-import { AdminUsers } from '@/components/admin/AdminUsers';
-import { AdminTickets } from '@/components/admin/AdminTickets';
-import { AdminPaymentMethods } from '@/components/admin/AdminPaymentMethods';
 import { useEffect } from 'react';
+import type { Page } from '@/lib/types';
 
 function PageRouter() {
   const { currentPage, user, checkAuth, cleanupCart } = useStore();
@@ -97,6 +85,19 @@ function PageRouter() {
     }
   }, [currentPage, user]);
 
+  // All user dashboard pages render through UserDashboard (which has sidebar nav)
+  const userDashboardPages: Page[] = ['dashboard', 'orders', 'order-detail', 'wallet', 'tickets', 'ticket-detail', 'referrals'];
+  // All admin pages render through AdminDashboard (which has sidebar nav)
+  const adminDashboardPages: Page[] = ['admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-tickets', 'admin-payment-methods', 'admin-analytics', 'admin-coupons', 'admin-settings'];
+
+  if (userDashboardPages.includes(currentPage)) {
+    return <UserDashboard />;
+  }
+
+  if (adminDashboardPages.includes(currentPage)) {
+    return <AdminDashboard />;
+  }
+
   switch (currentPage) {
     // Homepage
     case 'home':
@@ -125,42 +126,6 @@ function PageRouter() {
     case 'checkout':
       return <CheckoutView />;
 
-    // User Dashboard
-    case 'dashboard':
-      return <UserDashboard />;
-    case 'orders':
-      return <OrderHistory />;
-    case 'order-detail':
-      return <OrderDetail />;
-    case 'wallet':
-      return <WalletView />;
-    case 'tickets':
-      return <TicketList />;
-    case 'ticket-detail':
-      return <TicketDetail />;
-    case 'referrals':
-      return <ReferralView />;
-
-    // Admin
-    case 'admin':
-      return <AdminDashboard />;
-    case 'admin-products':
-      return <AdminProducts />;
-    case 'admin-orders':
-      return <AdminOrders />;
-    case 'admin-users':
-      return <AdminUsers />;
-    case 'admin-tickets':
-      return <AdminTickets />;
-    case 'admin-payment-methods':
-      return <AdminPaymentMethods />;
-    case 'admin-analytics':
-      return <AdminDashboard />;
-    case 'admin-coupons':
-      return <AdminProducts />;
-    case 'admin-settings':
-      return <AdminDashboard />;
-
     default:
       return (
         <>
@@ -178,13 +143,22 @@ function PageRouter() {
 }
 
 export default function Home() {
+  const currentPage = useStore((s) => s.currentPage);
+
+  // Dashboard pages (admin & user) have their own full-height layouts with sidebar
+  const isDashboardPage = [
+    'dashboard', 'orders', 'order-detail', 'wallet', 'tickets', 'ticket-detail', 'referrals',
+    'admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-tickets', 'admin-payment-methods',
+    'admin-analytics', 'admin-coupons', 'admin-settings',
+  ].includes(currentPage);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex-1">
+      {!isDashboardPage && <Header />}
+      <main className={isDashboardPage ? '' : 'flex-1'}>
         <PageRouter />
       </main>
-      <Footer />
+      {!isDashboardPage && <Footer />}
       <AuthDialog />
       <FloatingActions />
     </div>
