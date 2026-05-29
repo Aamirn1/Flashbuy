@@ -33,8 +33,8 @@ export default function Footer() {
               onClick={() => navigate('home')}
               className="flex items-center gap-2.5 mb-4 group"
             >
-              <div className="flex items-center justify-center size-9 rounded-xl border border-emerald-500/30 bg-transparent">
-                <Zap className="size-5 text-emerald-400" />
+              <div className="flex items-center justify-center size-9 rounded-xl">
+                <Zap className="size-6 text-emerald-400" />
               </div>
               <span className="text-xl font-bold tracking-tight">
                 <span className="text-gradient-cyan">Flash</span>

@@ -105,10 +105,10 @@ export default function Header() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="relative flex items-center justify-center size-9 rounded-xl border border-emerald-500/30 bg-transparent group-hover:border-emerald-500/50 transition-all duration-300">
-              <Zap className="size-5 text-emerald-400" />
+            <div className="flex items-center justify-center size-9 rounded-xl group-hover:opacity-80 transition-all duration-300">
+              <Zap className="size-6 text-emerald-400" />
             </div>
-            <span className="text-xl font-bold tracking-tight hidden sm:inline">
+            <span className="text-lg sm:text-xl font-bold tracking-tight">
               <span className="text-gradient-cyan">Flash</span>
               <span className="text-foreground"> Buy</span>
             </span>
@@ -256,11 +256,11 @@ export default function Header() {
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   onClick={() => setShowAuthDialog(true, 'login')}
-                  className="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-background font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 rounded-xl"
-                  size="sm"
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl"
                 >
-                  <User className="size-4 mr-1.5" />
-                  <span className="hidden sm:inline">Sign In</span>
+                  <User className="size-5" />
                 </Button>
               </motion.div>
             )}
@@ -287,8 +287,8 @@ export default function Header() {
         >
           <SheetHeader className="p-4 pb-0">
             <SheetTitle className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center size-8 rounded-lg border border-emerald-500/30 bg-transparent">
-                <Zap className="size-4 text-emerald-400" />
+              <div className="flex items-center justify-center size-8 rounded-lg">
+                <Zap className="size-5 text-emerald-400" />
               </div>
               <span className="text-lg font-bold">
                 <span className="text-gradient-cyan">Flash</span>

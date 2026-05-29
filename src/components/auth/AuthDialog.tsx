@@ -248,12 +248,12 @@ export default function AuthDialog() {
           <DialogHeader className="relative">
             <div className="flex items-center justify-center gap-2 mb-2">
               <motion.div
-                className="flex items-center justify-center size-11 rounded-xl border border-emerald-500/30 bg-transparent"
+                className="flex items-center justify-center size-11 rounded-xl"
                 animate={{ rotateY: [0, 360] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
-                <Zap className="size-5 text-emerald-400" />
+                <Zap className="size-6 text-emerald-400" />
               </motion.div>
             </div>
             <DialogTitle className="text-center text-xl font-bold text-foreground">
