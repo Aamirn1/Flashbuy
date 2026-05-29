@@ -105,3 +105,25 @@ Stage Summary:
 - Back-to-store navigation added to both admin and user dashboards
 - Site header/footer hidden on dashboard pages to prevent double navigation
 - All changes pushed to GitHub
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix UI issues across all user and admin portal pages, push to GitHub
+
+Work Log:
+- Analyzed uploaded screenshot showing referral page UI issues (truncated link, inconsistent icons, no CTA)
+- Read all source files: CheckoutView, UserDashboard, AdminDashboard, WalletView, ReferralView, TicketDetail, AdminTickets, etc.
+- Fixed payment submitted page scroll-to-top: Changed from `window.scrollTo({ behavior: 'instant' })` to `requestAnimationFrame(() => window.scrollTo(0, 0))` for reliable cross-browser scrolling
+- Fixed referral page UI: Replaced Input with div containers for code/link display (prevents truncation), added Share button with Web Share API fallback, changed violet icons to emerald
+- Fixed mobile responsiveness: Made dashboard/admin nav tabs sticky, added scrollbar-none utility, improved tab styling with rounded-xl, added bottom padding for mobile content
+- Fixed inconsistent violet colors across ticket detail and admin tickets: Changed to emerald theme
+- Improved wallet transaction list: rounded-xl cards, better icon sizing (w-9 h-9), larger max-height
+- Fixed dashboard stat cards: Changed violet referral earnings to amber for consistency
+- Pushed all changes to GitHub (commit 6ec5ee2)
+
+Stage Summary:
+- All UI fixes committed and pushed to https://github.com/Aamirn1/Flashbuy.git
+- Payment page now reliably scrolls to top on completion
+- Referral page has proper code display, share button, consistent emerald color scheme
+- Mobile views improved with sticky headers, better spacing, hidden scrollbar for tabs
+- All violet/inconsistent colors replaced with emerald/amber theme
