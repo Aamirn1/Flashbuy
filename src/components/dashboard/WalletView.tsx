@@ -12,12 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, ArrowDownLeft, ArrowUpRight, Wallet, RefreshCw } from 'lucide-react';
+import { DollarSign, ArrowDownLeft, ArrowUpRight, Wallet, RefreshCw, Gift, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const TYPE_OPTIONS = [
   { value: 'all', label: 'All Types' },
   { value: 'deposit', label: 'Deposit' },
   { value: 'withdrawal', label: 'Withdrawal' },
+  { value: 'welcome_bonus', label: 'Welcome Bonus' },
   { value: 'purchase', label: 'Purchase' },
   { value: 'refund', label: 'Refund' },
   { value: 'commission', label: 'Commission' },
@@ -26,13 +27,14 @@ const TYPE_OPTIONS = [
 const GLASS_TYPE_COLORS: Record<string, string> = {
   deposit: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   withdrawal: 'bg-red-500/20 text-red-400 border border-red-500/30',
+  welcome_bonus: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   purchase: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   refund: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   commission: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
 };
 
 export function WalletView() {
-  const { user } = useStore();
+  const { user, setUser } = useStore();
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -43,6 +45,8 @@ export function WalletView() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [welcomeBonus, setWelcomeBonus] = useState(user?.welcomeBonus || 0);
+  const [welcomeBonusUnlocked, setWelcomeBonusUnlocked] = useState(user?.welcomeBonusUnlocked || false);
 
   useEffect(() => {
     fetchTransactions();
@@ -51,10 +55,22 @@ export function WalletView() {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/wallet');
+      const res = await fetch(`/api/wallet?userId=${user?.id}`);
       if (res.ok) {
         const data = await res.json();
         setTransactions(data.transactions || []);
+        setWelcomeBonus(data.welcomeBonus ?? 0);
+        setWelcomeBonusUnlocked(data.welcomeBonusUnlocked ?? false);
+
+        // Update user in store with latest bonus info
+        if (user) {
+          setUser({
+            ...user,
+            balance: data.balance ?? user.balance,
+            welcomeBonus: data.welcomeBonus ?? user.welcomeBonus,
+            welcomeBonusUnlocked: data.welcomeBonusUnlocked ?? user.welcomeBonusUnlocked,
+          });
+        }
       }
     } catch {
       // handle error
@@ -67,10 +83,10 @@ export function WalletView() {
     if (!depositAmount || parseFloat(depositAmount) <= 0) return;
     setSubmitting(true);
     try {
-      const res = await fetch('/api/wallet/deposit', {
+      const res = await fetch('/api/wallet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: parseFloat(depositAmount), network: depositNetwork }),
+        body: JSON.stringify({ userId: user?.id, type: 'deposit', amount: parseFloat(depositAmount), method: depositNetwork }),
       });
       if (res.ok) {
         setDepositOpen(false);
@@ -88,10 +104,10 @@ export function WalletView() {
     if (!withdrawAmount || !withdrawAddress || parseFloat(withdrawAmount) <= 0) return;
     setSubmitting(true);
     try {
-      const res = await fetch('/api/wallet/withdraw', {
+      const res = await fetch('/api/wallet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: parseFloat(withdrawAmount), address: withdrawAddress }),
+        body: JSON.stringify({ userId: user?.id, type: 'withdrawal', amount: parseFloat(withdrawAmount) }),
       });
       if (res.ok) {
         setWithdrawOpen(false);
@@ -116,7 +132,7 @@ export function WalletView() {
     });
 
   const getAmountDisplay = (tx: WalletTransaction) => {
-    const isPositive = ['deposit', 'refund', 'commission'].includes(tx.type);
+    const isPositive = ['deposit', 'refund', 'commission', 'welcome_bonus'].includes(tx.type);
     return (
       <span className={`font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
         {isPositive ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
@@ -154,18 +170,65 @@ export function WalletView() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative flex items-center justify-between">
-          <div>
-            <p className="text-emerald-400/70 text-sm font-medium">Available Balance</p>
-            <p className="text-4xl font-bold mt-2 text-gradient-gold">
-              ${user?.balance?.toFixed(2) || '0.00'}{' '}
-              <span className="text-lg text-emerald-400/60">USDT</span>
-            </p>
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-emerald-400/70 text-sm font-medium">Available Balance</p>
+              <p className="text-4xl font-bold mt-2 text-gradient-gold">
+                ${user?.balance?.toFixed(2) || '0.00'}{' '}
+                <span className="text-lg text-emerald-400/60">USDT</span>
+              </p>
+            </div>
+            <div className="h-16 w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
+              <Wallet className="h-8 w-8 text-emerald-400" />
+            </div>
           </div>
-          <div className="h-16 w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
-            <Wallet className="h-8 w-8 text-emerald-400" />
-          </div>
+
+          {/* Welcome Bonus Section */}
+          {welcomeBonus > 0 && !welcomeBonusUnlocked && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-5 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5"
+            >
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center flex-shrink-0 border border-amber-500/20">
+                  <Gift className="h-5 w-5 text-amber-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-amber-400">Welcome Bonus</p>
+                    <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-1.5 py-0">
+                      <Lock className="size-2.5 mr-0.5" /> Locked
+                    </Badge>
+                  </div>
+                  <p className="text-2xl font-bold text-gradient-cyan mt-1">
+                    ${welcomeBonus.toFixed(2)} <span className="text-sm text-emerald-400/60">USDT</span>
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-400">
+                    <AlertCircle className="size-3.5 text-amber-400/60 flex-shrink-0" />
+                    <span>Place a minimum <strong className="text-emerald-400">$10 order</strong> to unlock your bonus for withdrawal</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Unlocked Bonus Success */}
+          {welcomeBonusUnlocked && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center gap-2"
+            >
+              <CheckCircle2 className="size-4 text-emerald-400 flex-shrink-0" />
+              <span className="text-sm text-emerald-400 font-medium">$500 Welcome Bonus unlocked and added to your balance!</span>
+            </motion.div>
+          )}
         </div>
+
         <div className="flex gap-3 mt-6 relative">
           <Dialog open={depositOpen} onOpenChange={setDepositOpen}>
             <DialogTrigger asChild>
@@ -301,46 +364,48 @@ export function WalletView() {
             <p className="text-sm">Your transaction history will appear here.</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-emerald-500/10 hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Type</TableHead>
-                <TableHead className="text-muted-foreground">Amount</TableHead>
-                <TableHead className="text-muted-foreground">Status</TableHead>
-                <TableHead className="text-muted-foreground">Date</TableHead>
-                <TableHead className="text-muted-foreground">Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.map((tx) => (
-                <TableRow key={tx.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
-                  <TableCell>
-                    <Badge className={`${GLASS_TYPE_COLORS[tx.type] || ''} text-xs`}>
-                      {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{getAmountDisplay(tx)}</TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        tx.status === 'confirmed' || tx.status === 'completed'
-                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          : tx.status === 'failed'
-                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      }
-                    >
-                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{formatDate(tx.createdAt)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
-                    {tx.description || '-'}
-                  </TableCell>
+          <div className="max-h-96 overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-emerald-500/10 hover:bg-transparent">
+                  <TableHead className="text-muted-foreground">Type</TableHead>
+                  <TableHead className="text-muted-foreground">Amount</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-muted-foreground">Date</TableHead>
+                  <TableHead className="text-muted-foreground">Description</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredTransactions.map((tx) => (
+                  <TableRow key={tx.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
+                    <TableCell>
+                      <Badge className={`${GLASS_TYPE_COLORS[tx.type] || ''} text-xs`}>
+                        {tx.type === 'welcome_bonus' ? 'Bonus' : tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{getAmountDisplay(tx)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          tx.status === 'confirmed' || tx.status === 'completed'
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : tx.status === 'failed'
+                              ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                              : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        }
+                      >
+                        {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{formatDate(tx.createdAt)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
+                      {tx.description || '-'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </motion.div>
     </div>

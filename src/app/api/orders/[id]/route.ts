@@ -129,6 +129,34 @@ export async function PATCH(
           }
         }
       }
+
+      // Unlock welcome bonus if order total >= $10 and bonus not yet unlocked
+      if (updatedOrder.total >= 10) {
+        const orderUser = await db.user.findUnique({
+          where: { id: updatedOrder.userId },
+          select: { welcomeBonus: true, welcomeBonusUnlocked: true },
+        });
+        if (orderUser && !orderUser.welcomeBonusUnlocked && orderUser.welcomeBonus > 0) {
+          // Add bonus to balance and mark as unlocked
+          await db.user.update({
+            where: { id: updatedOrder.userId },
+            data: {
+              balance: { increment: orderUser.welcomeBonus },
+              welcomeBonusUnlocked: true,
+            },
+          });
+          // Create a wallet transaction for the bonus unlock
+          await db.walletTransaction.create({
+            data: {
+              userId: updatedOrder.userId,
+              type: 'welcome_bonus',
+              amount: orderUser.welcomeBonus,
+              status: 'completed',
+              description: `$${orderUser.welcomeBonus.toFixed(0)} Welcome Bonus unlocked — Order #${updatedOrder.orderNumber}`,
+            },
+          });
+        }
+      }
     }
 
     // If order is cancelled or refunded, restore stock

@@ -52,6 +52,8 @@ export interface User {
   role: UserRole;
   avatar?: string;
   balance: number;
+  welcomeBonus: number;
+  welcomeBonusUnlocked: boolean;
   referralCode: string;
   isVerified: boolean;
   createdAt: string;

@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Zap, Mail, Lock, User, Phone, Globe, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { Zap, Mail, Lock, User, Phone, Globe, Eye, EyeOff, Loader2, AlertCircle, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { User as UserType } from '@/lib/types';
 
@@ -433,6 +433,16 @@ export default function AuthDialog() {
           {/* Register Tab */}
           <TabsContent value="register" className="mt-0">
             <form onSubmit={handleRegister} className="px-6 pb-6 pt-4 space-y-4">
+              {/* Welcome Bonus Banner */}
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20"
+              >
+                <Gift className="size-4 text-emerald-400 flex-shrink-0" />
+                <p className="text-xs text-emerald-400 font-medium">Create an account now and get a <strong>$500 Welcome Bonus!</strong></p>
+              </motion.div>
+
               <AnimatePresence>
                 {serverError && (
                   <motion.div

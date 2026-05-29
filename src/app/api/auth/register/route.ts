@@ -10,6 +10,8 @@ function generateReferralCode(): string {
   return code;
 }
 
+const WELCOME_BONUS_AMOUNT = 500;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -41,6 +43,19 @@ export async function POST(request: NextRequest) {
         country: country || null,
         phone: phone || null,
         referralCode,
+        welcomeBonus: WELCOME_BONUS_AMOUNT,
+        welcomeBonusUnlocked: false,
+      },
+    });
+
+    // Create a welcome bonus wallet transaction
+    await db.walletTransaction.create({
+      data: {
+        userId: user.id,
+        type: 'welcome_bonus',
+        amount: WELCOME_BONUS_AMOUNT,
+        status: 'completed',
+        description: `$${WELCOME_BONUS_AMOUNT} Welcome Bonus — Place a minimum $10 order to unlock`,
       },
     });
 

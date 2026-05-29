@@ -11,6 +11,7 @@ import HowItWorks from '@/components/home/HowItWorks';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import FAQSection from '@/components/home/FAQSection';
 import CTASection from '@/components/home/CTASection';
+import WelcomeBonusBanner from '@/components/home/WelcomeBonusBanner';
 import CustomerReviews from '@/components/home/CustomerReviews';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductDetail from '@/components/products/ProductDetail';
@@ -55,6 +56,7 @@ function PageRouter() {
       return (
         <>
           <HeroBanner />
+          <WelcomeBonusBanner />
           <FlashUSDTProduct />
           <HowItWorks />
           <FeaturesSection />
@@ -112,6 +114,7 @@ function PageRouter() {
       return (
         <>
           <HeroBanner />
+          <WelcomeBonusBanner />
           <FlashUSDTProduct />
           <HowItWorks />
           <FeaturesSection />

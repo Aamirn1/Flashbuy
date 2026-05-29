@@ -1,13 +1,22 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Shield, Globe, ArrowRight } from 'lucide-react';
+import { Zap, Shield, Globe, ArrowRight, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const quickStats = [
   { icon: Zap, label: 'Instant Delivery', color: 'text-emerald-400' },
   { icon: Shield, label: 'Secure', color: 'text-emerald-400' },
   { icon: Globe, label: 'Global', color: 'text-emerald-300' },
+];
+
+// Typewriter animation lines
+const typewriterLines = [
+  'Instant Crypto at Unbeatable Prices',
+  'Get $500 Welcome Bonus',
+  'Secure TRC20 & BEP20 Transfers',
+  'The Fastest Way to Buy Flash USDT',
 ];
 
 const containerVariants = {
@@ -27,6 +36,46 @@ const statVariants = {
   hidden: { opacity: 0, scale: 0.85 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' } },
 };
+
+function TypewriterText({ lines, className }: { lines: string[]; className?: string }) {
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentLine = lines[currentLineIndex];
+
+    const timeout = setTimeout(
+      () => {
+        if (!isDeleting) {
+          // Typing
+          setCurrentText(currentLine.slice(0, currentText.length + 1));
+          if (currentText.length + 1 === currentLine.length) {
+            // Finished typing, wait then start deleting
+            setTimeout(() => setIsDeleting(true), 2500);
+          }
+        } else {
+          // Deleting
+          setCurrentText(currentLine.slice(0, currentText.length - 1));
+          if (currentText.length === 0) {
+            setIsDeleting(false);
+            setCurrentLineIndex((prev) => (prev + 1) % lines.length);
+          }
+        }
+      },
+      isDeleting ? 30 : 70
+    );
+
+    return () => clearTimeout(timeout);
+  }, [currentText, isDeleting, currentLineIndex, lines]);
+
+  return (
+    <span className={className}>
+      {currentText}
+      <span className="animate-pulse text-emerald-400">|</span>
+    </span>
+  );
+}
 
 export default function HeroBanner() {
   return (
@@ -66,12 +115,16 @@ export default function HeroBanner() {
               <span className="text-gradient-cyan">Flash USDT</span>
             </motion.h1>
 
-            <motion.p
+            {/* Typewriter animated subtitle */}
+            <motion.div
               variants={itemVariants}
-              className="mt-3 sm:mt-4 text-lg sm:text-xl lg:text-2xl text-slate-300 font-light"
+              className="mt-3 sm:mt-4 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem]"
             >
-              Instant Crypto at Unbeatable Prices
-            </motion.p>
+              <TypewriterText
+                lines={typewriterLines}
+                className="text-lg sm:text-xl lg:text-2xl text-slate-300 font-light"
+              />
+            </motion.div>
 
             <motion.p
               variants={itemVariants}

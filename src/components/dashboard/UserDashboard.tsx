@@ -21,6 +21,8 @@ import {
   ArrowRight,
   LogOut,
   Zap,
+  Gift,
+  Lock,
 } from 'lucide-react';
 import { OrderHistory } from './OrderHistory';
 import { OrderDetail } from './OrderDetail';
@@ -136,6 +138,54 @@ export function UserDashboard() {
           </motion.div>
         ))}
       </div>
+
+      {/* Welcome Bonus Card */}
+      {user && user.welcomeBonus > 0 && !user.welcomeBonusUnlocked && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-card rounded-xl p-5 border border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent"
+        >
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-amber-500/15 flex items-center justify-center border border-amber-500/20 flex-shrink-0">
+              <Gift className="h-6 w-6 text-amber-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-amber-400">Welcome Bonus</p>
+                <Badge className="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-1.5 py-0">
+                  <Lock className="size-2.5 mr-0.5" /> Locked
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                You have <span className="text-amber-400 font-semibold">${user.welcomeBonus.toFixed(0)}</span> bonus waiting! Place a minimum <span className="text-emerald-400 font-semibold">$10 order</span> to unlock it.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-semibold rounded-xl shadow-lg shadow-emerald-500/25"
+              onClick={() => navigate('home')}
+            >
+              Order Now
+              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Bonus Unlocked Success */}
+      {user && user.welcomeBonusUnlocked && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="glass-card rounded-xl p-4 border border-emerald-500/20 bg-gradient-to-r from-emerald-500/5 to-transparent flex items-center gap-3"
+        >
+          <Gift className="size-5 text-emerald-400 flex-shrink-0" />
+          <p className="text-sm text-emerald-400 font-medium">$500 Welcome Bonus has been unlocked and added to your balance!</p>
+        </motion.div>
+      )}
 
       {/* Recent Orders & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const user = await db.user.findUnique({
       where: { id: userId },
-      select: { balance: true },
+      select: { balance: true, welcomeBonus: true, welcomeBonusUnlocked: true },
     });
 
     if (!user) {
@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       balance: user.balance,
+      welcomeBonus: user.welcomeBonus,
+      welcomeBonusUnlocked: user.welcomeBonusUnlocked,
       transactions,
     });
   } catch (error) {
@@ -55,10 +57,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const validTypes = ['deposit', 'withdrawal'];
+    const validTypes = ['deposit', 'withdrawal', 'welcome_bonus'];
     if (!validTypes.includes(type)) {
       return NextResponse.json(
-        { error: 'Invalid type. Must be deposit or withdrawal' },
+        { error: 'Invalid type. Must be deposit, withdrawal, or welcome_bonus' },
         { status: 400 }
       );
     }
@@ -93,12 +95,16 @@ export async function POST(request: NextRequest) {
         amount,
         method: method || null,
         status: 'completed',
-        description: type === 'deposit' ? 'Wallet deposit' : 'Wallet withdrawal',
+        description: type === 'deposit'
+          ? 'Wallet deposit'
+          : type === 'welcome_bonus'
+            ? 'Welcome bonus'
+            : 'Wallet withdrawal',
       },
     });
 
     // Update user balance
-    if (type === 'deposit') {
+    if (type === 'deposit' || type === 'welcome_bonus') {
       await db.user.update({
         where: { id: userId },
         data: { balance: { increment: amount } },
