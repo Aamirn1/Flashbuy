@@ -208,7 +208,7 @@ export const useStore = create<AppState>()(
       
       getCartCount: () => {
         const state = get();
-        return state.cart.reduce((sum, item) => sum + item.quantity, 0);
+        return state.cart.length;
       },
       
       addNotification: (notification) => set((state) => ({
