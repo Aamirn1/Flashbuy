@@ -59,3 +59,27 @@ Stage Summary:
 - Tickets API fully migrated from JSON-string messages to TicketMessage relation table
 - Referrals and tickets API switched from query-param auth to JWT cookie-based auth
 - Frontend can safely call .toFixed() and other Number methods on price/balance/amount fields
+---
+Task ID: 2
+Agent: Main Agent
+Task: Fix admin & user UI errors, browser back button, database connection, order management
+
+Work Log:
+- Fixed DATABASE_URL fallback in db.ts: Added getDatabaseUrl() that checks for valid postgresql:// protocol before using env var, falls back to Neon PostgreSQL URL
+- Fixed browser back-button handling: Modified navigate() to push full navigation state (page, selectedProductId, selectedOrderId, selectedTicketId) to history; Modified goBack() to just call history.back(); Updated popstate handler to restore state from event.state; Added buffer history entry to prevent app exit on back press
+- Replaced recharts in AdminDashboard with CSS-based charts (SVG path for line chart, div-based bar chart) to prevent SSR crashes
+- Fixed Admin Orders API: Status changes now cascade to paymentStatus and deliveryStatus atomically; Added cancelled→failed, payment_waiting→pending, processing→pending cascades; Re-fetches full order after updates to return fresh data with walletAddress
+- Fixed UserDashboard infinite re-render: Added useRef to track lastFetchedUserId, prevents setUser inside effect from triggering re-fetch; Removed unused activeTab state
+- Fixed CheckoutView: Added useEffect to scroll to top when orderComplete changes (fixes "opens from bottom" issue)
+- Fixed OrderDetail: Replaced all (order as Record<string, unknown>) casts with proper type access since Order type already has flashUsdtAmount, paymentTxHash, deliveryWalletAddress, deliveryWalletNetwork
+- Fixed TicketDetail: Removed redundant sender:'customer' from PATCH request body
+- All lint checks pass
+- Pushed all changes to GitHub (commit 4f55211)
+
+Stage Summary:
+- Database connection fixed with proper URL fallback
+- Browser back button now works correctly - navigates one step back instead of closing the app
+- Admin Dashboard no longer crashes from recharts SSR issues
+- Admin order status changes properly cascade to payment and delivery status
+- User dashboard no longer has infinite re-render loop
+- All 10 modified files committed and pushed to GitHub
