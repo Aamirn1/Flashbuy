@@ -1,7 +1,11 @@
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const { user: adminUser, error: authError } = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
@@ -71,6 +75,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  const { user: adminUser, error: authError } = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { userId, isBanned, role } = body;

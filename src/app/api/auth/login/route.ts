@@ -1,5 +1,7 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { generateToken, setAuthCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,16 +15,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await db.user.findUnique({ where: { email } });
-    if (!user) {
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await db.user.findUnique({ where: { email: normalizedEmail } });
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
 
-    const hashedPassword = Buffer.from(password).toString('base64');
-    if (user.password !== hashedPassword) {
+    // Verify password with bcrypt
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -36,9 +42,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (user.deletedAt) {
+      return NextResponse.json(
+        { error: 'Account has been deactivated' },
+        { status: 403 }
+      );
+    }
+
+    // Generate JWT token
+    const token = generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Return user without password
     const { password: _, ...userWithoutPassword } = user;
 
-    return NextResponse.json({ user: userWithoutPassword });
+    const response = NextResponse.json({ user: userWithoutPassword });
+    setAuthCookie(response, token);
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

@@ -52,6 +52,7 @@ interface AppState {
   goBack: () => void;
   setUser: (user: User | null) => void;
   logout: () => void;
+  checkAuth: () => Promise<void>;
   setShowAuthDialog: (show: boolean, mode?: 'login' | 'register') => void;
   setFlashQuantity: (qty: number) => void;
   incrementFlash: (step?: number) => void;
@@ -119,11 +120,32 @@ export const useStore = create<AppState>()(
       
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       
-      logout: () => set({ 
-        user: null, 
-        isAuthenticated: false,
-        currentPage: 'home',
-      }),
+      logout: async () => {
+        // Call server logout to clear httpOnly cookie
+        try {
+          await fetch('/api/auth/me', { method: 'POST' });
+        } catch {}
+        set({ 
+          user: null, 
+          isAuthenticated: false,
+          currentPage: 'home',
+        });
+      },
+      
+      checkAuth: async () => {
+        try {
+          const res = await fetch('/api/auth/me');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user) {
+              set({ user: data.user, isAuthenticated: true });
+              return;
+            }
+          }
+        } catch {}
+        // If cookie auth fails, clear stale client state
+        set({ user: null, isAuthenticated: false });
+      },
       
       setShowAuthDialog: (show, mode) => set({ 
         showAuthDialog: show, 

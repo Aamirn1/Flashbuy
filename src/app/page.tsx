@@ -31,7 +31,12 @@ import { AdminUsers } from '@/components/admin/AdminUsers';
 import { useEffect } from 'react';
 
 function PageRouter() {
-  const { currentPage, user } = useStore();
+  const { currentPage, user, checkAuth } = useStore();
+
+  // Check auth from server-side JWT cookie on initial load
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   // Scroll to top on every page navigation
   useEffect(() => {

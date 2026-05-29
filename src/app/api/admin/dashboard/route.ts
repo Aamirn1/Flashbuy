@@ -1,7 +1,11 @@
 import { db } from '@/lib/db';
-import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { user: adminUser, error: authError } = await requireAdmin(request);
+  if (authError) return authError;
+
   try {
     // Total revenue from completed orders
     const completedOrders = await db.order.findMany({

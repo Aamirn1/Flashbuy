@@ -1,20 +1,17 @@
 import { db } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
+
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = searchParams.get('userId') || authUser.id;
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
-      );
-    }
 
     const where: Record<string, unknown> = { userId };
     if (status) {
@@ -79,13 +76,17 @@ const FLASH_USDT_PRODUCT_ID = 'flash-usdt';
 const FLASH_USDT_RATE = 0.01; // $0.01 per Flash USDT
 
 export async function POST(request: NextRequest) {
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
-    const { userId, items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal } = body;
+    const { items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal } = body;
+    const userId = authUser.id;
 
-    if (!userId || !items || !items.length) {
+    if (!items || !items.length) {
       return NextResponse.json(
-        { error: 'userId and items are required' },
+        { error: 'items are required' },
         { status: 400 }
       );
     }

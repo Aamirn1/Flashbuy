@@ -10,35 +10,143 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String
-  password      String?
-  phone         String?
-  country       String?
-  role          String    @default("customer") // customer, admin, support
-  avatar        String?
-  isBanned      Boolean   @default(false)
-  isVerified    Boolean   @default(false)
-  referralCode  String    @unique
-  referredBy    String?
-  walletAddress        String?
-  balance              Float     @default(0)
-  welcomeBonus         Float     @default(500)
-  welcomeBonusUnlocked Boolean   @default(false)
-  createdAt            DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+// ─── Enums ───────────────────────────────────────────────────────────
 
-  orders       Order[]
-  payments     Payment[]
-  tickets      Ticket[]
-  reviews      Review[]
-  referrals    Referral[]  @relation("UserReferrals")
-  referrer     Referral?   @relation("ReferredBy")
-  notifications Notification[]
-  transactions   Transaction[]
+enum UserRole {
+  customer
+  admin
+  support
+}
+
+enum OrderStatus {
+  pending
+  payment_waiting
+  paid
+  processing
+  completed
+  cancelled
+  refunded
+}
+
+enum PaymentStatus {
+  pending
+  confirmed
+  failed
+  expired
+  refunded
+}
+
+enum DeliveryType {
+  automatic
+  manual
+}
+
+enum PaymentMethod {
+  usdt_trc20
+  usdt_bep20
+}
+
+enum CouponType {
+  percentage
+  fixed
+}
+
+enum TicketStatus {
+  open
+  pending
+  solved
+  closed
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+}
+
+enum TicketCategory {
+  payment
+  delivery
+  account
+  other
+}
+
+enum NotificationType {
+  info
+  success
+  warning
+  error
+}
+
+enum ReferralStatus {
+  active
+  paid
+  cancelled
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  purchase
+  refund
+  commission
+  welcome_bonus
+}
+
+enum TransactionStatus {
+  pending
+  completed
+  failed
+}
+
+enum DeliveryStatus {
+  pending
+  delivered
+  failed
+}
+
+// ─── Models ──────────────────────────────────────────────────────────
+
+model User {
+  id                       String    @id @default(cuid())
+  email                    String    @unique
+  name                     String
+  password                 String?
+  phone                    String?
+  country                  String?
+  role                     UserRole  @default(customer)
+  avatar                   String?
+  isBanned                 Boolean   @default(false)
+  isVerified               Boolean   @default(false)
+  referralCode             String    @unique
+  referredBy               String?
+  walletAddress            String?
+  balance                  Decimal   @default(0) @db.Decimal(12, 2)
+  welcomeBonus             Decimal   @default(500) @db.Decimal(12, 2)
+  welcomeBonusUnlocked     Boolean   @default(false)
+  emailVerificationToken   String?
+  emailVerificationExpires DateTime?
+  passwordResetToken       String?
+  passwordResetExpires     DateTime?
+  deletedAt                DateTime? // soft delete
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  orders            Order[]
+  payments          Payment[]
+  tickets           Ticket[]
+  reviews           Review[]
+  referrals         Referral[] @relation("UserReferrals")
+  referrer          Referral?  @relation("ReferredBy")
+  notifications     Notification[]
+  transactions      Transaction[]
   walletTransactions WalletTransaction[]
+  couponUsages      CouponUsage[]
+
+  @@index([email])
+  @@index([referralCode])
+  @@index([role])
+  @@index([deletedAt])
 }
 
 model Category {
@@ -54,124 +162,178 @@ model Category {
   updatedAt   DateTime @updatedAt
 
   products Product[]
+
+  @@index([slug])
+  @@index([isActive])
 }
 
 model Product {
-  id            String   @id @default(cuid())
-  name          String
-  slug          String   @unique
-  description   String
-  shortDesc     String?
-  images        String   @default("[]") // JSON array of image URLs
-  price         Float
-  comparePrice  Float?
-  sku           String   @unique
-  categoryId    String
-  stock         Int      @default(0)
-  deliveryType  String   @default("automatic") // automatic, manual
-  deliveryInfo  String?  // JSON for automatic delivery content
-  isFeatured    Boolean  @default(false)
-  isNew         Boolean  @default(false)
-  isTrending    Boolean  @default(false)
-  isActive      Boolean  @default(true)
-  rating        Float    @default(0)
-  reviewCount   Int      @default(0)
-  soldCount     Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String
+  shortDesc    String?
+  images       Json     @default("[]")
+  price        Decimal  @db.Decimal(12, 2)
+  comparePrice Decimal? @db.Decimal(12, 2)
+  sku          String   @unique
+  categoryId   String
+  stock        Int      @default(0)
+  deliveryType DeliveryType @default(automatic)
+  deliveryInfo Json?
+  isFeatured   Boolean  @default(false)
+  isNew        Boolean  @default(false)
+  isTrending   Boolean  @default(false)
+  isActive     Boolean  @default(true)
+  rating       Decimal  @default(0) @db.Decimal(3, 1)
+  reviewCount  Int      @default(0)
+  soldCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   category Category     @relation(fields: [categoryId], references: [id])
   reviews  Review[]
   items    OrderItem[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([isTrending])
 }
 
 model Order {
-  id            String   @id @default(cuid())
-  orderNumber   String   @unique
-  userId        String
-  status        String   @default("pending") // pending, payment_waiting, paid, processing, completed, cancelled, refunded
-  itemsPrice    Float
-  discount      Float    @default(0)
-  fee           Float    @default(0)
-  total         Float
-  couponId      String?
-  paymentMethod String?  // usdt_trc20, usdt_bep20
-  paymentStatus String   @default("pending") // pending, confirmed, failed, refunded
-  paymentId     String?
-  deliveryStatus String  @default("pending") // pending, delivered, failed
-  notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String        @id @default(cuid())
+  orderNumber    String        @unique
+  userId         String
+  status         OrderStatus   @default(pending)
+  itemsPrice     Decimal       @db.Decimal(12, 2)
+  discount       Decimal       @default(0) @db.Decimal(12, 2)
+  fee            Decimal       @default(0) @db.Decimal(12, 2)
+  total          Decimal       @db.Decimal(12, 2)
+  couponId       String?
+  paymentMethod  PaymentMethod?
+  paymentStatus  PaymentStatus @default(pending)
+  paymentId      String?
+  deliveryStatus DeliveryStatus @default(pending)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   user    User        @relation(fields: [userId], references: [id])
   items   OrderItem[]
   payment Payment?
   coupon  Coupon?     @relation(fields: [couponId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([orderNumber])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  total     Float
-  deliveryData String? // JSON for automatic delivery content
+  id           String  @id @default(cuid())
+  orderId      String
+  productId    String
+  quantity     Int
+  price        Decimal @db.Decimal(12, 2)
+  total        Decimal @db.Decimal(12, 2)
+  deliveryData Json?
 
-  order   Order    @relation(fields: [orderId], references: [id])
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product? @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Payment {
-  id              String   @id @default(cuid())
-  orderId         String   @unique
-  userId          String
-  method          String   // usdt_trc20, usdt_bep20
-  amount          Float
-  walletAddress   String?  // Generated wallet for payment
-  txHash          String?
-  status          String   @default("pending") // pending, confirmed, failed, expired, refunded
-  expiresAt       DateTime?
-  confirmedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  userId        String
+  method        PaymentMethod
+  amount        Decimal       @db.Decimal(12, 2)
+  walletAddress String?
+  txHash        String?
+  status        PaymentStatus @default(pending)
+  expiresAt     DateTime?
+  confirmedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   order Order @relation(fields: [orderId], references: [id])
   user  User  @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
 }
 
 model Coupon {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  type        String   // percentage, fixed
-  value       Float
-  minOrder    Float    @default(0)
-  maxDiscount Float?
+  id          String     @id @default(cuid())
+  code        String     @unique
+  type        CouponType
+  value       Decimal    @db.Decimal(12, 2)
+  minOrder    Decimal    @default(0) @db.Decimal(12, 2)
+  maxDiscount Decimal?   @db.Decimal(12, 2)
   usageLimit  Int?
-  usedCount   Int      @default(0)
-  userLimit   Int      @default(1)
+  usedCount   Int        @default(0)
+  userLimit   Int        @default(1)
   expiresAt   DateTime?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   orders Order[]
+  usages CouponUsage[]
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model CouponUsage {
+  id       String   @id @default(cuid())
+  couponId String
+  userId   String
+  orderId  String
+  createdAt DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([couponId, userId]) // Enforces per-user limit at DB level
+  @@index([couponId])
+  @@index([userId])
 }
 
 model Ticket {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   userId      String
   subject     String
-  category    String   // payment, delivery, account, other
+  category    TicketCategory
   description String
   screenshot  String?
-  status      String   @default("open") // open, pending, solved, closed
-  priority    String   @default("medium") // low, medium, high
-  messages    String   @default("[]") // JSON array of messages
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      TicketStatus   @default(open)
+  priority    TicketPriority @default(medium)
+  messages    TicketMessage[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  sender    String   // customer, support, admin
+  message   String
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
 }
 
 model Review {
@@ -181,64 +343,85 @@ model Review {
   rating    Int
   comment   String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id])
   product Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId]) // One review per user per product
+  @@index([productId])
+  @@index([userId])
 }
 
 model Referral {
-  id          String   @id @default(cuid())
-  referrerId  String
-  referredId  String   @unique
-  commission  Float    @default(0)
-  status      String   @default("active") // active, paid, cancelled
-  createdAt   DateTime @default(now())
+  id         String         @id @default(cuid())
+  referrerId String
+  referredId String         @unique
+  commission Decimal        @default(0) @db.Decimal(12, 2)
+  status     ReferralStatus @default(active)
+  createdAt  DateTime       @default(now())
 
   referrer User @relation("UserReferrals", fields: [referrerId], references: [id])
   referred User @relation("ReferredBy", fields: [referredId], references: [id])
+
+  @@index([referrerId])
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String          @id @default(cuid())
   userId    String
   title     String
   message   String
-  type      String   @default("info") // info, success, warning, error
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  type      NotificationType @default(info)
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
 }
 
 model Transaction {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   userId      String
-  type        String   // deposit, withdrawal, purchase, refund, commission
-  amount      Float
-  status      String   @default("completed") // pending, completed, failed
+  type        TransactionType
+  amount      Decimal          @db.Decimal(12, 2)
+  status      TransactionStatus @default(completed)
   description String?
-  referenceId String?  // Order ID or payment ID
-  createdAt   DateTime @default(now())
+  referenceId String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
 }
 
 model WalletTransaction {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   userId      String
-  type        String   // deposit, withdrawal
-  amount      Float
-  status      String   @default("pending") // pending, completed, failed
+  type        TransactionType
+  amount      Decimal          @db.Decimal(12, 2)
+  status      TransactionStatus @default(pending)
   txHash      String?
-  method      String?
+  method      PaymentMethod?
   description String?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
 }
 
 model SiteSetting {
   id    String @id @default(cuid())
   key   String @unique
   value String
+
+  @@index([key])
 }

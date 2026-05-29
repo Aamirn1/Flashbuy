@@ -1,17 +1,13 @@
 import { db } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
-      );
-    }
+  try {
+    const userId = authUser.id;
 
     const user = await db.user.findUnique({
       where: { id: userId },
@@ -46,13 +42,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
-    const { userId, type, amount, method } = body;
+    const { type, amount, method } = body;
+    const userId = authUser.id;
 
-    if (!userId || !type || !amount) {
+    if (!type || !amount) {
       return NextResponse.json(
-        { error: 'userId, type, and amount are required' },
+        { error: 'type and amount are required' },
         { status: 400 }
       );
     }
