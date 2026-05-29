@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -32,7 +33,7 @@ export async function GET(
 
     const parsedProduct = {
       ...product,
-      images: JSON.parse(product.images || '[]'),
+      images: parseJsonField(product.images),
     };
 
     return NextResponse.json({ product: parsedProduct });

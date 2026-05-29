@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
       items: order.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : null,
       })),
     }));
@@ -177,7 +178,7 @@ export async function PATCH(request: NextRequest) {
       items: updatedOrder.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : null,
       })),
     };

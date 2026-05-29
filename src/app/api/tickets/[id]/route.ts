@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -26,7 +27,7 @@ export async function GET(
 
     const parsedTicket = {
       ...ticket,
-      messages: JSON.parse(ticket.messages || '[]'),
+      messages: parseJsonField(ticket.messages),
     };
 
     return NextResponse.json({ ticket: parsedTicket });
@@ -60,7 +61,7 @@ export async function PATCH(
 
     // Add message to messages array
     if (message) {
-      const messages = JSON.parse(ticket.messages || '[]');
+      const messages = parseJsonField(ticket.messages);
       messages.push({
         id: Date.now().toString(),
         sender: isAdmin ? 'admin' : 'user',
@@ -95,7 +96,7 @@ export async function PATCH(
 
     const parsedTicket = {
       ...updatedTicket,
-      messages: JSON.parse(updatedTicket.messages || '[]'),
+      messages: parseJsonField(updatedTicket.messages),
     };
 
     return NextResponse.json({ ticket: parsedTicket });

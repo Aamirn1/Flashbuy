@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -41,7 +42,7 @@ export async function GET(
       items: order.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : null,
       })),
     };
@@ -174,7 +175,7 @@ export async function PATCH(
       items: updatedOrder.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : null,
       })),
     };

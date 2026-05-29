@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
       items: order.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : item.productId === 'flash-usdt'
             ? { id: 'flash-usdt', name: 'Flash USDT', images: [], price: 0.01, slug: 'flash-usdt' }
             : null,
@@ -281,7 +282,7 @@ export async function POST(request: NextRequest) {
       items: order.items.map((item) => ({
         ...item,
         product: item.product
-          ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
+          ? { ...item.product, images: parseJsonField(item.product.images) }
           : null,
       })),
     };

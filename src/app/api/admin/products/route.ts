@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { parseJsonField } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 function generateSlug(name: string): string {
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     const parsedProducts = products.map((product) => ({
       ...product,
-      images: JSON.parse(product.images || '[]'),
+      images: parseJsonField(product.images),
     }));
 
     return NextResponse.json({
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     const parsedProduct = {
       ...product,
-      images: JSON.parse(product.images || '[]'),
+      images: parseJsonField(product.images),
     };
 
     return NextResponse.json({ product: parsedProduct }, { status: 201 });
