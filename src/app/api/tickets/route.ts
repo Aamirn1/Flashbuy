@@ -1,18 +1,16 @@
 import { db } from '@/lib/db';
+import { requireAuth } from '@/lib/auth';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
+
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
     const status = searchParams.get('status');
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 }
-      );
-    }
+    const userId = authUser.id;
 
     const where: Record<string, unknown> = { userId };
     if (status) {
@@ -24,7 +22,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ tickets });
+    return NextResponse.json({ tickets: serializeData(tickets) });
   } catch (error) {
     console.error('Tickets list error:', error);
     return NextResponse.json(
@@ -35,13 +33,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const { user: authUser, error: authError } = await requireAuth(request);
+  if (authError) return authError;
+
   try {
     const body = await request.json();
-    const { userId, subject, category, description, screenshot } = body;
+    const { subject, category, description, screenshot } = body;
+    const userId = authUser.id;
 
-    if (!userId || !subject || !category || !description) {
+    if (!subject || !category || !description) {
       return NextResponse.json(
-        { error: 'userId, subject, category, and description are required' },
+        { error: 'subject, category, and description are required' },
         { status: 400 }
       );
     }
@@ -55,11 +57,10 @@ export async function POST(request: NextRequest) {
         screenshot: screenshot || null,
         status: 'open',
         priority: 'medium',
-        messages: JSON.stringify([]),
       },
     });
 
-    return NextResponse.json({ ticket }, { status: 201 });
+    return NextResponse.json({ ticket: serializeData(ticket) }, { status: 201 });
   } catch (error) {
     console.error('Ticket creation error:', error);
     return NextResponse.json(

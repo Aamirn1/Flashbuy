@@ -69,6 +69,7 @@ interface AppState {
   setSidebarOpen: (open: boolean) => void;
   getCartTotal: () => number;
   getCartCount: () => number;
+  cleanupCart: () => void;
   addNotification: (notification: Omit<AppState['notifications'][0], 'id' | 'createdAt'>) => void;
   markNotificationRead: (id: string) => void;
 }
@@ -208,8 +209,21 @@ export const useStore = create<AppState>()(
       
       getCartCount: () => {
         const state = get();
+        // Return number of distinct items in cart (not total quantity)
+        // For Flash USDT this should be 0 or 1
         return state.cart.length;
       },
+
+      // Clean up stale/duplicate cart items
+      cleanupCart: () => set((state) => {
+        const seen = new Set<string>();
+        const cleanCart = state.cart.filter(item => {
+          if (seen.has(item.productId)) return false;
+          seen.add(item.productId);
+          return true;
+        });
+        return { cart: cleanCart };
+      }),
       
       addNotification: (notification) => set((state) => ({
         notifications: [

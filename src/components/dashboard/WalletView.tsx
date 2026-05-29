@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import type { WalletTransaction } from '@/lib/types';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -12,13 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, ArrowDownLeft, ArrowUpRight, Wallet, RefreshCw, Gift, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { DollarSign, ArrowDownLeft, ArrowUpRight, Wallet, RefreshCw, Gift, Lock, CheckCircle2, AlertCircle, Plus, Trash2, Edit3 } from 'lucide-react';
 
 const TYPE_OPTIONS = [
-  { value: 'all', label: 'All Types' },
+  { value: 'all', label: 'All' },
   { value: 'deposit', label: 'Deposit' },
   { value: 'withdrawal', label: 'Withdrawal' },
-  { value: 'welcome_bonus', label: 'Welcome Bonus' },
+  { value: 'welcome_bonus', label: 'Bonus' },
   { value: 'purchase', label: 'Purchase' },
   { value: 'refund', label: 'Refund' },
   { value: 'commission', label: 'Commission' },
@@ -33,6 +32,13 @@ const GLASS_TYPE_COLORS: Record<string, string> = {
   commission: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
 };
 
+// Safe number conversion
+const safeNum = (val: unknown): number => {
+  if (typeof val === 'number') return val;
+  const n = parseFloat(String(val));
+  return isNaN(n) ? 0 : n;
+};
+
 export function WalletView() {
   const { user, setUser } = useStore();
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -45,8 +51,13 @@ export function WalletView() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [welcomeBonus, setWelcomeBonus] = useState(user?.welcomeBonus || 0);
+  const [welcomeBonus, setWelcomeBonus] = useState(safeNum(user?.welcomeBonus));
   const [welcomeBonusUnlocked, setWelcomeBonusUnlocked] = useState(user?.welcomeBonusUnlocked || false);
+
+  // Wallet address management
+  const [walletEditOpen, setWalletEditOpen] = useState(false);
+  const [editWalletAddress, setEditWalletAddress] = useState(user?.walletAddress || '');
+  const [editWalletNetwork, setEditWalletNetwork] = useState('usdt_trc20');
 
   useEffect(() => {
     fetchTransactions();
@@ -55,20 +66,20 @@ export function WalletView() {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/wallet?userId=${user?.id}`);
+      const res = await fetch('/api/wallet');
       if (res.ok) {
         const data = await res.json();
         setTransactions(data.transactions || []);
-        setWelcomeBonus(data.welcomeBonus ?? 0);
+        setWelcomeBonus(safeNum(data.welcomeBonus));
         setWelcomeBonusUnlocked(data.welcomeBonusUnlocked ?? false);
 
-        // Update user in store with latest bonus info
+        // Update user in store with latest balance info
         if (user) {
           setUser({
             ...user,
-            balance: data.balance ?? user.balance,
-            welcomeBonus: data.welcomeBonus ?? user.welcomeBonus,
-            welcomeBonusUnlocked: data.welcomeBonusUnlocked ?? user.welcomeBonusUnlocked,
+            balance: safeNum(data.balance),
+            welcomeBonus: safeNum(data.welcomeBonus),
+            welcomeBonusUnlocked: data.welcomeBonusUnlocked ?? false,
           });
         }
       }
@@ -86,7 +97,7 @@ export function WalletView() {
       const res = await fetch('/api/wallet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.id, type: 'deposit', amount: parseFloat(depositAmount), method: depositNetwork }),
+        body: JSON.stringify({ type: 'deposit', amount: parseFloat(depositAmount), method: depositNetwork }),
       });
       if (res.ok) {
         setDepositOpen(false);
@@ -107,13 +118,36 @@ export function WalletView() {
       const res = await fetch('/api/wallet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user?.id, type: 'withdrawal', amount: parseFloat(withdrawAmount) }),
+        body: JSON.stringify({ type: 'withdrawal', amount: parseFloat(withdrawAmount) }),
       });
       if (res.ok) {
         setWithdrawOpen(false);
         setWithdrawAmount('');
         setWithdrawAddress('');
         fetchTransactions();
+      }
+    } catch {
+      // handle error
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSaveWallet = async () => {
+    if (!editWalletAddress.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: editWalletAddress.trim() }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.user && user) {
+          setUser({ ...user, walletAddress: editWalletAddress.trim() });
+        }
+        setWalletEditOpen(false);
       }
     } catch {
       // handle error
@@ -132,10 +166,11 @@ export function WalletView() {
     });
 
   const getAmountDisplay = (tx: WalletTransaction) => {
+    const amount = safeNum(tx.amount);
     const isPositive = ['deposit', 'refund', 'commission', 'welcome_bonus'].includes(tx.type);
     return (
       <span className={`font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-        {isPositive ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
+        {isPositive ? '+' : '-'}${Math.abs(amount).toFixed(2)}
       </span>
     );
   };
@@ -156,7 +191,7 @@ export function WalletView() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h2 className="text-2xl font-bold text-gradient-cyan">Wallet</h2>
-        <p className="text-muted-foreground">Manage your balance and transactions</p>
+        <p className="text-muted-foreground text-sm">Manage your balance and transactions</p>
       </motion.div>
 
       {/* Balance Card */}
@@ -164,7 +199,7 @@ export function WalletView() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-xl glow-cyan-strong p-6 relative overflow-hidden"
+        className="glass-card rounded-xl glow-cyan-strong p-4 sm:p-6 relative overflow-hidden"
       >
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -174,13 +209,38 @@ export function WalletView() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-400/70 text-sm font-medium">Available Balance</p>
-              <p className="text-4xl font-bold mt-2 text-gradient-gold">
-                ${user?.balance?.toFixed(2) || '0.00'}{' '}
+              <p className="text-3xl sm:text-4xl font-bold mt-2 text-gradient-gold">
+                ${safeNum(user?.balance).toFixed(2)}{' '}
                 <span className="text-lg text-emerald-400/60">USDT</span>
               </p>
             </div>
-            <div className="h-16 w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
-              <Wallet className="h-8 w-8 text-emerald-400" />
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
+              <Wallet className="h-7 w-7 sm:h-8 sm:w-8 text-emerald-400" />
+            </div>
+          </div>
+
+          {/* Connected Wallet Section */}
+          <div className="mt-4 p-3 sm:p-4 rounded-xl glass-light border border-emerald-500/15">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground mb-1">Delivery Wallet Address</p>
+                {user?.walletAddress ? (
+                  <p className="text-sm font-mono text-emerald-400 truncate">{user.walletAddress}</p>
+                ) : (
+                  <p className="text-xs text-amber-400">No wallet connected — add one to receive Flash USDT</p>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-emerald-400 hover:bg-emerald-500/10 shrink-0"
+                onClick={() => {
+                  setEditWalletAddress(user?.walletAddress || '');
+                  setWalletEditOpen(true);
+                }}
+              >
+                {user?.walletAddress ? <Edit3 className="size-4" /> : <Plus className="size-4" />}
+              </Button>
             </div>
           </div>
 
@@ -190,11 +250,11 @@ export function WalletView() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-5 p-4 rounded-xl border border-amber-500/20 bg-amber-500/5"
+              className="mt-4 p-3 sm:p-4 rounded-xl border border-amber-500/20 bg-amber-500/5"
             >
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center flex-shrink-0 border border-amber-500/20">
-                  <Gift className="h-5 w-5 text-amber-400" />
+                <div className="h-9 w-9 rounded-xl bg-amber-500/15 flex items-center justify-center flex-shrink-0 border border-amber-500/20">
+                  <Gift className="h-4 w-4 text-amber-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
@@ -203,12 +263,12 @@ export function WalletView() {
                       <Lock className="size-2.5 mr-0.5" /> Locked
                     </Badge>
                   </div>
-                  <p className="text-2xl font-bold text-gradient-cyan mt-1">
+                  <p className="text-xl sm:text-2xl font-bold text-gradient-cyan mt-1">
                     ${welcomeBonus.toFixed(2)} <span className="text-sm text-emerald-400/60">USDT</span>
                   </p>
                   <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-400">
                     <AlertCircle className="size-3.5 text-amber-400/60 flex-shrink-0" />
-                    <span>Place a minimum <strong className="text-emerald-400">$10 order</strong> to unlock your bonus for withdrawal</span>
+                    <span>Place a minimum <strong className="text-emerald-400">$10 order</strong> to unlock your bonus</span>
                   </div>
                 </div>
               </div>
@@ -221,7 +281,7 @@ export function WalletView() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center gap-2"
+              className="mt-4 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-center gap-2"
             >
               <CheckCircle2 className="size-4 text-emerald-400 flex-shrink-0" />
               <span className="text-sm text-emerald-400 font-medium">$500 Welcome Bonus unlocked and added to your balance!</span>
@@ -229,10 +289,10 @@ export function WalletView() {
           )}
         </div>
 
-        <div className="flex gap-3 mt-6 relative">
+        <div className="flex gap-3 mt-5 relative">
           <Dialog open={depositOpen} onOpenChange={setDepositOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-emerald-400 font-semibold text-sm transition-all hover:border-emerald-500/30">
+              <button className="flex items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 glass-light glass-card-hover text-emerald-400 font-semibold text-sm transition-all hover:border-emerald-500/30">
                 <ArrowDownLeft className="h-4 w-4" /> Deposit
               </button>
             </DialogTrigger>
@@ -285,7 +345,7 @@ export function WalletView() {
 
           <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-foreground font-semibold text-sm transition-all hover:border-emerald-500/30">
+              <button className="flex items-center gap-2 rounded-xl px-4 sm:px-5 py-2.5 glass-light glass-card-hover text-foreground font-semibold text-sm transition-all hover:border-emerald-500/30">
                 <ArrowUpRight className="h-4 w-4" /> Withdraw
               </button>
             </DialogTrigger>
@@ -316,7 +376,7 @@ export function WalletView() {
                     className="glass-input"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Available: ${user?.balance?.toFixed(2) || '0.00'} USDT
+                    Available: ${safeNum(user?.balance).toFixed(2)} USDT
                   </p>
                 </div>
               </div>
@@ -332,6 +392,51 @@ export function WalletView() {
         </div>
       </motion.div>
 
+      {/* Wallet Address Edit Dialog */}
+      <Dialog open={walletEditOpen} onOpenChange={setWalletEditOpen}>
+        <DialogContent className="glass-strong border-emerald-500/20">
+          <DialogHeader>
+            <DialogTitle className="text-gradient-cyan">Delivery Wallet Address</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Add or update the wallet where you want to receive Flash USDT after purchase
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-foreground">Network</Label>
+              <Select value={editWalletNetwork} onValueChange={setEditWalletNetwork}>
+                <SelectTrigger className="glass-input">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="glass-strong border-emerald-500/20">
+                  <SelectItem value="usdt_trc20">USDT TRC20</SelectItem>
+                  <SelectItem value="usdt_bep20">USDT BEP20</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground">Wallet Address</Label>
+              <Input
+                placeholder="Enter your USDT wallet address"
+                value={editWalletAddress}
+                onChange={(e) => setEditWalletAddress(e.target.value)}
+                className="glass-input font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                This is where your ordered Flash USDT will be delivered after payment approval.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" className="text-muted-foreground" onClick={() => setWalletEditOpen(false)}>Cancel</Button>
+            <Button className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30" onClick={handleSaveWallet} disabled={submitting || !editWalletAddress.trim()}>
+              {submitting ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
+              Save Address
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Transactions */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -339,14 +444,14 @@ export function WalletView() {
         transition={{ delay: 0.2 }}
         className="glass-card rounded-xl overflow-hidden"
       >
-        <div className="flex items-center justify-between p-6 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 pb-4 gap-3">
           <h3 className="text-lg font-semibold text-glow-cyan">Transaction History</h3>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-1.5 flex-wrap">
             {TYPE_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setTypeFilter(opt.value)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
                   typeFilter === opt.value
                     ? 'glass-light border-emerald-500/30 text-emerald-400'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -364,47 +469,42 @@ export function WalletView() {
             <p className="text-sm">Your transaction history will appear here.</p>
           </div>
         ) : (
-          <div className="max-h-96 overflow-y-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-emerald-500/10 hover:bg-transparent">
-                  <TableHead className="text-muted-foreground">Type</TableHead>
-                  <TableHead className="text-muted-foreground">Amount</TableHead>
-                  <TableHead className="text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-muted-foreground">Date</TableHead>
-                  <TableHead className="text-muted-foreground">Description</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredTransactions.map((tx) => (
-                  <TableRow key={tx.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
-                    <TableCell>
-                      <Badge className={`${GLASS_TYPE_COLORS[tx.type] || ''} text-xs`}>
-                        {tx.type === 'welcome_bonus' ? 'Bonus' : tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{getAmountDisplay(tx)}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          tx.status === 'confirmed' || tx.status === 'completed'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : tx.status === 'failed'
-                              ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                              : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        }
-                      >
-                        {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{formatDate(tx.createdAt)}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">
-                      {tx.description || '-'}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="max-h-96 overflow-y-auto px-4 sm:px-6 pb-4 space-y-2">
+            {filteredTransactions.map((tx) => (
+              <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/20 transition-all">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                    ['deposit', 'refund', 'commission', 'welcome_bonus'].includes(tx.type)
+                      ? 'bg-emerald-500/20' : 'bg-red-500/20'
+                  }`}>
+                    {['deposit', 'refund', 'commission', 'welcome_bonus'].includes(tx.type)
+                      ? <ArrowDownLeft className="size-4 text-emerald-400" />
+                      : <ArrowUpRight className="size-4 text-red-400" />
+                    }
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {tx.type === 'welcome_bonus' ? 'Welcome Bonus' : tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">{tx.description || formatDate(tx.createdAt)}</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0 ml-3">
+                  {getAmountDisplay(tx)}
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <Badge className={
+                      tx.status === 'confirmed' || tx.status === 'completed'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-1 py-0'
+                        : tx.status === 'failed'
+                          ? 'bg-red-500/20 text-red-400 border border-red-500/30 text-[10px] px-1 py-0'
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] px-1 py-0'
+                    }>
+                      {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
+                    </Badge>
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </motion.div>

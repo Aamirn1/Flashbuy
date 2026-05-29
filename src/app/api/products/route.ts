@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({
-      products: parsedProducts,
+      products: serializeData(parsedProducts),
       total,
       page,
       totalPages: Math.ceil(total / limit),

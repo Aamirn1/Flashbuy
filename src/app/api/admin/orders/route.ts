@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({
-      orders: parsedOrders,
+      orders: serializeData(parsedOrders),
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -183,7 +183,7 @@ export async function PATCH(request: NextRequest) {
       })),
     };
 
-    return NextResponse.json({ order: parsedOrder });
+    return NextResponse.json({ order: serializeData(parsedOrder) });
   } catch (error) {
     console.error('Admin order update error:', error);
     return NextResponse.json(

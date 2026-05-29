@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -47,7 +47,7 @@ export async function GET(
       })),
     };
 
-    return NextResponse.json({ order: parsedOrder });
+    return NextResponse.json({ order: serializeData(parsedOrder) });
   } catch (error) {
     console.error('Order detail error:', error);
     return NextResponse.json(
@@ -180,7 +180,7 @@ export async function PATCH(
       })),
     };
 
-    return NextResponse.json({ order: parsedOrder });
+    return NextResponse.json({ order: serializeData(parsedOrder) });
   } catch (error) {
     console.error('Order update error:', error);
     return NextResponse.json(

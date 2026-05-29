@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 function generateSlug(name: string): string {
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({
-      products: parsedProducts,
+      products: serializeData(parsedProducts),
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
       images: parseJsonField(product.images),
     };
 
-    return NextResponse.json({ product: parsedProduct }, { status: 201 });
+    return NextResponse.json({ product: serializeData(parsedProduct) }, { status: 201 });
   } catch (error) {
     console.error('Admin product creation error:', error);
     return NextResponse.json(

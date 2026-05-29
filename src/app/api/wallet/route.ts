@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -26,12 +27,12 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({
+    return NextResponse.json(serializeData({
       balance: user.balance,
       welcomeBonus: user.welcomeBonus,
       welcomeBonusUnlocked: user.welcomeBonusUnlocked,
       transactions,
-    });
+    }));
   } catch (error) {
     console.error('Wallet GET error:', error);
     return NextResponse.json(
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ transaction }, { status: 201 });
+    return NextResponse.json({ transaction: serializeData(transaction) }, { status: 201 });
   } catch (error) {
     console.error('Wallet POST error:', error);
     return NextResponse.json(

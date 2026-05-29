@@ -2,19 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useStore } from '@/lib/store';
+import { useStore, formatUSDT } from '@/lib/store';
 import type { Order } from '@/lib/types';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronLeft, ChevronRight, Eye, ShoppingCart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, ShoppingCart, Package, Clock, CreditCard, CheckCircle2, XCircle, RefreshCw } from 'lucide-react';
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
-  { value: 'all', label: 'All Status' },
+  { value: 'all', label: 'All' },
   { value: 'pending', label: 'Pending' },
-  { value: 'payment_waiting', label: 'Payment Waiting' },
+  { value: 'payment_waiting', label: 'Awaiting' },
   { value: 'paid', label: 'Paid' },
   { value: 'processing', label: 'Processing' },
   { value: 'completed', label: 'Completed' },
@@ -30,6 +28,16 @@ const GLASS_STATUS_COLORS: Record<string, string> = {
   completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   cancelled: 'bg-red-500/20 text-red-400 border border-red-500/30',
   refunded: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
+};
+
+const STATUS_ICONS: Record<string, React.ReactNode> = {
+  pending: <Clock className="size-3.5" />,
+  payment_waiting: <Clock className="size-3.5" />,
+  paid: <CreditCard className="size-3.5" />,
+  processing: <RefreshCw className="size-3.5" />,
+  completed: <CheckCircle2 className="size-3.5" />,
+  cancelled: <XCircle className="size-3.5" />,
+  refunded: <XCircle className="size-3.5" />,
 };
 
 const PAGE_SIZE = 10;
@@ -78,6 +86,12 @@ export function OrderHistory() {
   const getStatusLabel = (status: string) =>
     status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
+  // Safe number conversion for values that might be strings from API
+  const safeToFixed = (val: unknown, decimals = 2): string => {
+    const num = typeof val === 'number' ? val : parseFloat(String(val));
+    return isNaN(num) ? '0.00' : num.toFixed(decimals);
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -96,9 +110,9 @@ export function OrderHistory() {
       >
         <div>
           <h2 className="text-2xl font-bold text-gradient-cyan">Order History</h2>
-          <p className="text-muted-foreground">View and manage your orders</p>
+          <p className="text-muted-foreground text-sm">View and manage your orders</p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap">
           {STATUS_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -119,10 +133,9 @@ export function OrderHistory() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-xl overflow-hidden"
       >
         {filteredOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <div className="glass-card rounded-xl flex flex-col items-center justify-center py-16 text-muted-foreground">
             <ShoppingCart className="h-12 w-12 mb-4 opacity-50" />
             <p className="text-lg font-medium">No orders found</p>
             <p className="text-sm">
@@ -132,55 +145,74 @@ export function OrderHistory() {
             </p>
           </div>
         ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-emerald-500/10 hover:bg-transparent">
-                  <TableHead className="text-muted-foreground">Order Number</TableHead>
-                  <TableHead className="text-muted-foreground">Date</TableHead>
-                  <TableHead className="text-muted-foreground">Items</TableHead>
-                  <TableHead className="text-muted-foreground">Total</TableHead>
-                  <TableHead className="text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-right text-muted-foreground">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedOrders.map((order) => (
-                  <TableRow
-                    key={order.id}
-                    className="cursor-pointer border-emerald-500/5 hover:bg-emerald-500/5 transition-colors"
-                    onClick={() => navigate('order-detail', order.id)}
-                  >
-                    <TableCell className="font-medium text-emerald-400 font-mono">{order.orderNumber}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{formatDate(order.createdAt)}</TableCell>
-                    <TableCell>
-                      <span className="text-sm text-foreground">
-                        {order.items.length} item{order.items.length !== 1 ? 's' : ''}
-                      </span>
-                    </TableCell>
-                    <TableCell className="font-semibold text-gradient-gold">${order.total.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge className={`${GLASS_STATUS_COLORS[order.status] || 'bg-muted/50 text-muted-foreground'} text-xs`}>
-                        {getStatusLabel(order.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10" onClick={(e) => { e.stopPropagation(); navigate('order-detail', order.id); }}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="space-y-3">
+            {paginatedOrders.map((order) => (
+              <motion.div
+                key={order.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card glass-card-hover rounded-xl p-4 sm:p-5 cursor-pointer transition-all"
+                onClick={() => navigate('order-detail', order.id)}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  {/* Left: Order info */}
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className={`shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+                      order.status === 'completed' ? 'bg-emerald-500/20' :
+                      order.status === 'cancelled' || order.status === 'refunded' ? 'bg-red-500/20' :
+                      'bg-amber-500/20'
+                    }`}>
+                      {STATUS_ICONS[order.status] || <Package className="size-4 text-muted-foreground" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-semibold text-emerald-400 text-sm">
+                          {order.orderNumber}
+                        </span>
+                        <Badge className={`${GLASS_STATUS_COLORS[order.status] || 'bg-muted/50 text-muted-foreground'} text-[10px] px-1.5 py-0`}>
+                          {getStatusLabel(order.status)}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatDate(order.createdAt)} · {order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? 's' : ''}
+                      </p>
+                      {/* Show items preview on mobile */}
+                      <div className="sm:hidden mt-2 space-y-1">
+                        {order.items?.slice(0, 2).map((item) => (
+                          <p key={item.id} className="text-xs text-muted-foreground truncate">
+                            {item.product?.name || 'Flash USDT'} × {item.quantity >= 1000 ? `${formatUSDT(item.quantity)}` : item.quantity}
+                          </p>
+                        ))}
+                        {order.items?.length > 2 && (
+                          <p className="text-xs text-muted-foreground">+{order.items.length - 2} more</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Amount & Action */}
+                  <div className="flex items-center justify-between sm:justify-end gap-4">
+                    <span className="text-lg font-bold text-gradient-gold">
+                      ${safeToFixed(order.total)}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                      onClick={(e) => { e.stopPropagation(); navigate('order-detail', order.id); }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-emerald-500/10">
+              <div className="flex items-center justify-between px-2 py-3">
                 <p className="text-sm text-muted-foreground">
-                  Showing {(currentPage - 1) * PAGE_SIZE + 1} to{' '}
-                  {Math.min(currentPage * PAGE_SIZE, filteredOrders.length)} of{' '}
-                  {filteredOrders.length} orders
+                  {(currentPage - 1) * PAGE_SIZE + 1}-{Math.min(currentPage * PAGE_SIZE, filteredOrders.length)} of {filteredOrders.length}
                 </p>
                 <div className="flex items-center gap-2">
                   <Button
@@ -192,8 +224,8 @@ export function OrderHistory() {
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm font-medium text-foreground">
-                    {currentPage} / {totalPages}
+                  <span className="text-sm font-medium">
+                    {currentPage}/{totalPages}
                   </span>
                   <Button
                     variant="ghost"
@@ -207,7 +239,7 @@ export function OrderHistory() {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </motion.div>
     </div>

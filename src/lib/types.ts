@@ -55,6 +55,7 @@ export interface User {
   welcomeBonus: number;
   welcomeBonusUnlocked: boolean;
   referralCode: string;
+  walletAddress?: string;
   isVerified: boolean;
   createdAt: string;
 }
@@ -102,6 +103,7 @@ export interface Order {
   paymentMethod?: string;
   paymentStatus: string;
   deliveryStatus: string;
+  notes?: string;
   createdAt: string;
   items: OrderItem[];
 }

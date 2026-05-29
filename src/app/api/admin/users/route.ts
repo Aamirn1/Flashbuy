@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({
-      users: usersWithOrderCount,
+      users: serializeData(usersWithOrderCount),
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -128,7 +129,7 @@ export async function PATCH(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ user: updatedUser });
+    return NextResponse.json({ user: serializeData(updatedUser) });
   } catch (error) {
     console.error('Admin user update error:', error);
     return NextResponse.json(

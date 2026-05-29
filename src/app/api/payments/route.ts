@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 function generateWalletAddress(method: string): string {
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
       where: { orderId },
     });
     if (existingPayment) {
-      return NextResponse.json({ payment: existingPayment });
+      return NextResponse.json({ payment: serializeData(existingPayment) });
     }
 
     const walletAddress = generateWalletAddress(method);
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ payment }, { status: 201 });
+    return NextResponse.json({ payment: serializeData(payment) }, { status: 201 });
   } catch (error) {
     console.error('Payment creation error:', error);
     return NextResponse.json(

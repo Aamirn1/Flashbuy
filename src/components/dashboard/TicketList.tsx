@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import type { Ticket } from '@/lib/types';
 import { TICKET_CATEGORIES } from '@/lib/constants';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -14,13 +13,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Ticket as TicketIcon, Eye, RefreshCw } from 'lucide-react';
+import { Plus, Ticket as TicketIcon, Eye, RefreshCw, MessageSquare, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const GLASS_STATUS_COLORS: Record<string, string> = {
   open: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   solved: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   closed: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
+};
+
+const STATUS_ICONS: Record<string, React.ReactNode> = {
+  open: <Clock className="size-3.5" />,
+  pending: <AlertCircle className="size-3.5" />,
+  solved: <CheckCircle2 className="size-3.5" />,
+  closed: <CheckCircle2 className="size-3.5" />,
 };
 
 export function TicketList() {
@@ -104,7 +110,7 @@ export function TicketList() {
       >
         <div>
           <h2 className="text-2xl font-bold text-gradient-cyan">Support Tickets</h2>
-          <p className="text-muted-foreground">Get help with your orders and account</p>
+          <p className="text-muted-foreground text-sm">Get help with your orders and account</p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
@@ -184,53 +190,66 @@ export function TicketList() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-xl overflow-hidden"
       >
         {tickets.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+          <div className="glass-card rounded-xl flex flex-col items-center justify-center py-16 text-muted-foreground">
             <TicketIcon className="h-12 w-12 mb-4 opacity-50" />
             <p className="text-lg font-medium">No support tickets</p>
             <p className="text-sm">Create a ticket if you need help with anything.</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-emerald-500/10 hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Subject</TableHead>
-                <TableHead className="text-muted-foreground">Category</TableHead>
-                <TableHead className="text-muted-foreground">Status</TableHead>
-                <TableHead className="text-muted-foreground">Date</TableHead>
-                <TableHead className="text-right text-muted-foreground">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tickets.map((ticket) => (
-                <TableRow
-                  key={ticket.id}
-                  className="cursor-pointer border-emerald-500/5 hover:bg-emerald-500/5 transition-colors"
-                  onClick={() => navigate('ticket-detail', ticket.id)}
-                >
-                  <TableCell className="font-medium text-foreground">{ticket.subject}</TableCell>
-                  <TableCell>
-                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs">
-                      {getCategoryLabel(ticket.category)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={`${GLASS_STATUS_COLORS[ticket.status] || ''} text-xs`}>
-                      {getStatusLabel(ticket.status)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{formatDate(ticket.createdAt)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={(e) => { e.stopPropagation(); navigate('ticket-detail', ticket.id); }}>
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="space-y-3">
+            {tickets.map((ticket) => (
+              <motion.div
+                key={ticket.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card glass-card-hover rounded-xl p-4 sm:p-5 cursor-pointer transition-all"
+                onClick={() => navigate('ticket-detail', ticket.id)}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                    <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${
+                      ticket.status === 'open' ? 'bg-emerald-500/20' :
+                      ticket.status === 'pending' ? 'bg-amber-500/20' :
+                      'bg-slate-500/20'
+                    }`}>
+                      {STATUS_ICONS[ticket.status] || <TicketIcon className="size-4 text-muted-foreground" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm text-foreground truncate">{ticket.subject}</span>
+                        <Badge className={`${GLASS_STATUS_COLORS[ticket.status] || ''} text-[10px] px-1.5 py-0`}>
+                          {getStatusLabel(ticket.status)}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] px-1.5 py-0">
+                          {getCategoryLabel(ticket.category)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{formatDate(ticket.createdAt)}</span>
+                      </div>
+                      {/* Messages preview */}
+                      {ticket.messages && Array.isArray(ticket.messages) && ticket.messages.length > 0 && (
+                        <p className="text-xs text-muted-foreground mt-2 truncate flex items-center gap-1">
+                          <MessageSquare className="size-3" />
+                          {ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-emerald-400 hover:bg-emerald-500/10 shrink-0"
+                    onClick={(e) => { e.stopPropagation(); navigate('ticket-detail', ticket.id); }}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
       </motion.div>
     </div>

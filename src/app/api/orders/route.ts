@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({
-      orders: parsedOrders,
+      orders: serializeData(parsedOrders),
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal } = body;
+    const { items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal, deliveryWalletAddress, deliveryWalletNetwork } = body;
     const userId = authUser.id;
 
     if (!items || !items.length) {
@@ -212,6 +212,9 @@ export async function POST(request: NextRequest) {
         paymentMethod: paymentMethod || null,
         paymentStatus: 'pending',
         deliveryStatus: 'pending',
+        notes: deliveryWalletAddress
+          ? `Delivery Wallet: ${deliveryWalletAddress}${deliveryWalletNetwork ? ` (${deliveryWalletNetwork})` : ''}`
+          : null,
         items: {
           create: orderItems.map((item) => ({
             productId: item.productId,
@@ -287,7 +290,7 @@ export async function POST(request: NextRequest) {
       })),
     };
 
-    return NextResponse.json({ order: parsedOrder }, { status: 201 });
+    return NextResponse.json({ order: serializeData(parsedOrder) }, { status: 201 });
   } catch (error) {
     console.error('Order creation error:', error);
     return NextResponse.json(

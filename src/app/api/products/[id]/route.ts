@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -36,7 +36,7 @@ export async function GET(
       images: parseJsonField(product.images),
     };
 
-    return NextResponse.json({ product: parsedProduct });
+    return NextResponse.json({ product: serializeData(parsedProduct) });
   } catch (error) {
     console.error('Product detail error:', error);
     return NextResponse.json(

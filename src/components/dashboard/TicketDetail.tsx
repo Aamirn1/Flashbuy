@@ -49,10 +49,11 @@ export function TicketDetail() {
     if (!reply.trim() || !ticket) return;
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/tickets/${ticket.id}/messages`, {
-        method: 'POST',
+      // Use PATCH /api/tickets/[id] with message (NOT /messages endpoint)
+      const res = await fetch(`/api/tickets/${ticket.id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: reply }),
+        body: JSON.stringify({ message: reply, sender: 'customer' }),
       });
       if (res.ok) {
         setReply('');
@@ -118,6 +119,7 @@ export function TicketDetail() {
   }
 
   const isOpen = ticket.status === 'open' || ticket.status === 'pending';
+  const messages = Array.isArray(ticket.messages) ? ticket.messages : [];
 
   return (
     <div className="space-y-6">
@@ -125,16 +127,16 @@ export function TicketDetail() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-4"
+        className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={goBack}>
+        <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 w-fit" onClick={goBack}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gradient-cyan">{ticket.subject}</h2>
+        <div className="flex-1 min-w-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-gradient-cyan truncate">{ticket.subject}</h2>
           <p className="text-muted-foreground text-sm">{getCategoryLabel(ticket.category)} · {formatDate(ticket.createdAt)}</p>
         </div>
-        <Badge className={`${GLASS_STATUS_COLORS[ticket.status] || ''} px-3 py-1`}>
+        <Badge className={`${GLASS_STATUS_COLORS[ticket.status] || ''} px-3 py-1 w-fit`}>
           {getStatusLabel(ticket.status)}
         </Badge>
       </motion.div>
@@ -144,7 +146,7 @@ export function TicketDetail() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-xl p-6"
+        className="glass-card rounded-xl p-4 sm:p-6"
       >
         <div className="flex flex-wrap gap-4 text-sm">
           <div>
@@ -173,7 +175,7 @@ export function TicketDetail() {
         transition={{ delay: 0.2 }}
         className="glass-card rounded-xl"
       >
-        <div className="flex items-center justify-between p-6 pb-0">
+        <div className="flex items-center justify-between p-4 sm:p-6 pb-0">
           <h3 className="text-lg font-semibold text-glow-cyan">Messages</h3>
           {isOpen && (
             <Button
@@ -182,15 +184,15 @@ export function TicketDetail() {
               className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
               onClick={handleCloseTicket}
             >
-              <XCircle className="h-4 w-4 mr-1" /> Close Ticket
+              <XCircle className="h-4 w-4 mr-1" /> Close
             </Button>
           )}
         </div>
         <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
-          {ticket.messages && ticket.messages.length > 0 ? (
-            ticket.messages.map((msg: TicketMessage, idx: number) => (
+          {messages.length > 0 ? (
+            messages.map((msg: TicketMessage, idx: number) => (
               <motion.div
-                key={msg.id}
+                key={msg.id || idx}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
@@ -204,7 +206,7 @@ export function TicketDetail() {
                 <div className={`max-w-[80%] ${msg.isAdmin ? '' : 'text-right'}`}>
                   <div className="flex items-center gap-2 mb-1">
                     {msg.isAdmin && <span className="text-xs font-medium text-emerald-400">Support Team</span>}
-                    <span className="text-xs text-muted-foreground">{formatDate(msg.timestamp)}</span>
+                    <span className="text-xs text-muted-foreground">{msg.timestamp ? formatDate(msg.timestamp) : ''}</span>
                     {!msg.isAdmin && <span className="text-xs font-medium text-violet-400">You</span>}
                   </div>
                   <div className={`inline-block rounded-2xl px-4 py-2.5 text-sm ${

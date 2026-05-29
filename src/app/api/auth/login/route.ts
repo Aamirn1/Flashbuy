@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { generateToken, setAuthCookie } from '@/lib/auth';
+import { serializeData } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;
 
-    const response = NextResponse.json({ user: userWithoutPassword });
+    const response = NextResponse.json({ user: serializeData(userWithoutPassword) });
     setAuthCookie(response, token);
 
     return response;

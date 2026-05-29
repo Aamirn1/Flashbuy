@@ -21,3 +21,30 @@ export function parseJsonField<T = unknown>(value: unknown, fallback: T = [] as 
   }
   return value as T;
 }
+
+/** Convert Prisma Decimal fields to plain numbers for JSON serialization */
+export function decimalToNumber<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'object' && 'toNumber' in (obj as object)) {
+    return (obj as { toNumber: () => number }).toNumber() as T;
+  }
+  return obj;
+}
+
+/** Recursively convert all Decimal-like fields in an object to numbers */
+export function serializeData<T>(obj: T): T {
+  if (obj === null || obj === undefined) return obj;
+  if (Array.isArray(obj)) return obj.map(serializeData) as T;
+  if (typeof obj === 'object') {
+    // Check if it's a Prisma Decimal (has toNumber method)
+    if ('toNumber' in (obj as object) && typeof (obj as { toNumber: unknown }).toNumber === 'function') {
+      return (obj as { toNumber: () => number }).toNumber() as T;
+    }
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+      result[key] = serializeData(value);
+    }
+    return result as T;
+  }
+  return obj;
+}

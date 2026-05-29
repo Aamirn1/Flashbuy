@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
       discount = coupon.value;
     }
 
-    return NextResponse.json({
+    return NextResponse.json(serializeData({
       valid: true,
       discount: Math.round(discount * 100) / 100,
       coupon: {
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
         minOrder: coupon.minOrder,
         maxDiscount: coupon.maxDiscount,
       },
-    });
+    }));
   } catch (error) {
     console.error('Coupon validation error:', error);
     return NextResponse.json(

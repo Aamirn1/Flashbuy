@@ -17,6 +17,7 @@ import {
   Link2,
   CircleDot,
   Sparkles,
+  Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -24,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { useStore, formatUSDT } from '@/lib/store';
 import { CRYPTO_WALLETS } from '@/lib/constants';
 
@@ -38,10 +40,18 @@ export default function CheckoutView() {
   const user = useStore((s) => s.user);
   const isAuthenticated = useStore((s) => s.isAuthenticated);
   const setShowAuthDialog = useStore((s) => s.setShowAuthDialog);
+  const setUser = useStore((s) => s.setUser);
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('usdt_trc20');
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes
+
+  // Wallet selection for Flash USDT delivery
+  const [deliveryWallet, setDeliveryWallet] = useState<'profile' | 'custom'>(
+    user?.walletAddress ? 'profile' : 'custom'
+  );
+  const [customWalletAddress, setCustomWalletAddress] = useState('');
+  const [customWalletNetwork, setCustomWalletNetwork] = useState<'usdt_trc20' | 'usdt_bep20'>('usdt_trc20');
 
   // Redirect to registration if not authenticated
   useEffect(() => {
@@ -63,6 +73,12 @@ export default function CheckoutView() {
   const total = Math.max(0, subtotal - couponDiscount + serviceFee);
 
   const selectedWallet = CRYPTO_WALLETS[paymentMethod];
+
+  // Get the delivery wallet address
+  const getDeliveryWalletAddress = () => {
+    if (deliveryWallet === 'profile') return user?.walletAddress || '';
+    return customWalletAddress;
+  };
 
   // Timer countdown
   useEffect(() => {
@@ -114,6 +130,26 @@ export default function CheckoutView() {
     setCompletedTotal(currentTotal);
     setCompletedQuantity(currentQuantity);
 
+    // Determine delivery wallet address
+    const walletAddr = getDeliveryWalletAddress();
+
+    // Save wallet address to user profile if using custom and it's valid
+    if (deliveryWallet === 'custom' && customWalletAddress && user) {
+      try {
+        const updateRes = await fetch('/api/user/profile', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress: customWalletAddress }),
+        });
+        if (updateRes.ok) {
+          const updateData = await updateRes.json();
+          if (updateData.user) setUser(updateData.user);
+        }
+      } catch {
+        // Non-critical, continue
+      }
+    }
+
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
@@ -129,6 +165,8 @@ export default function CheckoutView() {
           couponDiscount,
           paymentMethod,
           total: currentTotal,
+          deliveryWalletAddress: walletAddr,
+          deliveryWalletNetwork: deliveryWallet === 'profile' ? paymentMethod : customWalletNetwork,
         }),
       });
 
@@ -144,11 +182,14 @@ export default function CheckoutView() {
       setOrderComplete(true);
       clearCart();
       removeCoupon();
+      // Scroll to top so user sees the confirmation
+      window.scrollTo({ top: 0, behavior: 'instant' });
     } catch {
       setOrderNumber(generateOrderNumber());
       setOrderComplete(true);
       clearCart();
       removeCoupon();
+      window.scrollTo({ top: 0, behavior: 'instant' });
     } finally {
       setIsConfirming(false);
     }
@@ -365,6 +406,91 @@ export default function CheckoutView() {
               </div>
             </motion.div>
 
+            {/* Delivery Wallet Selection */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+            >
+              <div className="glass-card rounded-2xl p-6">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Wallet className="size-4 text-emerald-400" />
+                  </div>
+                  <h2 className="text-lg font-bold">Delivery Wallet</h2>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Select the wallet where you want to receive your Flash USDT after payment approval.
+                </p>
+
+                <div className="space-y-3">
+                  {/* Profile wallet option */}
+                  {user?.walletAddress ? (
+                    <Label className="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 glass-light border border-emerald-500/30">
+                      <RadioGroupItem
+                        value="profile"
+                        checked={deliveryWallet === 'profile'}
+                        onClick={() => setDeliveryWallet('profile')}
+                        className="border-emerald-500/30 text-emerald-400"
+                      />
+                      <div className="flex-1">
+                        <div className="font-semibold text-sm">Connected Wallet</div>
+                        <p className="text-xs text-emerald-400 font-mono mt-0.5">{user.walletAddress}</p>
+                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs">
+                        Profile
+                      </Badge>
+                    </Label>
+                  ) : (
+                    <div className="p-4 rounded-xl glass-light border border-amber-500/20">
+                      <p className="text-xs text-amber-400">
+                        No wallet connected in profile. Add one below or in your Wallet settings.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Custom wallet option */}
+                  <Label className="flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 glass-light border border-emerald-500/15">
+                    <RadioGroupItem
+                      value="custom"
+                      checked={deliveryWallet === 'custom'}
+                      onClick={() => setDeliveryWallet('custom')}
+                      className="border-emerald-500/30 text-emerald-400 mt-1"
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold text-sm">Different Wallet</div>
+                      <p className="text-xs text-muted-foreground mt-0.5">Enter a different wallet address to receive Flash USDT</p>
+                      {deliveryWallet === 'custom' && (
+                        <div className="mt-3 space-y-3">
+                          <div className="flex gap-2">
+                            {(['usdt_trc20', 'usdt_bep20'] as const).map((network) => (
+                              <button
+                                key={network}
+                                onClick={() => setCustomWalletNetwork(network)}
+                                className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                                  customWalletNetwork === network
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                    : 'glass-light text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                {network === 'usdt_trc20' ? 'TRC20' : 'BEP20'}
+                              </button>
+                            ))}
+                          </div>
+                          <Input
+                            placeholder="Enter your USDT wallet address"
+                            value={customWalletAddress}
+                            onChange={(e) => setCustomWalletAddress(e.target.value)}
+                            className="glass-input font-mono text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </Label>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Payment Method Selection */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -561,6 +687,19 @@ export default function CheckoutView() {
 
               <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
+              {/* Delivery wallet info */}
+              {getDeliveryWalletAddress() && (
+                <>
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Delivery Wallet</p>
+                    <p className="text-xs font-mono text-emerald-400 break-all">
+                      {getDeliveryWalletAddress()}
+                    </p>
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                </>
+              )}
+
               {/* Price breakdown */}
               <div className="space-y-2.5">
                 <div className="flex justify-between text-sm">
@@ -608,7 +747,7 @@ export default function CheckoutView() {
                 size="lg"
                 className="w-full gap-2 font-semibold glow-cyan-strong bg-primary/90 hover:bg-primary text-primary-foreground rounded-xl h-12 text-base"
                 onClick={handleConfirmPayment}
-                disabled={isExpired || isConfirming || !disclaimerAccepted}
+                disabled={isExpired || isConfirming || !disclaimerAccepted || (deliveryWallet === 'custom' && !customWalletAddress)}
               >
                 {isConfirming ? (
                   <>
@@ -619,6 +758,11 @@ export default function CheckoutView() {
                   <>
                     <Shield className="size-5" />
                     Accept Disclaimer to Continue
+                  </>
+                ) : deliveryWallet === 'custom' && !customWalletAddress ? (
+                  <>
+                    <Wallet className="size-5" />
+                    Enter Delivery Wallet Address
                   </>
                 ) : (
                   <>

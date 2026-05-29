@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { parseJsonField } from '@/lib/utils';
+import { serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -15,6 +15,9 @@ export async function GET(
         user: {
           select: { id: true, name: true, email: true, avatar: true },
         },
+        messages: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
     });
 
@@ -25,12 +28,19 @@ export async function GET(
       );
     }
 
+    // Transform messages to match frontend TicketMessage type
     const parsedTicket = {
       ...ticket,
-      messages: parseJsonField(ticket.messages),
+      messages: ticket.messages.map((msg) => ({
+        id: msg.id,
+        sender: msg.sender,
+        message: msg.message,
+        timestamp: msg.createdAt.toISOString(),
+        isAdmin: msg.sender === 'admin' || msg.sender === 'support',
+      })),
     };
 
-    return NextResponse.json({ ticket: parsedTicket });
+    return NextResponse.json({ ticket: serializeData(parsedTicket) });
   } catch (error) {
     console.error('Ticket detail error:', error);
     return NextResponse.json(
@@ -47,7 +57,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { message, isAdmin, status } = body;
+    const { message, sender, status } = body;
 
     const ticket = await db.ticket.findUnique({ where: { id } });
     if (!ticket) {
@@ -57,24 +67,15 @@ export async function PATCH(
       );
     }
 
-    const updateData: Record<string, unknown> = {};
-
-    // Add message to messages array
+    // Add message if provided
     if (message) {
-      const messages = parseJsonField(ticket.messages);
-      messages.push({
-        id: Date.now().toString(),
-        sender: isAdmin ? 'admin' : 'user',
-        message,
-        timestamp: new Date().toISOString(),
-        isAdmin: !!isAdmin,
+      await db.ticketMessage.create({
+        data: {
+          ticketId: id,
+          sender: sender || 'customer',
+          message,
+        },
       });
-      updateData.messages = JSON.stringify(messages);
-
-      // Auto-update status based on who is replying
-      if (isAdmin && ticket.status === 'open') {
-        updateData.status = 'pending';
-      }
     }
 
     // Update status if provided
@@ -86,20 +87,34 @@ export async function PATCH(
           { status: 400 }
         );
       }
-      updateData.status = status;
+      await db.ticket.update({
+        where: { id },
+        data: { status },
+      });
     }
 
-    const updatedTicket = await db.ticket.update({
+    // Re-fetch with messages
+    const updatedTicket = await db.ticket.findUnique({
       where: { id },
-      data: updateData,
+      include: {
+        messages: {
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
     const parsedTicket = {
       ...updatedTicket,
-      messages: parseJsonField(updatedTicket.messages),
+      messages: updatedTicket?.messages.map((msg) => ({
+        id: msg.id,
+        sender: msg.sender,
+        message: msg.message,
+        timestamp: msg.createdAt.toISOString(),
+        isAdmin: msg.sender === 'admin' || msg.sender === 'support',
+      })) || [],
     };
 
-    return NextResponse.json({ ticket: parsedTicket });
+    return NextResponse.json({ ticket: serializeData(parsedTicket) });
   } catch (error) {
     console.error('Ticket update error:', error);
     return NextResponse.json(

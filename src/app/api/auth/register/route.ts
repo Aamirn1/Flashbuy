@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { generateToken, setAuthCookie } from '@/lib/auth';
+import { serializeData } from '@/lib/utils';
 
 const SALT_ROUNDS = 12;
 const WELCOME_BONUS_AMOUNT = 500;
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
     // Return user without password
     const { password: _, ...userWithoutPassword } = user;
 
-    const response = NextResponse.json({ user: userWithoutPassword }, { status: 201 });
+    const response = NextResponse.json({ user: serializeData(userWithoutPassword) }, { status: 201 });
     setAuthCookie(response, token);
 
     return response;

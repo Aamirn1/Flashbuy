@@ -1,6 +1,6 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { parseJsonField } from '@/lib/utils';
+import { parseJsonField, serializeData } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
       })),
     }));
 
-    return NextResponse.json({
+    return NextResponse.json(serializeData({
       totalRevenue: Math.round(totalRevenue * 100) / 100,
       totalOrders,
       totalUsers,
@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
       userGrowth,
       topProducts: topProductsWithRevenue,
       recentOrders: parsedRecentOrders,
-    });
+    }));
   } catch (error) {
     console.error('Admin dashboard error:', error);
     return NextResponse.json(
