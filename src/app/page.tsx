@@ -33,6 +33,11 @@ import { useEffect } from 'react';
 function PageRouter() {
   const { currentPage, user } = useStore();
 
+  // Scroll to top on every page navigation
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+  }, [currentPage]);
+
   // Redirect to home if trying to access protected pages without auth
   useEffect(() => {
     const protectedPages = ['dashboard', 'orders', 'order-detail', 'wallet', 'tickets', 'ticket-detail', 'referrals', 'admin', 'admin-products', 'admin-orders', 'admin-users', 'admin-analytics', 'admin-coupons', 'admin-settings'];
