@@ -4,6 +4,7 @@ import { useStore } from '@/lib/store';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import AuthDialog from '@/components/auth/AuthDialog';
+import FloatingActions from '@/components/layout/FloatingActions';
 import HeroBanner from '@/components/home/HeroBanner';
 import FlashUSDTProduct from '@/components/home/FlashUSDTProduct';
 import HowItWorks from '@/components/home/HowItWorks';
@@ -131,6 +132,7 @@ export default function Home() {
       </main>
       <Footer />
       <AuthDialog />
+      <FloatingActions />
     </div>
   );
 }

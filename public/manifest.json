@@ -1,0 +1,21 @@
+{
+  "name": "Flash Buy - Instant Flash USDT",
+  "short_name": "Flash Buy",
+  "description": "Buy Flash USDT instantly. 1000 Flash USDT = $10. Secure, fast, and global crypto transfers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050a15",
+  "theme_color": "#34d399",
+  "icons": [
+    {
+      "src": "/favicon-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
