@@ -35,14 +35,28 @@ export default function CheckoutView() {
   const clearCart = useStore((s) => s.clearCart);
   const removeCoupon = useStore((s) => s.removeCoupon);
   const navigate = useStore((s) => s.navigate);
+  const user = useStore((s) => s.user);
+  const isAuthenticated = useStore((s) => s.isAuthenticated);
+  const setShowAuthDialog = useStore((s) => s.setShowAuthDialog);
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('usdt_trc20');
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes
+
+  // Redirect to registration if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true, 'register');
+      navigate('products');
+    }
+  }, [isAuthenticated, setShowAuthDialog, navigate]);
+
   const [isConfirming, setIsConfirming] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [completedTotal, setCompletedTotal] = useState(0);
+  const [completedQuantity, setCompletedQuantity] = useState('');
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const serviceFee = subtotal > 0 ? parseFloat((subtotal * 0.01).toFixed(2)) : 0;
@@ -90,19 +104,31 @@ export default function CheckoutView() {
 
   const handleConfirmPayment = async () => {
     setIsConfirming(true);
+    // Store totals BEFORE clearing cart
+    const currentTotal = total;
+    const currentQuantity = cart.map((item) =>
+      item.name.toLowerCase().includes('flash')
+        ? `${formatUSDT(item.quantity)} Flash USDT`
+        : `Qty: ${item.quantity}`
+    ).join(', ');
+    setCompletedTotal(currentTotal);
+    setCompletedQuantity(currentQuantity);
+
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userId: user?.id,
           items: cart.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.price,
           })),
-          paymentMethod,
+          couponCode: useStore.getState().couponCode,
           couponDiscount,
-          total,
+          paymentMethod,
+          total: currentTotal,
         }),
       });
 
@@ -195,10 +221,14 @@ export default function CheckoutView() {
               <span className="text-muted-foreground">Order Number</span>
               <span className="font-mono font-semibold text-emerald-300">{orderNumber}</span>
             </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Order</span>
+              <span className="font-semibold text-emerald-300">{completedQuantity}</span>
+            </div>
             <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Amount</span>
-              <span className="font-semibold text-gradient-gold text-lg">${total.toFixed(2)} USDT</span>
+              <span className="text-muted-foreground">Amount Paid</span>
+              <span className="font-semibold text-gradient-gold text-lg">${completedTotal.toFixed(2)} USDT</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Payment Method</span>

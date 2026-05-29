@@ -3,7 +3,7 @@
 import { motion, useMotionValue, animate } from 'framer-motion';
 import { useEffect, useState, useCallback } from 'react';
 import { ShoppingCart, Zap, Minus, Plus } from 'lucide-react';
-import { useStore, calculatePrice, FLASH_USDT_MIN, FLASH_USDT_MAX, FLASH_USDT_UNIT } from '@/lib/store';
+import { useStore, calculatePrice, formatUSDT, FLASH_USDT_RATE, FLASH_USDT_MIN, FLASH_USDT_MAX, FLASH_USDT_UNIT } from '@/lib/store';
 
 const quickSelects = [
   { label: '1K', value: 1000 },
@@ -23,6 +23,9 @@ export default function FlashUSDTProduct() {
     decrementFlash,
     addToCart,
     navigate,
+    isAuthenticated,
+    setShowAuthDialog,
+    addNotification,
   } = useStore();
 
   const [displayPrice, setDisplayPrice] = useState(calculatePrice(flashQuantity));
@@ -41,27 +44,43 @@ export default function FlashUSDTProduct() {
     addToCart({
       productId: 'flash-usdt',
       name: 'Flash USDT',
-      price: calculatePrice(flashQuantity),
-      quantity: 1,
+      price: FLASH_USDT_RATE,
+      quantity: flashQuantity,
       image: '',
       deliveryType: 'automatic',
       stock: 999999999,
     });
+    addNotification({
+      title: 'Added to Cart',
+      message: `${formatUSDT(flashQuantity)} Flash USDT for $${calculatePrice(flashQuantity).toFixed(2)} added to your cart`,
+      type: 'success',
+      isRead: false,
+    });
     navigate('cart');
-  }, [addToCart, flashQuantity, navigate]);
+  }, [addToCart, flashQuantity, navigate, addNotification]);
 
   const handleBuyNow = useCallback(() => {
+    if (!isAuthenticated) {
+      setShowAuthDialog(true, 'register');
+      return;
+    }
     addToCart({
       productId: 'flash-usdt',
       name: 'Flash USDT',
-      price: calculatePrice(flashQuantity),
-      quantity: 1,
+      price: FLASH_USDT_RATE,
+      quantity: flashQuantity,
       image: '',
       deliveryType: 'automatic',
       stock: 999999999,
     });
+    addNotification({
+      title: 'Proceeding to Checkout',
+      message: `${formatUSDT(flashQuantity)} Flash USDT — $${calculatePrice(flashQuantity).toFixed(2)}`,
+      type: 'success',
+      isRead: false,
+    });
     navigate('checkout');
-  }, [addToCart, flashQuantity, navigate]);
+  }, [addToCart, flashQuantity, navigate, isAuthenticated, setShowAuthDialog, addNotification]);
 
   const formatQuantityDisplay = (qty: number): string => {
     return qty.toLocaleString();
@@ -198,7 +217,7 @@ export default function FlashUSDTProduct() {
                 className="w-full flex items-center justify-center gap-2 px-4 sm:px-6 py-3 sm:py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 glow-cyan-strong text-gray-950 font-bold text-sm sm:text-base transition-all hover:from-emerald-400 hover:to-emerald-300"
               >
                 <Zap className="size-4 sm:size-5" />
-                Buy Now
+                {isAuthenticated ? 'Buy Now' : 'Sign Up to Buy'}
               </motion.button>
             </div>
           </div>

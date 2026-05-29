@@ -54,7 +54,9 @@ export async function GET(request: NextRequest) {
         ...item,
         product: item.product
           ? { ...item.product, images: JSON.parse(item.product.images || '[]') }
-          : null,
+          : item.productId === 'flash-usdt'
+            ? { id: 'flash-usdt', name: 'Flash USDT', images: [], price: 0.01, slug: 'flash-usdt' }
+            : null,
       })),
     }));
 
@@ -73,10 +75,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
+const FLASH_USDT_PRODUCT_ID = 'flash-usdt';
+const FLASH_USDT_RATE = 0.01; // $0.01 per Flash USDT
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, items, couponCode, paymentMethod } = body;
+    const { userId, items, couponCode, couponDiscount: clientCouponDiscount, paymentMethod, total: clientTotal } = body;
 
     if (!userId || !items || !items.length) {
       return NextResponse.json(
@@ -85,22 +90,56 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate products and stock
-    const productIds = items.map((item: { productId: string }) => item.productId);
-    const products = await db.product.findMany({
-      where: { id: { in: productIds }, isActive: true },
-    });
+    // Separate flash-usdt items from regular DB products
+    const flashItems = items.filter((item: { productId: string }) => item.productId === FLASH_USDT_PRODUCT_ID);
+    const dbItems = items.filter((item: { productId: string }) => item.productId !== FLASH_USDT_PRODUCT_ID);
 
-    if (products.length !== productIds.length) {
-      return NextResponse.json(
-        { error: 'One or more products not found or inactive' },
-        { status: 400 }
-      );
+    // Look up the real Flash USDT product from DB for foreign key
+    let flashProduct: { id: string } | null = null;
+    if (flashItems.length > 0) {
+      flashProduct = await db.product.findFirst({ where: { slug: 'flash-usdt', isActive: true } });
+      if (!flashProduct) {
+        return NextResponse.json(
+          { error: 'Flash USDT product is currently unavailable' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Validate stock
-    for (const item of items) {
-      const product = products.find((p) => p.id === item.productId);
+    // Fetch DB products for non-flash items
+    let dbProducts: Awaited<ReturnType<typeof db.product.findMany>> = [];
+    if (dbItems.length > 0) {
+      const productIds = dbItems.map((item: { productId: string }) => item.productId);
+      dbProducts = await db.product.findMany({
+        where: { id: { in: productIds }, isActive: true },
+      });
+      if (dbProducts.length !== productIds.length) {
+        return NextResponse.json(
+          { error: 'One or more products not found or inactive' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Calculate items price
+    let itemsPrice = 0;
+    const orderItems: { productId: string; quantity: number; price: number; total: number }[] = [];
+
+    // Process flash-usdt items — use real product ID for foreign key
+    for (const item of flashItems) {
+      const itemTotal = FLASH_USDT_RATE * item.quantity;
+      itemsPrice += itemTotal;
+      orderItems.push({
+        productId: flashProduct!.id,
+        quantity: item.quantity,
+        price: FLASH_USDT_RATE,
+        total: itemTotal,
+      });
+    }
+
+    // Process DB product items
+    for (const item of dbItems) {
+      const product = dbProducts.find((p) => p.id === item.productId);
       if (!product) {
         return NextResponse.json(
           { error: `Product ${item.productId} not found` },
@@ -113,21 +152,15 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-    }
-
-    // Calculate items price
-    let itemsPrice = 0;
-    const orderItems = items.map((item: { productId: string; quantity: number }) => {
-      const product = products.find((p) => p.id === item.productId)!;
-      const total = product.price * item.quantity;
-      itemsPrice += total;
-      return {
+      const itemTotal = product.price * item.quantity;
+      itemsPrice += itemTotal;
+      orderItems.push({
         productId: item.productId,
         quantity: item.quantity,
         price: product.price,
-        total,
-      };
-    });
+        total: itemTotal,
+      });
+    }
 
     // Apply coupon
     let discount = 0;
@@ -211,12 +244,35 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Decrement stock
-    for (const item of items) {
+    // Decrement stock for DB products only (flash-usdt is virtual)
+    for (const item of dbItems) {
       await db.product.update({
         where: { id: item.productId },
         data: { stock: { decrement: item.quantity } },
       });
+    }
+
+    // Unlock welcome bonus if order total >= $10
+    if (total >= 10) {
+      const userRecord = await db.user.findUnique({ where: { id: userId } });
+      if (userRecord && !userRecord.welcomeBonusUnlocked) {
+        await db.user.update({
+          where: { id: userId },
+          data: {
+            welcomeBonusUnlocked: true,
+            balance: { increment: userRecord.welcomeBonus },
+          },
+        });
+        await db.walletTransaction.create({
+          data: {
+            userId,
+            type: 'welcome_bonus',
+            amount: userRecord.welcomeBonus,
+            status: 'completed',
+            description: `$${userRecord.welcomeBonus} Welcome Bonus unlocked with order ${orderNumber}`,
+          },
+        });
+      }
     }
 
     const parsedOrder = {

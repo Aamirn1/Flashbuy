@@ -348,7 +348,9 @@ function CartItemRow({
                     </Badge>
                   )}
                   <span className="text-xs text-muted-foreground">
-                    ${item.price.toFixed(2)} each
+                    {item.name.toLowerCase().includes('flash')
+                      ? '1,000 = $10.00'
+                      : `$${item.price.toFixed(2)} each`}
                   </span>
                 </div>
               </div>
