@@ -174,7 +174,7 @@ export default function Header() {
                   >
                     <Avatar className="size-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-transparent text-emerald-400 text-xs font-semibold border-0">
+                      <AvatarFallback className="!bg-transparent text-emerald-400 text-xs font-semibold border-0">
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
@@ -328,7 +328,7 @@ export default function Header() {
               <div className="flex items-center gap-3 px-3 py-2 mb-2">
                 <Avatar className="size-8">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="border border-emerald-500/30 bg-black text-emerald-400 text-xs font-semibold">
+                  <AvatarFallback className="!bg-transparent text-emerald-400 text-xs font-semibold border-0">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
