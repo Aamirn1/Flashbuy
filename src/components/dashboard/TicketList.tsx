@@ -19,7 +19,7 @@ import { Plus, Ticket as TicketIcon, Eye, RefreshCw } from 'lucide-react';
 const GLASS_STATUS_COLORS: Record<string, string> = {
   open: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-  solved: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  solved: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   closed: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
 };
 
@@ -108,11 +108,11 @@ export function TicketList() {
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
-            <button className="flex items-center gap-2 rounded-xl px-4 py-2.5 bg-cyan-500/15 text-cyan-400 font-semibold text-sm border border-cyan-500/30 hover:bg-cyan-500/25 transition-all glow-cyan">
+            <button className="flex items-center gap-2 rounded-xl px-4 py-2.5 bg-emerald-500/15 text-emerald-400 font-semibold text-sm border border-emerald-500/30 hover:bg-emerald-500/25 transition-all glow-cyan">
               <Plus className="h-4 w-4" /> Create Ticket
             </button>
           </DialogTrigger>
-          <DialogContent className="glass-strong border-cyan-500/20">
+          <DialogContent className="glass-strong border-emerald-500/20">
             <DialogHeader>
               <DialogTitle className="text-gradient-cyan">Create Support Ticket</DialogTitle>
               <DialogDescription className="text-muted-foreground">Describe your issue and we&apos;ll get back to you</DialogDescription>
@@ -134,7 +134,7 @@ export function TicketList() {
                   <SelectTrigger id="ticket-category" className="glass-input">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
-                  <SelectContent className="glass-strong border-cyan-500/20">
+                  <SelectContent className="glass-strong border-emerald-500/20">
                     {TICKET_CATEGORIES.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>
                         {cat.label}
@@ -168,7 +168,7 @@ export function TicketList() {
             <DialogFooter>
               <Button variant="ghost" className="text-muted-foreground" onClick={() => setCreateOpen(false)}>Cancel</Button>
               <Button
-                className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30"
+                className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
                 onClick={handleCreateTicket}
                 disabled={submitting || !form.subject || !form.category || !form.description}
               >
@@ -195,7 +195,7 @@ export function TicketList() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Subject</TableHead>
                 <TableHead className="text-muted-foreground">Category</TableHead>
                 <TableHead className="text-muted-foreground">Status</TableHead>
@@ -207,12 +207,12 @@ export function TicketList() {
               {tickets.map((ticket) => (
                 <TableRow
                   key={ticket.id}
-                  className="cursor-pointer border-cyan-500/5 hover:bg-cyan-500/5 transition-colors"
+                  className="cursor-pointer border-emerald-500/5 hover:bg-emerald-500/5 transition-colors"
                   onClick={() => navigate('ticket-detail', ticket.id)}
                 >
                   <TableCell className="font-medium text-foreground">{ticket.subject}</TableCell>
                   <TableCell>
-                    <Badge className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs">
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs">
                       {getCategoryLabel(ticket.category)}
                     </Badge>
                   </TableCell>
@@ -223,7 +223,7 @@ export function TicketList() {
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">{formatDate(ticket.createdAt)}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={(e) => { e.stopPropagation(); navigate('ticket-detail', ticket.id); }}>
+                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={(e) => { e.stopPropagation(); navigate('ticket-detail', ticket.id); }}>
                       <Eye className="h-4 w-4" />
                     </Button>
                   </TableCell>

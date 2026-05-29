@@ -238,7 +238,7 @@ export default function AuthDialog() {
 
   return (
     <Dialog open={showAuthDialog} onOpenChange={(open) => setShowAuthDialog(open)}>
-      <DialogContent className="sm:max-w-[440px] glass-strong border-cyan-500/15 p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[440px] glass-strong border-emerald-500/15 p-0 overflow-hidden">
         {/* Header with gradient */}
         <div className="relative px-6 pt-6 pb-4 overflow-hidden">
           {/* Background orbs */}
@@ -248,7 +248,7 @@ export default function AuthDialog() {
           <DialogHeader className="relative">
             <div className="flex items-center justify-center gap-2 mb-2">
               <motion.div
-                className="flex items-center justify-center size-11 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-lg shadow-cyan-500/30"
+                className="flex items-center justify-center size-11 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/30"
                 animate={{ rotateY: [0, 360] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 style={{ transformStyle: 'preserve-3d' }}
@@ -271,16 +271,16 @@ export default function AuthDialog() {
           className="w-full"
         >
           <div className="px-6">
-            <TabsList className="w-full glass h-10 border-cyan-500/10">
+            <TabsList className="w-full glass h-10 border-emerald-500/10">
               <TabsTrigger
                 value="login"
-                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25 text-muted-foreground rounded-lg transition-all duration-300"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 text-muted-foreground rounded-lg transition-all duration-300"
               >
                 Sign In
               </TabsTrigger>
               <TabsTrigger
                 value="register"
-                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-cyan-500/25 text-muted-foreground rounded-lg transition-all duration-300"
+                className="flex-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-400 data-[state=active]:text-background data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 text-muted-foreground rounded-lg transition-all duration-300"
               >
                 Create Account
               </TabsTrigger>
@@ -309,7 +309,7 @@ export default function AuthDialog() {
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                   <Input
                     id="login-email"
                     type="email"
@@ -337,7 +337,7 @@ export default function AuthDialog() {
                   </Label>
                   <button
                     type="button"
-                    className="text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors duration-300"
+                    className="text-xs text-emerald-400/70 hover:text-emerald-400 transition-colors duration-300"
                     onClick={() => {
                       // TODO: implement forgot password
                     }}
@@ -346,7 +346,7 @@ export default function AuthDialog() {
                   </button>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                   <Input
                     id="login-password"
                     type={showPassword ? 'text' : 'password'}
@@ -364,7 +364,7 @@ export default function AuthDialog() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400/40 hover:text-emerald-400 transition-colors duration-300"
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" />
@@ -382,7 +382,7 @@ export default function AuthDialog() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 rounded-xl glow-cyan"
+                  className="w-full h-10 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-background font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 rounded-xl glow-cyan"
                 >
                   {isLoading ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -393,7 +393,7 @@ export default function AuthDialog() {
               </motion.div>
 
               <div className="relative">
-                <Separator className="bg-cyan-500/10" />
+                <Separator className="bg-emerald-500/10" />
                 <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[rgba(15,23,42,0.65)] px-3 text-xs text-muted-foreground">
                   or continue with
                 </span>
@@ -402,7 +402,7 @@ export default function AuthDialog() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-10 glass-input rounded-xl hover:!border-cyan-500/25 hover:!bg-cyan-500/5 transition-all duration-300"
+                className="w-full h-10 glass-input rounded-xl hover:!border-emerald-500/25 hover:!bg-emerald-500/5 transition-all duration-300"
                 onClick={() => {
                   // TODO: implement Google login
                 }}
@@ -452,7 +452,7 @@ export default function AuthDialog() {
                   Full Name
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                   <Input
                     id="reg-name"
                     type="text"
@@ -478,7 +478,7 @@ export default function AuthDialog() {
                   Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                   <Input
                     id="reg-email"
                     type="email"
@@ -505,7 +505,7 @@ export default function AuthDialog() {
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                     <Input
                       id="reg-password"
                       type={showPassword ? 'text' : 'password'}
@@ -523,7 +523,7 @@ export default function AuthDialog() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400/40 hover:text-emerald-400 transition-colors duration-300"
                     >
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -538,7 +538,7 @@ export default function AuthDialog() {
                     Confirm
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                     <Input
                       id="reg-confirm"
                       type={showConfirmPassword ? 'text' : 'password'}
@@ -556,7 +556,7 @@ export default function AuthDialog() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400/40 hover:text-cyan-400 transition-colors duration-300"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400/40 hover:text-emerald-400 transition-colors duration-300"
                     >
                       {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
@@ -582,15 +582,15 @@ export default function AuthDialog() {
                         registerErrors.country && '!border-red-500/50'
                       )}
                     >
-                      <Globe className="size-4 text-cyan-400/40 mr-1" />
+                      <Globe className="size-4 text-emerald-400/40 mr-1" />
                       <SelectValue placeholder="Select" />
                     </SelectTrigger>
-                    <SelectContent className="glass-strong border-cyan-500/10">
+                    <SelectContent className="glass-strong border-emerald-500/10">
                       {COUNTRIES.map((country) => (
                         <SelectItem
                           key={country.value}
                           value={country.value}
-                          className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 transition-colors"
+                          className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 transition-colors"
                         >
                           {country.label}
                         </SelectItem>
@@ -607,7 +607,7 @@ export default function AuthDialog() {
                     Phone <span className="text-muted-foreground text-xs">(optional)</span>
                   </Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-cyan-400/40" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-emerald-400/40" />
                     <Input
                       id="reg-phone"
                       type="tel"
@@ -633,7 +633,7 @@ export default function AuthDialog() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full h-10 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 rounded-xl glow-cyan"
+                  className="w-full h-10 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-background font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 rounded-xl glow-cyan"
                 >
                   {isLoading ? (
                     <Loader2 className="size-4 animate-spin" />
@@ -645,11 +645,11 @@ export default function AuthDialog() {
 
               <p className="text-xs text-muted-foreground text-center leading-relaxed">
                 By creating an account, you agree to our{' '}
-                <button type="button" className="text-cyan-400/80 hover:text-cyan-400 underline underline-offset-2 transition-colors duration-300">
+                <button type="button" className="text-emerald-400/80 hover:text-emerald-400 underline underline-offset-2 transition-colors duration-300">
                   Terms of Service
                 </button>{' '}
                 and{' '}
-                <button type="button" className="text-cyan-400/80 hover:text-cyan-400 underline underline-offset-2 transition-colors duration-300">
+                <button type="button" className="text-emerald-400/80 hover:text-emerald-400 underline underline-offset-2 transition-colors duration-300">
                   Privacy Policy
                 </button>
               </p>

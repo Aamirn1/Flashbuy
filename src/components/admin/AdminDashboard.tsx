@@ -88,7 +88,7 @@ const demoRecentUsers = [
 const GLASS_STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   payment_waiting: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  paid: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
   completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   cancelled: 'bg-red-500/20 text-red-400 border border-red-500/30',
@@ -98,7 +98,7 @@ const GLASS_STATUS_COLORS: Record<string, string> = {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="glass-strong rounded-lg px-3 py-2 border border-cyan-500/20">
+      <div className="glass-strong rounded-lg px-3 py-2 border border-emerald-500/20">
         <p className="text-xs text-muted-foreground">{label}</p>
         <p className="text-sm font-semibold text-gradient-gold">${payload[0].value.toLocaleString()}</p>
       </div>
@@ -152,7 +152,7 @@ export function AdminDashboard() {
         {[
           { label: 'Total Revenue', value: `$${stats?.totalRevenue?.toLocaleString() || '32,450'}`, trend: '+12.5%', up: true, icon: DollarSign, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
           { label: 'Total Orders', value: stats?.totalOrders?.toLocaleString() || '284', trend: '+8.2%', up: true, icon: ShoppingCart, iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400' },
-          { label: 'Total Users', value: stats?.totalUsers?.toLocaleString() || '1,429', trend: '+15.3%', up: true, icon: Users, iconBg: 'bg-cyan-500/20', iconColor: 'text-cyan-400' },
+          { label: 'Total Users', value: stats?.totalUsers?.toLocaleString() || '1,429', trend: '+15.3%', up: true, icon: Users, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
           { label: 'Total Products', value: stats?.totalProducts?.toLocaleString() || '56', trend: '-2', up: false, icon: Package, iconBg: 'bg-violet-500/20', iconColor: 'text-violet-400' },
         ].map((stat, idx) => (
           <motion.div
@@ -160,7 +160,7 @@ export function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="glass-card glass-card-hover rounded-xl p-6 border border-cyan-500/10"
+            className="glass-card glass-card-hover rounded-xl p-6 border border-emerald-500/10"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -192,9 +192,9 @@ export function AdminDashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={stats?.dailyRevenue || demoDailyRevenue}>
                 <defs>
-                  <linearGradient id="cyanGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
+                  <linearGradient id="emeraldGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
@@ -204,11 +204,11 @@ export function AdminDashboard() {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#22d3ee"
+                  stroke="#34d399"
                   strokeWidth={2}
-                  fill="url(#cyanGradient)"
-                  dot={{ fill: '#22d3ee', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, fill: '#22d3ee', stroke: '#050a15', strokeWidth: 2 }}
+                  fill="url(#emeraldGradient)"
+                  dot={{ fill: '#34d399', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: '#34d399', stroke: '#050a15', strokeWidth: 2 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -227,8 +227,8 @@ export function AdminDashboard() {
               <BarChart data={stats?.monthlyRevenue || demoMonthlyRevenue}>
                 <defs>
                   <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#0891b2" stopOpacity={0.4} />
+                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0.4} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
@@ -252,7 +252,7 @@ export function AdminDashboard() {
         >
           <div className="flex items-center justify-between p-6 pb-0">
             <h3 className="text-lg font-semibold text-glow-cyan">Recent Orders</h3>
-            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleNavClick('admin-orders')}>
+            <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleNavClick('admin-orders')}>
               View All <ArrowUpRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -260,12 +260,12 @@ export function AdminDashboard() {
             {(stats?.recentOrders || demoRecentOrders).map((order) => (
               <div
                 key={order.id}
-                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/30 transition-all cursor-pointer"
                 onClick={() => navigate('admin-orders')}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm text-cyan-400 font-mono">{order.orderNumber}</p>
+                    <p className="font-medium text-sm text-emerald-400 font-mono">{order.orderNumber}</p>
                     <Badge className={`${GLASS_STATUS_COLORS[order.status] || ''} text-xs`}>
                       {getStatusLabel(order.status)}
                     </Badge>
@@ -288,7 +288,7 @@ export function AdminDashboard() {
         >
           <div className="flex items-center justify-between p-6 pb-0">
             <h3 className="text-lg font-semibold text-glow-cyan">Recent Users</h3>
-            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleNavClick('admin-users')}>
+            <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleNavClick('admin-users')}>
               View All <ArrowUpRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -296,12 +296,12 @@ export function AdminDashboard() {
             {demoRecentUsers.map((u) => (
               <div
                 key={u.id}
-                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/30 transition-all cursor-pointer"
                 onClick={() => handleNavClick('admin-users')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20">
-                    <Users className="h-4 w-4 text-cyan-400" />
+                  <div className="h-8 w-8 rounded-full bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20">
+                    <Users className="h-4 w-4 text-emerald-400" />
                   </div>
                   <div>
                     <p className="font-medium text-sm text-foreground">{u.name}</p>
@@ -336,7 +336,7 @@ export function AdminDashboard() {
             <button
               key={action.label}
               onClick={action.action}
-              className="flex flex-col items-center gap-2 h-auto py-4 rounded-xl glass-light glass-card-hover text-cyan-400 text-xs font-medium transition-all hover:border-cyan-500/30"
+              className="flex flex-col items-center gap-2 h-auto py-4 rounded-xl glass-light glass-card-hover text-emerald-400 text-xs font-medium transition-all hover:border-emerald-500/30"
             >
               {action.icon}
               {action.label}
@@ -351,12 +351,12 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-mesh">
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <div className="glass border-b border-cyan-500/10 px-4 py-3">
+        <div className="glass border-b border-emerald-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-bold text-lg text-gradient-cyan flex items-center gap-2">
-              <Zap className="h-5 w-5 text-cyan-400" /> Admin Panel
+              <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
             </h1>
-            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={logout}>
+            <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
@@ -367,7 +367,7 @@ export function AdminDashboard() {
                 onClick={() => handleNavClick(item.page)}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
                   currentPage === item.page
-                    ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 }`}
               >
@@ -383,10 +383,10 @@ export function AdminDashboard() {
       {/* Desktop Layout */}
       <div className="hidden lg:flex lg:min-h-screen">
         {/* Glass Sidebar */}
-        <aside className="w-64 glass-strong flex flex-col border-r border-cyan-500/10">
-          <div className="p-6 border-b border-cyan-500/10">
+        <aside className="w-64 glass-strong flex flex-col border-r border-emerald-500/10">
+          <div className="p-6 border-b border-emerald-500/10">
             <h1 className="text-xl font-bold flex items-center gap-2 text-gradient-cyan">
-              <Zap className="h-5 w-5 text-cyan-400" /> Admin Panel
+              <Zap className="h-5 w-5 text-emerald-400" /> Admin Panel
             </h1>
           </div>
 
@@ -400,20 +400,20 @@ export function AdminDashboard() {
                     onClick={() => handleNavClick(item.page)}
                     className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 glow-cyan'
+                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 glow-cyan'
                         : 'text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent'
                     }`}
                   >
                     {item.icon}
                     {item.label}
-                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
                   </button>
                 );
               })}
             </nav>
           </ScrollArea>
 
-          <div className="p-3 border-t border-cyan-500/10 space-y-1">
+          <div className="p-3 border-t border-emerald-500/10 space-y-1">
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={() => navigate('home')}>
               <Eye className="h-4 w-4" /> View Store
             </Button>

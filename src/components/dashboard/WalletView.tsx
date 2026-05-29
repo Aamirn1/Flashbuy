@@ -27,7 +27,7 @@ const GLASS_TYPE_COLORS: Record<string, string> = {
   deposit: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   withdrawal: 'bg-red-500/20 text-red-400 border border-red-500/30',
   purchase: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-  refund: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  refund: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   commission: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
 };
 
@@ -151,29 +151,29 @@ export function WalletView() {
         className="glass-card rounded-xl glow-cyan-strong p-6 relative overflow-hidden"
       >
         {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-cyan-400/70 text-sm font-medium">Available Balance</p>
+            <p className="text-emerald-400/70 text-sm font-medium">Available Balance</p>
             <p className="text-4xl font-bold mt-2 text-gradient-gold">
               ${user?.balance?.toFixed(2) || '0.00'}{' '}
-              <span className="text-lg text-cyan-400/60">USDT</span>
+              <span className="text-lg text-emerald-400/60">USDT</span>
             </p>
           </div>
-          <div className="h-16 w-16 rounded-2xl bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20 animate-pulse-glow">
-            <Wallet className="h-8 w-8 text-cyan-400" />
+          <div className="h-16 w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
+            <Wallet className="h-8 w-8 text-emerald-400" />
           </div>
         </div>
         <div className="flex gap-3 mt-6 relative">
           <Dialog open={depositOpen} onOpenChange={setDepositOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-cyan-400 font-semibold text-sm transition-all hover:border-cyan-500/30">
+              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-emerald-400 font-semibold text-sm transition-all hover:border-emerald-500/30">
                 <ArrowDownLeft className="h-4 w-4" /> Deposit
               </button>
             </DialogTrigger>
-            <DialogContent className="glass-strong border-cyan-500/20">
+            <DialogContent className="glass-strong border-emerald-500/20">
               <DialogHeader>
                 <DialogTitle className="text-gradient-cyan">Deposit USDT</DialogTitle>
                 <DialogDescription className="text-muted-foreground">Add funds to your Flash Buy wallet</DialogDescription>
@@ -185,7 +185,7 @@ export function WalletView() {
                     <SelectTrigger className="glass-input">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="glass-strong border-cyan-500/20">
+                    <SelectContent className="glass-strong border-emerald-500/20">
                       <SelectItem value="usdt_trc20">USDT TRC20</SelectItem>
                       <SelectItem value="usdt_bep20">USDT BEP20</SelectItem>
                     </SelectContent>
@@ -212,7 +212,7 @@ export function WalletView() {
               </div>
               <DialogFooter>
                 <Button variant="ghost" className="text-muted-foreground" onClick={() => setDepositOpen(false)}>Cancel</Button>
-                <Button className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30" onClick={handleDeposit} disabled={submitting || !depositAmount}>
+                <Button className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30" onClick={handleDeposit} disabled={submitting || !depositAmount}>
                   {submitting ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
                   Confirm Deposit
                 </Button>
@@ -222,11 +222,11 @@ export function WalletView() {
 
           <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-foreground font-semibold text-sm transition-all hover:border-cyan-500/30">
+              <button className="flex items-center gap-2 rounded-xl px-5 py-2.5 glass-light glass-card-hover text-foreground font-semibold text-sm transition-all hover:border-emerald-500/30">
                 <ArrowUpRight className="h-4 w-4" /> Withdraw
               </button>
             </DialogTrigger>
-            <DialogContent className="glass-strong border-cyan-500/20">
+            <DialogContent className="glass-strong border-emerald-500/20">
               <DialogHeader>
                 <DialogTitle className="text-gradient-cyan">Withdraw USDT</DialogTitle>
                 <DialogDescription className="text-muted-foreground">Withdraw funds from your wallet</DialogDescription>
@@ -259,7 +259,7 @@ export function WalletView() {
               </div>
               <DialogFooter>
                 <Button variant="ghost" className="text-muted-foreground" onClick={() => setWithdrawOpen(false)}>Cancel</Button>
-                <Button className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30" onClick={handleWithdraw} disabled={submitting || !withdrawAmount || !withdrawAddress}>
+                <Button className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30" onClick={handleWithdraw} disabled={submitting || !withdrawAmount || !withdrawAddress}>
                   {submitting ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
                   Confirm Withdrawal
                 </Button>
@@ -285,7 +285,7 @@ export function WalletView() {
                 onClick={() => setTypeFilter(opt.value)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
                   typeFilter === opt.value
-                    ? 'glass-light border-cyan-500/30 text-cyan-400'
+                    ? 'glass-light border-emerald-500/30 text-emerald-400'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 }`}
               >
@@ -303,7 +303,7 @@ export function WalletView() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Type</TableHead>
                 <TableHead className="text-muted-foreground">Amount</TableHead>
                 <TableHead className="text-muted-foreground">Status</TableHead>
@@ -313,7 +313,7 @@ export function WalletView() {
             </TableHeader>
             <TableBody>
               {filteredTransactions.map((tx) => (
-                <TableRow key={tx.id} className="border-cyan-500/5 hover:bg-cyan-500/5">
+                <TableRow key={tx.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
                   <TableCell>
                     <Badge className={`${GLASS_TYPE_COLORS[tx.type] || ''} text-xs`}>
                       {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}

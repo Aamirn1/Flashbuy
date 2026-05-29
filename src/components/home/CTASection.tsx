@@ -30,7 +30,7 @@ export default function CTASection() {
         >
           <div className="glass-card rounded-3xl p-8 sm:p-12 glow-cyan">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-cyan-400 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-emerald-400 text-sm font-medium mb-6">
               <Sparkles className="size-4" />
               <span>Get Started Today</span>
             </div>
@@ -54,7 +54,7 @@ export default function CTASection() {
             >
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 font-bold px-8 h-14 text-base rounded-xl glow-cyan-strong shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-400/40"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-bold px-8 h-14 text-base rounded-xl glow-cyan-strong shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-400/40"
                 onClick={() => navigate('products')}
               >
                 Get Started
@@ -63,7 +63,7 @@ export default function CTASection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400/50 bg-transparent h-14 text-base px-8 rounded-xl transition-all"
+                className="border-emerald-500/30 text-emerald-300 hover:text-white hover:border-emerald-400/50 bg-transparent h-14 text-base px-8 rounded-xl transition-all"
                 onClick={() => setShowAuthDialog(true, 'register')}
               >
                 <UserPlus className="size-4 mr-2" />
@@ -74,15 +74,15 @@ export default function CTASection() {
             {/* Trust indicators */}
             <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400">
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-cyan-400 glow-cyan" />
+                <div className="size-2 rounded-full bg-emerald-400 glow-cyan" />
                 <span>No registration fee</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-cyan-400 glow-cyan" />
+                <div className="size-2 rounded-full bg-emerald-400 glow-cyan" />
                 <span>Instant delivery</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-cyan-400 glow-cyan" />
+                <div className="size-2 rounded-full bg-emerald-400 glow-cyan" />
                 <span>Buyer protection</span>
               </div>
             </div>

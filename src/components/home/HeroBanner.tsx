@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button';
 import { useStore } from '@/lib/store';
 
 const quickStats = [
-  { icon: Zap, label: 'Instant Delivery', color: 'text-cyan-400' },
+  { icon: Zap, label: 'Instant Delivery', color: 'text-emerald-400' },
   { icon: Shield, label: 'Secure', color: 'text-emerald-400' },
-  { icon: Globe, label: 'Global', color: 'text-sky-400' },
+  { icon: Globe, label: 'Global', color: 'text-emerald-300' },
 ];
 
 const containerVariants = {
@@ -56,7 +56,7 @@ export default function HeroBanner() {
           <div className="flex-1 text-center lg:text-left">
             <motion.div
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-cyan-400 text-sm font-medium mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-light text-emerald-400 text-sm font-medium mb-8"
             >
               <Zap className="size-4" />
               <span>Powered by Blockchain Technology</span>
@@ -105,7 +105,7 @@ export default function HeroBanner() {
             <motion.div variants={itemVariants} className="mt-10">
               <Button
                 size="lg"
-                className="glow-cyan-strong bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-950 font-bold px-10 h-14 text-base rounded-xl shadow-lg shadow-cyan-500/25 transition-all hover:shadow-cyan-400/40 hover:scale-105"
+                className="glow-cyan-strong bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-bold px-10 h-14 text-base rounded-xl shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-400/40 hover:scale-105"
                 onClick={() => navigate('products')}
               >
                 Buy Flash USDT

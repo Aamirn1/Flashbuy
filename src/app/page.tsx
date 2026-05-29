@@ -10,6 +10,7 @@ import HowItWorks from '@/components/home/HowItWorks';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import FAQSection from '@/components/home/FAQSection';
 import CTASection from '@/components/home/CTASection';
+import CustomerReviews from '@/components/home/CustomerReviews';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductDetail from '@/components/products/ProductDetail';
 import CartView from '@/components/cart/CartView';
@@ -56,6 +57,7 @@ function PageRouter() {
           <FlashUSDTProduct />
           <HowItWorks />
           <FeaturesSection />
+          <CustomerReviews />
           <FAQSection />
           <CTASection />
         </>
@@ -112,6 +114,7 @@ function PageRouter() {
           <FlashUSDTProduct />
           <HowItWorks />
           <FeaturesSection />
+          <CustomerReviews />
           <FAQSection />
           <CTASection />
         </>

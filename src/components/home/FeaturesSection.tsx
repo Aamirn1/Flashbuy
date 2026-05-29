@@ -1,7 +1,6 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
 import { FEATURES_LIST } from '@/lib/constants';
 
 const containerVariants = {
@@ -19,8 +18,14 @@ const cardVariants = {
 
 export default function FeaturesSection() {
   return (
-    <section id="features-section" className="py-16 sm:py-20 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative py-16 sm:py-24 overflow-hidden">
+      {/* Background orbs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="orb orb-emerald w-[400px] h-[400px] top-0 -left-20 animate-float-slow" />
+        <div className="orb orb-green w-[300px] h-[300px] bottom-0 right-1/4 animate-float-slow" style={{ animationDelay: '3s' }} />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -31,11 +36,9 @@ export default function FeaturesSection() {
         >
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Why Choose{' '}
-            <span className="bg-gradient-to-r from-emerald-600 to-emerald-500 bg-clip-text text-transparent">
-              Flash Buy
-            </span>
+            <span className="text-gradient-cyan">Flash Buy</span>
           </h2>
-          <p className="mt-3 text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="mt-3 text-slate-400 text-lg max-w-2xl mx-auto">
             We combine the power of blockchain payments with a seamless shopping experience.
           </p>
         </motion.div>
@@ -50,17 +53,15 @@ export default function FeaturesSection() {
         >
           {FEATURES_LIST.map((feature, index) => (
             <motion.div key={index} variants={cardVariants}>
-              <Card className="group h-full border-border/50 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300">
-                <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                  <div className="text-4xl p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 group-hover:scale-110 transition-transform duration-300">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-semibold">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {feature.description}
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="glass-card glass-card-hover rounded-2xl p-6 h-full flex flex-col items-center text-center gap-4">
+                <div className="text-4xl p-3 rounded-xl bg-emerald-500/10 group-hover:scale-110 transition-transform duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-slate-100">{feature.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
             </motion.div>
           ))}
         </motion.div>

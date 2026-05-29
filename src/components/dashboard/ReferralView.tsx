@@ -92,14 +92,14 @@ export function ReferralView() {
         transition={{ delay: 0.1 }}
         className="glass-card rounded-xl glow-cyan p-6 relative overflow-hidden"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative flex items-center gap-3 mb-4">
-          <div className="h-12 w-12 rounded-2xl bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20 animate-pulse-glow">
-            <Gift className="h-6 w-6 text-cyan-400" />
+          <div className="h-12 w-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20 animate-pulse-glow">
+            <Gift className="h-6 w-6 text-emerald-400" />
           </div>
           <div>
             <p className="font-semibold text-lg text-gradient-cyan">Your Referral Code</p>
-            <p className="text-cyan-400/60 text-sm">Share this code with friends to earn commission</p>
+            <p className="text-emerald-400/60 text-sm">Share this code with friends to earn commission</p>
           </div>
         </div>
 
@@ -108,13 +108,13 @@ export function ReferralView() {
             <Input
               readOnly
               value={referralCode}
-              className="glass-input font-mono text-lg text-cyan-400"
+              className="glass-input font-mono text-lg text-emerald-400"
             />
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleCopy(referralCode)}
-              className="flex-shrink-0 text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/20 h-10 w-10"
+              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-10 w-10"
             >
               {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
             </Button>
@@ -129,7 +129,7 @@ export function ReferralView() {
               variant="ghost"
               size="icon"
               onClick={() => handleCopy(referralLink)}
-              className="flex-shrink-0 text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/20 h-10 w-10"
+              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-10 w-10"
             >
               <Copy className="h-4 w-4" />
             </Button>
@@ -186,7 +186,7 @@ export function ReferralView() {
             </div>
             {stat.showWithdraw && (
               <button
-                className="w-full mt-4 rounded-lg px-4 py-2 bg-cyan-500/15 text-cyan-400 font-semibold text-sm border border-cyan-500/30 hover:bg-cyan-500/25 transition-all"
+                className="w-full mt-4 rounded-lg px-4 py-2 bg-emerald-500/15 text-emerald-400 font-semibold text-sm border border-emerald-500/30 hover:bg-emerald-500/25 transition-all"
                 onClick={handleWithdraw}
               >
                 Withdraw to Wallet
@@ -215,7 +215,7 @@ export function ReferralView() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Name</TableHead>
                 <TableHead className="text-muted-foreground">Date</TableHead>
                 <TableHead className="text-muted-foreground">Commission</TableHead>
@@ -223,7 +223,7 @@ export function ReferralView() {
             </TableHeader>
             <TableBody>
               {referralInfo.referrals.map((ref, idx) => (
-                <TableRow key={idx} className="border-cyan-500/5 hover:bg-cyan-500/5">
+                <TableRow key={idx} className="border-emerald-500/5 hover:bg-emerald-500/5">
                   <TableCell className="font-medium text-foreground">{ref.name}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{formatDate(ref.date)}</TableCell>
                   <TableCell>

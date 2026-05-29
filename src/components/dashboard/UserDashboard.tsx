@@ -38,7 +38,7 @@ const NAV_ITEMS: { page: Page; label: string; icon: React.ReactNode }[] = [
 ];
 
 const statCards = [
-  { key: 'orders', page: 'orders' as Page, label: 'Total Orders', value: '12', icon: Package, color: 'from-cyan-500/20 to-cyan-600/5', iconBg: 'bg-cyan-500/20', iconColor: 'text-cyan-400' },
+  { key: 'orders', page: 'orders' as Page, label: 'Total Orders', value: '12', icon: Package, color: 'from-emerald-500/20 to-emerald-600/5', iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
   { key: 'wallet', page: 'wallet' as Page, label: 'Wallet Balance', value: '$0.00', icon: DollarSign, color: 'from-emerald-500/20 to-emerald-600/5', iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400' },
   { key: 'tickets', page: 'tickets' as Page, label: 'Active Tickets', value: '2', icon: Ticket, color: 'from-amber-500/20 to-amber-600/5', iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400' },
   { key: 'referrals', page: 'referrals' as Page, label: 'Referral Earnings', value: '$45.50', icon: TrendingUp, color: 'from-violet-500/20 to-violet-600/5', iconBg: 'bg-violet-500/20', iconColor: 'text-violet-400' },
@@ -55,7 +55,7 @@ const recentOrders = [
 const statusColors: Record<string, string> = {
   completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
-  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  paid: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
 };
 
@@ -93,12 +93,12 @@ export function UserDashboard() {
       >
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Avatar className="h-14 w-14 ring-2 ring-cyan-500/40 ring-offset-2 ring-offset-[#050a15]">
-              <AvatarFallback className="bg-cyan-500/20 text-cyan-400 text-lg font-bold border border-cyan-500/30">
+            <Avatar className="h-14 w-14 ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-[#050a15]">
+              <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-lg font-bold border border-emerald-500/30">
                 {user ? getInitials(user.name) : 'U'}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-cyan-500 flex items-center justify-center animate-pulse-glow">
+            <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center animate-pulse-glow">
               <Zap className="h-3 w-3 text-[#050a15]" />
             </div>
           </div>
@@ -151,7 +151,7 @@ export function UserDashboard() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+              className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
               onClick={() => handleNavClick('orders')}
             >
               View All <ArrowRight className="h-4 w-4 ml-1" />
@@ -161,7 +161,7 @@ export function UserDashboard() {
             {recentOrders.map((order) => (
               <div
                 key={order.id}
-                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-cyan-500/30 transition-all cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/30 transition-all cursor-pointer"
                 onClick={() => navigate('order-detail', order.id)}
               >
                 <div className="flex-1 min-w-0">
@@ -197,9 +197,9 @@ export function UserDashboard() {
               <button
                 key={action.label}
                 onClick={action.action}
-                className="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium glass-light glass-card-hover text-foreground transition-all hover:border-cyan-500/30"
+                className="w-full flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium glass-light glass-card-hover text-foreground transition-all hover:border-emerald-500/30"
               >
-                <span className="text-cyan-400">{action.icon}</span>
+                <span className="text-emerald-400">{action.icon}</span>
                 {action.label}
               </button>
             ))}
@@ -213,17 +213,17 @@ export function UserDashboard() {
     <div className="min-h-screen bg-mesh">
       {/* Mobile Tabs */}
       <div className="lg:hidden">
-        <div className="glass border-b border-cyan-500/10 px-4 py-3">
+        <div className="glass border-b border-emerald-500/10 px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9 ring-1 ring-cyan-500/30">
-                <AvatarFallback className="bg-cyan-500/20 text-cyan-400 text-sm font-bold">
+              <Avatar className="h-9 w-9 ring-1 ring-emerald-500/30">
+                <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-sm font-bold">
                   {user ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
               <span className="font-semibold text-sm text-gradient-cyan">{user?.name || 'User'}</span>
             </div>
-            <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={logout}>
+            <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={logout}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
@@ -238,7 +238,7 @@ export function UserDashboard() {
                   onClick={() => handleNavClick(item.page)}
                   className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
                     isActive
-                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                   }`}
                 >
@@ -255,11 +255,11 @@ export function UserDashboard() {
       {/* Desktop Layout */}
       <div className="hidden lg:flex lg:min-h-screen">
         {/* Glass Sidebar */}
-        <aside className="w-64 glass-strong flex flex-col border-r border-cyan-500/10">
-          <div className="p-6 border-b border-cyan-500/10">
+        <aside className="w-64 glass-strong flex flex-col border-r border-emerald-500/10">
+          <div className="p-6 border-b border-emerald-500/10">
             <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12 ring-2 ring-cyan-500/40 ring-offset-2 ring-offset-[#050a15]">
-                <AvatarFallback className="bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">
+              <Avatar className="h-12 w-12 ring-2 ring-emerald-500/40 ring-offset-2 ring-offset-[#050a15]">
+                <AvatarFallback className="bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
                   {user ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -283,20 +283,20 @@ export function UserDashboard() {
                     onClick={() => handleNavClick(item.page)}
                     className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 glow-cyan'
+                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 glow-cyan'
                         : 'text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent'
                     }`}
                   >
                     {item.icon}
                     {item.label}
-                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />}
+                    {isActive && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />}
                   </button>
                 );
               })}
             </nav>
           </ScrollArea>
 
-          <div className="p-3 border-t border-cyan-500/10">
+          <div className="p-3 border-t border-emerald-500/10">
             <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-white/5" onClick={logout}>
               <LogOut className="h-4 w-4" />
               Sign Out

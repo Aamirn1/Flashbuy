@@ -191,9 +191,9 @@ export default function CheckoutView() {
           >
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Order Number</span>
-              <span className="font-mono font-semibold text-cyan-300">{orderNumber}</span>
+              <span className="font-mono font-semibold text-emerald-300">{orderNumber}</span>
             </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Amount</span>
               <span className="font-semibold text-gradient-gold text-lg">${total.toFixed(2)} USDT</span>
@@ -202,7 +202,7 @@ export default function CheckoutView() {
               <span className="text-muted-foreground">Payment Method</span>
               <span className="font-medium">{selectedWallet.name}</span>
             </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
             <div className="flex items-start gap-2 p-3 glass-light rounded-xl">
               <AlertTriangle className="size-4 text-amber-400 mt-0.5 shrink-0" />
               <p className="text-xs text-amber-300/80 text-left">
@@ -228,7 +228,7 @@ export default function CheckoutView() {
             </Button>
             <Button
               variant="outline"
-              className="flex-1 glass-light border-cyan-500/20 text-cyan-300 hover:bg-cyan-500/10 rounded-xl h-11"
+              className="flex-1 glass-light border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10 rounded-xl h-11"
               onClick={() => navigate('products')}
             >
               Continue Shopping
@@ -250,8 +250,8 @@ export default function CheckoutView() {
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
           >
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/15 flex items-center justify-center mb-6 mx-auto">
-              <Shield className="size-10 text-cyan-400" />
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border border-emerald-500/15 flex items-center justify-center mb-6 mx-auto">
+              <Shield className="size-10 text-emerald-400" />
             </div>
           </motion.div>
           <h2 className="text-2xl font-bold mb-2">No Items to Checkout</h2>
@@ -287,7 +287,7 @@ export default function CheckoutView() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate('cart')}
-            className="size-10 rounded-xl glass-light border border-cyan-500/15 flex items-center justify-center text-muted-foreground hover:text-cyan-400 transition-colors"
+            className="size-10 rounded-xl glass-light border border-emerald-500/15 flex items-center justify-center text-muted-foreground hover:text-emerald-400 transition-colors"
           >
             <ArrowLeft className="size-5" />
           </motion.button>
@@ -341,8 +341,8 @@ export default function CheckoutView() {
             >
               <div className="glass-card rounded-2xl p-6">
                 <div className="flex items-center gap-2.5 mb-5">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                    <CircleDot className="size-4 text-cyan-400" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <CircleDot className="size-4 text-emerald-400" />
                   </div>
                   <h2 className="text-lg font-bold">Payment Method</h2>
                 </div>
@@ -357,12 +357,12 @@ export default function CheckoutView() {
                       htmlFor={key}
                       className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 ${
                         paymentMethod === key
-                          ? 'glass-light border-cyan-500/30 shadow-lg shadow-cyan-500/5'
-                          : 'glass border-white/5 hover:border-cyan-500/15'
+                          ? 'glass-light border-emerald-500/30 shadow-lg shadow-emerald-500/5'
+                          : 'glass border-white/5 hover:border-emerald-500/15'
                       }`}
                     >
-                      <RadioGroupItem value={key} id={key} className="border-cyan-500/30 text-cyan-400" />
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/15 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center text-xl">
+                      <RadioGroupItem value={key} id={key} className="border-emerald-500/30 text-emerald-400" />
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 border border-emerald-500/10 flex items-center justify-center text-xl">
                         {wallet.icon}
                       </div>
                       <div className="flex-1">
@@ -373,7 +373,7 @@ export default function CheckoutView() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-xs">
+                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs">
                           ~{wallet.estimatedTime}
                         </Badge>
                         <div className="text-xs text-muted-foreground mt-1">
@@ -394,14 +394,14 @@ export default function CheckoutView() {
             >
               <div className="glass-card rounded-2xl p-6 space-y-6">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                    <Zap className="size-4 text-cyan-400" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Zap className="size-4 text-emerald-400" />
                   </div>
                   <h2 className="text-lg font-bold">Send Payment</h2>
                 </div>
 
                 {/* Amount to send */}
-                <div className="glass-light rounded-xl p-5 text-center border border-cyan-500/15">
+                <div className="glass-light rounded-xl p-5 text-center border border-emerald-500/15">
                   <p className="text-sm text-muted-foreground mb-1">Send exactly</p>
                   <p className="text-4xl font-bold text-gradient-gold">${total.toFixed(2)}</p>
                   <p className="text-sm text-muted-foreground mt-1">USDT on {selectedWallet.network}</p>
@@ -412,7 +412,7 @@ export default function CheckoutView() {
                   <p className="text-sm font-medium text-muted-foreground">To this wallet address:</p>
                   <div className="glass rounded-xl p-4">
                     <div className="flex items-center gap-2">
-                      <p className="flex-1 font-mono text-sm break-all text-cyan-200/80">
+                      <p className="flex-1 font-mono text-sm break-all text-emerald-200/80">
                         {selectedWallet.address}
                       </p>
                       <motion.button
@@ -422,7 +422,7 @@ export default function CheckoutView() {
                         className={`shrink-0 size-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                           copiedAddress
                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'glass-light border-cyan-500/15 text-cyan-400 hover:bg-cyan-500/10'
+                            : 'glass-light border-emerald-500/15 text-emerald-400 hover:bg-emerald-500/10'
                         }`}
                       >
                         <AnimatePresence mode="wait">
@@ -462,9 +462,9 @@ export default function CheckoutView() {
 
                 {/* QR Code Placeholder */}
                 <div className="flex flex-col items-center gap-3 glass-light rounded-xl p-6">
-                  <div className="w-40 h-40 rounded-xl bg-white/5 border border-cyan-500/10 flex items-center justify-center relative overflow-hidden">
-                    <QrCode className="size-20 text-cyan-500/40" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent" />
+                  <div className="w-40 h-40 rounded-xl bg-white/5 border border-emerald-500/10 flex items-center justify-center relative overflow-hidden">
+                    <QrCode className="size-20 text-emerald-500/40" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent" />
                   </div>
                   <p className="text-xs text-muted-foreground text-center">
                     Scan QR code with your wallet app to send payment
@@ -499,8 +499,8 @@ export default function CheckoutView() {
           >
             <div className="glass-card rounded-2xl p-6 sticky top-24 space-y-5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                  <Sparkles className="size-4 text-cyan-400" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <Sparkles className="size-4 text-emerald-400" />
                 </div>
                 <h2 className="text-lg font-bold">Order Summary</h2>
               </div>
@@ -509,8 +509,8 @@ export default function CheckoutView() {
               <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {cart.map((item) => (
                   <div key={item.productId} className="flex items-center gap-3 glass-light rounded-xl p-3">
-                    <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/15 to-cyan-600/5 border border-cyan-500/10 flex items-center justify-center">
-                      <span className="text-cyan-400 font-bold text-xs">₮</span>
+                    <div className="shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 border border-emerald-500/10 flex items-center justify-center">
+                      <span className="text-emerald-400 font-bold text-xs">₮</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{item.name}</p>
@@ -527,7 +527,7 @@ export default function CheckoutView() {
                 ))}
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
               {/* Price breakdown */}
               <div className="space-y-2.5">
@@ -547,7 +547,7 @@ export default function CheckoutView() {
                 </div>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
               <div className="flex justify-between items-baseline">
                 <span className="font-semibold text-lg">Total</span>
@@ -575,7 +575,7 @@ export default function CheckoutView() {
 
               <button
                 onClick={() => navigate('cart')}
-                className="w-full text-center text-sm text-muted-foreground hover:text-cyan-400 transition-colors py-2 flex items-center justify-center gap-1.5"
+                className="w-full text-center text-sm text-muted-foreground hover:text-emerald-400 transition-colors py-2 flex items-center justify-center gap-1.5"
               >
                 <ArrowLeft className="size-3.5" />
                 Back to Cart

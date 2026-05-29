@@ -136,13 +136,13 @@ export default function CartView() {
         >
           <div className="flex items-center gap-4">
             <h1 className="text-3xl sm:text-4xl font-bold text-gradient-cyan">Your Cart</h1>
-            <Badge className="glass-light text-cyan-300 border-cyan-500/20 px-3 py-1 text-sm font-semibold">
+            <Badge className="glass-light text-emerald-300 border-emerald-500/20 px-3 py-1 text-sm font-semibold">
               {cart.length} item{cart.length !== 1 ? 's' : ''}
             </Badge>
           </div>
           <button
             onClick={() => navigate('products')}
-            className="text-sm text-muted-foreground hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+            className="text-sm text-muted-foreground hover:text-emerald-400 transition-colors flex items-center gap-1.5"
           >
             Continue Shopping
           </button>
@@ -173,8 +173,8 @@ export default function CartView() {
           >
             <div className="glass-card rounded-2xl p-6 sticky top-24 space-y-5">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                  <ShieldCheck className="size-4 text-cyan-400" />
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <ShieldCheck className="size-4 text-emerald-400" />
                 </div>
                 <h2 className="text-lg font-bold">Order Summary</h2>
               </div>
@@ -191,7 +191,7 @@ export default function CartView() {
                     animate={{ scale: 1 }}
                     className="flex items-center gap-2"
                   >
-                    <Badge className="glass-light text-cyan-300 border-cyan-500/20 gap-1.5 py-1.5 px-3">
+                    <Badge className="glass-light text-emerald-300 border-emerald-500/20 gap-1.5 py-1.5 px-3">
                       <Sparkles className="size-3" />
                       {couponCode}
                       <span className="text-xs opacity-75">(-${couponDiscount.toFixed(2)})</span>
@@ -219,7 +219,7 @@ export default function CartView() {
                       variant="outline"
                       onClick={handleApplyCoupon}
                       disabled={!couponInput.trim() || couponLoading}
-                      className="glass-light border-cyan-500/20 text-cyan-300 hover:bg-cyan-500/10 hover:text-cyan-200 rounded-xl"
+                      className="glass-light border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10 hover:text-emerald-200 rounded-xl"
                     >
                       {couponLoading ? <Loader2 className="size-4 animate-spin" /> : 'Apply'}
                     </Button>
@@ -236,7 +236,7 @@ export default function CartView() {
                 )}
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
               {/* Price breakdown */}
               <div className="space-y-3">
@@ -256,7 +256,7 @@ export default function CartView() {
                 </div>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
 
               <div className="flex justify-between items-baseline">
                 <span className="font-semibold text-lg">Total</span>
@@ -274,7 +274,7 @@ export default function CartView() {
 
               <button
                 onClick={() => navigate('products')}
-                className="w-full text-center text-sm text-muted-foreground hover:text-cyan-400 transition-colors py-2"
+                className="w-full text-center text-sm text-muted-foreground hover:text-emerald-400 transition-colors py-2"
               >
                 Continue Shopping
               </button>
@@ -316,8 +316,8 @@ function CartItemRow({
         <div className="flex gap-4">
           {/* Coin Icon */}
           <div className="shrink-0">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/5 border border-cyan-500/15 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 border border-emerald-500/15 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
                 <span className="text-white font-bold text-sm">₮</span>
               </div>
             </div>
@@ -330,7 +330,7 @@ function CartItemRow({
                 <h3 className="font-bold text-base">{item.name}</h3>
                 <div className="flex items-center gap-2 mt-1">
                   {item.deliveryType === 'automatic' ? (
-                    <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 text-xs gap-1 py-0">
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs gap-1 py-0">
                       <Zap className="size-3" />
                       Auto Delivery
                     </Badge>

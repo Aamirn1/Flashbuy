@@ -187,7 +187,7 @@ export function AdminProducts() {
         </div>
         <button
           onClick={handleOpenCreate}
-          className="flex items-center gap-2 rounded-xl px-4 py-2.5 bg-cyan-500/15 text-cyan-400 font-semibold text-sm border border-cyan-500/30 hover:bg-cyan-500/25 transition-all glow-cyan"
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 bg-emerald-500/15 text-emerald-400 font-semibold text-sm border border-emerald-500/30 hover:bg-emerald-500/25 transition-all glow-cyan"
         >
           <Plus className="h-4 w-4" /> Add Product
         </button>
@@ -200,7 +200,7 @@ export function AdminProducts() {
         transition={{ delay: 0.1 }}
         className="relative"
       >
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-400/50" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400/50" />
         <Input
           placeholder="Search products by name or SKU..."
           value={search}
@@ -225,7 +225,7 @@ export function AdminProducts() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Name</TableHead>
                 <TableHead className="text-muted-foreground">SKU</TableHead>
                 <TableHead className="text-muted-foreground">Price</TableHead>
@@ -237,23 +237,23 @@ export function AdminProducts() {
             </TableHeader>
             <TableBody>
               {filteredProducts.map((product) => (
-                <TableRow key={product.id} className="border-cyan-500/5 hover:bg-cyan-500/5">
+                <TableRow key={product.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {product.images[0] ? (
-                        <div className="h-10 w-10 rounded-lg bg-cyan-500/10 overflow-hidden flex-shrink-0 border border-cyan-500/10">
+                        <div className="h-10 w-10 rounded-lg bg-emerald-500/10 overflow-hidden flex-shrink-0 border border-emerald-500/10">
                           <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
                         </div>
                       ) : (
-                        <div className="h-10 w-10 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0 border border-cyan-500/10">
-                          <Package className="h-5 w-5 text-cyan-400/50" />
+                        <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/10">
+                          <Package className="h-5 w-5 text-emerald-400/50" />
                         </div>
                       )}
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate max-w-[200px] text-foreground">{product.name}</p>
                         <div className="flex gap-1 mt-0.5">
                           {product.isFeatured && <Badge className="text-[10px] px-1 py-0 bg-amber-500/20 text-amber-400 border border-amber-500/30">Featured</Badge>}
-                          {product.isNew && <Badge className="text-[10px] px-1 py-0 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">New</Badge>}
+                          {product.isNew && <Badge className="text-[10px] px-1 py-0 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">New</Badge>}
                           {product.isTrending && <Badge className="text-[10px] px-1 py-0 bg-violet-500/20 text-violet-400 border border-violet-500/30">Trending</Badge>}
                         </div>
                       </div>
@@ -282,14 +282,14 @@ export function AdminProducts() {
                     <Badge className={
                       product.deliveryType === 'automatic'
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                        : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                     }>
                       {product.deliveryType === 'automatic' ? '⚡ Auto' : '📋 Manual'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => handleOpenEdit(product)}>
+                      <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={() => handleOpenEdit(product)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" className="text-red-400 hover:bg-red-500/10" onClick={() => setDeleteConfirm(product.id)}>
@@ -306,7 +306,7 @@ export function AdminProducts() {
 
       {/* Add/Edit Product Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="glass-strong border-cyan-500/20 sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="glass-strong border-emerald-500/20 sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-gradient-cyan">{editId ? 'Edit Product' : 'Add Product'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
@@ -355,7 +355,7 @@ export function AdminProducts() {
                 <Label className="text-foreground">Category *</Label>
                 <Select value={form.categoryId} onValueChange={(v) => setForm({ ...form, categoryId: v })}>
                   <SelectTrigger className="glass-input"><SelectValue placeholder="Select category" /></SelectTrigger>
-                  <SelectContent className="glass-strong border-cyan-500/20">
+                  <SelectContent className="glass-strong border-emerald-500/20">
                     {DEMO_CATEGORIES.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
                     ))}
@@ -366,7 +366,7 @@ export function AdminProducts() {
                 <Label className="text-foreground">Delivery Type</Label>
                 <Select value={form.deliveryType} onValueChange={(v) => setForm({ ...form, deliveryType: v as DeliveryType })}>
                   <SelectTrigger className="glass-input"><SelectValue /></SelectTrigger>
-                  <SelectContent className="glass-strong border-cyan-500/20">
+                  <SelectContent className="glass-strong border-emerald-500/20">
                     <SelectItem value="automatic">⚡ Automatic</SelectItem>
                     <SelectItem value="manual">📋 Manual</SelectItem>
                   </SelectContent>
@@ -397,7 +397,7 @@ export function AdminProducts() {
           <DialogFooter>
             <Button variant="ghost" className="text-muted-foreground" onClick={() => setDialogOpen(false)}>Cancel</Button>
             <Button
-              className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30"
+              className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
               onClick={handleSubmit}
               disabled={submitting || !form.name || !form.price || !form.sku}
             >
@@ -410,7 +410,7 @@ export function AdminProducts() {
 
       {/* Delete Confirm Dialog */}
       <Dialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent className="glass-strong border-cyan-500/20">
+        <DialogContent className="glass-strong border-emerald-500/20">
           <DialogHeader>
             <DialogTitle className="text-gradient-cyan">Delete Product</DialogTitle>
             <DialogDescription className="text-muted-foreground">Are you sure you want to delete this product? This action cannot be undone.</DialogDescription>

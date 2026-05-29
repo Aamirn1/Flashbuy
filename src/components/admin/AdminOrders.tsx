@@ -27,7 +27,7 @@ const ORDER_STATUS_OPTIONS: OrderStatus[] = ['pending', 'payment_waiting', 'paid
 const GLASS_STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   payment_waiting: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  paid: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
   completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   cancelled: 'bg-red-500/20 text-red-400 border border-red-500/30',
@@ -143,7 +143,7 @@ export function AdminOrders() {
               onClick={() => setStatusFilter(opt.value)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                 statusFilter === opt.value
-                  ? 'glass-light border-cyan-500/30 text-cyan-400'
+                  ? 'glass-light border-emerald-500/30 text-emerald-400'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
             >
@@ -168,7 +168,7 @@ export function AdminOrders() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Order #</TableHead>
                 <TableHead className="text-muted-foreground">Customer</TableHead>
                 <TableHead className="text-muted-foreground">Items</TableHead>
@@ -181,8 +181,8 @@ export function AdminOrders() {
             </TableHeader>
             <TableBody>
               {filteredOrders.map((order) => (
-                <TableRow key={order.id} className="border-cyan-500/5 hover:bg-cyan-500/5">
-                  <TableCell className="font-medium text-sm text-cyan-400 font-mono">{order.orderNumber}</TableCell>
+                <TableRow key={order.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
+                  <TableCell className="font-medium text-sm text-emerald-400 font-mono">{order.orderNumber}</TableCell>
                   <TableCell>
                     <div>
                       <p className="text-sm text-foreground">{order.customerName || 'Customer'}</p>
@@ -204,7 +204,7 @@ export function AdminOrders() {
                           </Badge>
                         </SelectValue>
                       </SelectTrigger>
-                      <SelectContent className="glass-strong border-cyan-500/20">
+                      <SelectContent className="glass-strong border-emerald-500/20">
                         {ORDER_STATUS_OPTIONS.map((s) => (
                           <SelectItem key={s} value={s}>
                             {getStatusLabel(s)}
@@ -228,7 +228,7 @@ export function AdminOrders() {
                   <TableCell className="text-muted-foreground text-xs">{formatDate(order.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => openDetail(order)}>
+                      <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={() => openDetail(order)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       {order.status !== 'refunded' && order.status !== 'cancelled' && (
@@ -252,7 +252,7 @@ export function AdminOrders() {
 
       {/* Order Detail Dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="glass-strong border-cyan-500/20 sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="glass-strong border-emerald-500/20 sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
           {selectedOrder && (
             <>
               <DialogHeader>
@@ -289,7 +289,7 @@ export function AdminOrders() {
                       </div>
                     ))}
                   </div>
-                  <div className="border-t border-cyan-500/10 mt-3 pt-3 space-y-1">
+                  <div className="border-t border-emerald-500/10 mt-3 pt-3 space-y-1">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
                       <span className="text-foreground">${selectedOrder.itemsPrice.toFixed(2)}</span>
@@ -314,7 +314,7 @@ export function AdminOrders() {
                   </div>
                   <div className="glass-light rounded-lg p-3">
                     <p className="text-muted-foreground text-xs">Delivery Type</p>
-                    <Badge className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mt-1">
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mt-1">
                       {selectedOrder.deliveryStatus === 'automatic' ? '⚡ Automatic' : '📋 Manual'}
                     </Badge>
                   </div>
@@ -327,7 +327,7 @@ export function AdminOrders() {
 
       {/* Refund Confirm Dialog */}
       <Dialog open={!!refundConfirm} onOpenChange={() => setRefundConfirm(null)}>
-        <DialogContent className="glass-strong border-cyan-500/20">
+        <DialogContent className="glass-strong border-emerald-500/20">
           <DialogHeader>
             <DialogTitle className="text-gradient-cyan">Refund Order</DialogTitle>
             <DialogDescription className="text-muted-foreground">

@@ -15,7 +15,7 @@ import { ArrowLeft, Send, XCircle, RefreshCw, User, Headphones } from 'lucide-re
 const GLASS_STATUS_COLORS: Record<string, string> = {
   open: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
-  solved: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  solved: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   closed: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
 };
 
@@ -110,7 +110,7 @@ export function TicketDetail() {
     return (
       <div className="text-center py-16">
         <p className="text-muted-foreground">Ticket not found</p>
-        <Button variant="outline" className="mt-4 glass-light border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/10" onClick={goBack}>
+        <Button variant="outline" className="mt-4 glass-light border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10" onClick={goBack}>
           Go Back
         </Button>
       </div>
@@ -127,7 +127,7 @@ export function TicketDetail() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-4"
       >
-        <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={goBack}>
+        <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={goBack}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
         <div className="flex-1">
@@ -162,7 +162,7 @@ export function TicketDetail() {
             <span className="font-medium text-foreground">{getCategoryLabel(ticket.category)}</span>
           </div>
         </div>
-        <Separator className="my-4 bg-cyan-500/10" />
+        <Separator className="my-4 bg-emerald-500/10" />
         <p className="text-sm leading-relaxed text-foreground/80">{ticket.description}</p>
       </motion.div>
 
@@ -196,21 +196,21 @@ export function TicketDetail() {
                 transition={{ delay: idx * 0.05 }}
                 className={`flex gap-3 ${msg.isAdmin ? 'flex-row' : 'flex-row-reverse'}`}
               >
-                <Avatar className="h-8 w-8 flex-shrink-0 ring-1 ring-cyan-500/20">
-                  <AvatarFallback className={msg.isAdmin ? 'bg-cyan-500/20 text-cyan-400' : 'bg-violet-500/20 text-violet-400'}>
+                <Avatar className="h-8 w-8 flex-shrink-0 ring-1 ring-emerald-500/20">
+                  <AvatarFallback className={msg.isAdmin ? 'bg-emerald-500/20 text-emerald-400' : 'bg-violet-500/20 text-violet-400'}>
                     {msg.isAdmin ? <Headphones className="h-4 w-4" /> : <User className="h-4 w-4" />}
                   </AvatarFallback>
                 </Avatar>
                 <div className={`max-w-[80%] ${msg.isAdmin ? '' : 'text-right'}`}>
                   <div className="flex items-center gap-2 mb-1">
-                    {msg.isAdmin && <span className="text-xs font-medium text-cyan-400">Support Team</span>}
+                    {msg.isAdmin && <span className="text-xs font-medium text-emerald-400">Support Team</span>}
                     <span className="text-xs text-muted-foreground">{formatDate(msg.timestamp)}</span>
                     {!msg.isAdmin && <span className="text-xs font-medium text-violet-400">You</span>}
                   </div>
                   <div className={`inline-block rounded-2xl px-4 py-2.5 text-sm ${
                     msg.isAdmin
                       ? 'glass-light text-foreground rounded-tl-sm'
-                      : 'bg-cyan-500/15 text-foreground border border-cyan-500/20 rounded-tr-sm'
+                      : 'bg-emerald-500/15 text-foreground border border-emerald-500/20 rounded-tr-sm'
                   }`}>
                     {msg.message}
                   </div>
@@ -240,7 +240,7 @@ export function TicketDetail() {
               className="flex-1 glass-input min-h-[80px]"
             />
             <Button
-              className="self-end bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/30 h-10 w-10 p-0"
+              className="self-end bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 h-10 w-10 p-0"
               disabled={!reply.trim() || submitting}
               onClick={handleReply}
             >

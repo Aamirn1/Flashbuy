@@ -79,12 +79,12 @@ export default function HowItWorks() {
         >
           {/* Connecting line (desktop only) */}
           <div className="hidden md:block absolute top-1/2 left-[18%] right-[18%] h-px -translate-y-1/2">
-            <div className="w-full h-px bg-gradient-to-r from-cyan-500/30 via-cyan-400/50 to-cyan-500/30" />
+            <div className="w-full h-px bg-gradient-to-r from-emerald-500/30 via-emerald-400/50 to-emerald-500/30" />
             <div className="absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400/50 glow-cyan" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400/50 glow-cyan" />
             </div>
             <div className="absolute top-1/2 left-2/3 -translate-y-1/2 -translate-x-1/2">
-              <div className="w-2 h-2 rounded-full bg-cyan-400/50 glow-cyan" />
+              <div className="w-2 h-2 rounded-full bg-emerald-400/50 glow-cyan" />
             </div>
           </div>
 
@@ -96,14 +96,14 @@ export default function HowItWorks() {
             >
               <div className="glass-card glass-card-hover rounded-2xl p-6 text-center h-full">
                 {/* Step number */}
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400 text-gray-950 font-black text-sm mb-4 glow-cyan">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 text-gray-950 font-black text-sm mb-4 glow-cyan">
                   {step.step}
                 </div>
 
                 {/* Icon */}
                 <div className="flex justify-center mb-4">
                   <div className="p-4 rounded-2xl glass-light">
-                    <step.icon className="size-8 text-cyan-400" />
+                    <step.icon className="size-8 text-emerald-400" />
                   </div>
                 </div>
 

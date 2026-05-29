@@ -152,8 +152,8 @@ export default function FlashUSDTProduct() {
                       onClick={() => setFlashQuantity(qs.value)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
                         flashQuantity === qs.value
-                          ? 'bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 glow-cyan'
-                          : 'glass-light text-slate-400 hover:text-cyan-300 hover:border-cyan-400/30'
+                          ? 'bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 glow-cyan'
+                          : 'glass-light text-slate-400 hover:text-emerald-300 hover:border-emerald-400/30'
                       }`}
                     >
                       {qs.label}
@@ -163,7 +163,7 @@ export default function FlashUSDTProduct() {
               </div>
 
               {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent my-6" />
+              <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent my-6" />
 
               {/* Price Display */}
               <div className="mb-6">
@@ -186,7 +186,7 @@ export default function FlashUSDTProduct() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl glass-card glow-cyan text-cyan-300 font-bold text-base transition-all hover:text-white hover:border-cyan-400/40"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl glass-card glow-cyan text-emerald-300 font-bold text-base transition-all hover:text-white hover:border-emerald-400/40"
                 >
                   <ShoppingCart className="size-5" />
                   Add to Cart
@@ -196,7 +196,7 @@ export default function FlashUSDTProduct() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBuyNow}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-400 glow-cyan-strong text-gray-950 font-bold text-base transition-all hover:from-cyan-400 hover:to-cyan-300"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 glow-cyan-strong text-gray-950 font-bold text-base transition-all hover:from-emerald-400 hover:to-emerald-300"
                 >
                   <Zap className="size-5" />
                   Buy Now

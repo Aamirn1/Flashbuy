@@ -88,12 +88,12 @@ export default function Header() {
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-500',
         scrolled
-          ? 'glass-strong shadow-lg shadow-cyan-500/5'
+          ? 'glass-strong shadow-lg shadow-emerald-500/5'
           : 'glass'
       )}
       style={{
         borderBottom: scrolled
-          ? '1px solid rgba(34, 211, 238, 0.15)'
+          ? '1px solid rgba(52, 211, 153, 0.15)'
           : '1px solid rgba(148, 163, 184, 0.08)',
       }}
     >
@@ -106,7 +106,7 @@ export default function Header() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <div className="relative flex items-center justify-center size-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-lg shadow-cyan-500/25 group-hover:shadow-cyan-500/40 transition-shadow duration-300">
+            <div className="relative flex items-center justify-center size-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-shadow duration-300">
               <Zap className="size-5 text-white fill-white/20" />
               <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent" />
             </div>
@@ -127,7 +127,7 @@ export default function Header() {
                 className={cn(
                   'text-sm font-medium transition-all duration-300 rounded-lg',
                   currentPage === item.page
-                    ? 'text-cyan-400 bg-cyan-500/10 hover:bg-cyan-500/15 hover:text-cyan-400'
+                    ? 'text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/15 hover:text-emerald-400'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 )}
               >
@@ -144,7 +144,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 rounded-xl"
+                className="relative text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl"
                 onClick={() => handleNavClick('cart')}
                 aria-label="Shopping cart"
               >
@@ -157,7 +157,7 @@ export default function Header() {
                       exit={{ scale: 0 }}
                       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                     >
-                      <Badge className="absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center bg-gradient-to-r from-cyan-500 to-cyan-400 text-[10px] font-bold border-0 text-background hover:from-cyan-500 hover:to-cyan-400">
+                      <Badge className="absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center bg-gradient-to-r from-emerald-500 to-emerald-400 text-[10px] font-bold border-0 text-background hover:from-emerald-500 hover:to-emerald-400">
                         {cartCount > 99 ? '99+' : cartCount}
                       </Badge>
                     </motion.div>
@@ -172,11 +172,11 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full ring-2 ring-cyan-500/20 hover:ring-cyan-500/40 transition-all duration-300"
+                    className="relative h-9 w-9 rounded-full ring-2 ring-emerald-500/20 hover:ring-emerald-500/40 transition-all duration-300"
                   >
                     <Avatar className="size-8">
                       <AvatarImage src={user.avatar} alt={user.name} />
-                      <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white text-xs font-semibold">
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
@@ -184,7 +184,7 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 glass-strong border-cyan-500/10"
+                  className="w-56 glass-strong border-emerald-500/10"
                 >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
@@ -194,39 +194,39 @@ export default function Header() {
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-cyan-500/10" />
+                  <DropdownMenuSeparator className="bg-emerald-500/10" />
                   <DropdownMenuGroup>
                     <DropdownMenuItem
                       onClick={() => handleNavClick('dashboard')}
-                      className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 cursor-pointer transition-colors"
+                      className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 cursor-pointer transition-colors"
                     >
                       <LayoutDashboard className="size-4 mr-2" />
                       Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleNavClick('orders')}
-                      className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 cursor-pointer transition-colors"
+                      className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 cursor-pointer transition-colors"
                     >
                       <Package className="size-4 mr-2" />
                       Orders
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleNavClick('wallet')}
-                      className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 cursor-pointer transition-colors"
+                      className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 cursor-pointer transition-colors"
                     >
                       <Wallet className="size-4 mr-2" />
                       Wallet
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleNavClick('tickets')}
-                      className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 cursor-pointer transition-colors"
+                      className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 cursor-pointer transition-colors"
                     >
                       <Ticket className="size-4 mr-2" />
                       Tickets
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleNavClick('referrals')}
-                      className="text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-400 cursor-pointer transition-colors"
+                      className="text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-400 cursor-pointer transition-colors"
                     >
                       <Users className="size-4 mr-2" />
                       Referrals
@@ -234,17 +234,17 @@ export default function Header() {
                   </DropdownMenuGroup>
                   {user.role === 'admin' && (
                     <>
-                      <DropdownMenuSeparator className="bg-cyan-500/10" />
+                      <DropdownMenuSeparator className="bg-emerald-500/10" />
                       <DropdownMenuItem
                         onClick={() => handleNavClick('admin')}
-                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 focus:bg-cyan-500/10 focus:text-cyan-300 cursor-pointer transition-colors"
+                        className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 focus:bg-emerald-500/10 focus:text-emerald-300 cursor-pointer transition-colors"
                       >
                         <ShieldCheck className="size-4 mr-2" />
                         Admin Panel
                       </DropdownMenuItem>
                     </>
                   )}
-                  <DropdownMenuSeparator className="bg-cyan-500/10" />
+                  <DropdownMenuSeparator className="bg-emerald-500/10" />
                   <DropdownMenuItem
                     onClick={logout}
                     className="text-red-400 hover:text-red-300 hover:bg-red-500/10 focus:bg-red-500/10 focus:text-red-300 cursor-pointer transition-colors"
@@ -258,7 +258,7 @@ export default function Header() {
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   onClick={() => setShowAuthDialog(true, 'login')}
-                  className="bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 rounded-xl"
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-background font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 rounded-xl"
                   size="sm"
                 >
                   <User className="size-4 mr-1.5" />
@@ -271,7 +271,7 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 rounded-xl"
+              className="lg:hidden text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-300 rounded-xl"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open menu"
             >
@@ -285,11 +285,11 @@ export default function Header() {
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent
           side="left"
-          className="glass-strong border-cyan-500/10 w-80 p-0"
+          className="glass-strong border-emerald-500/10 w-80 p-0"
         >
           <SheetHeader className="p-4 pb-0">
             <SheetTitle className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-lg shadow-cyan-500/25">
+              <div className="flex items-center justify-center size-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg shadow-emerald-500/25">
                 <Zap className="size-4 text-white fill-white/20" />
               </div>
               <span className="text-lg font-bold">
@@ -299,7 +299,7 @@ export default function Header() {
             </SheetTitle>
           </SheetHeader>
 
-          <Separator className="bg-cyan-500/10 my-4" />
+          <Separator className="bg-emerald-500/10 my-4" />
 
           {/* Navigation */}
           <nav className="flex flex-col gap-1 px-3">
@@ -310,7 +310,7 @@ export default function Header() {
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-left',
                   currentPage === item.page
-                    ? 'text-cyan-400 bg-cyan-500/10 shadow-sm shadow-cyan-500/10'
+                    ? 'text-emerald-400 bg-emerald-500/10 shadow-sm shadow-emerald-500/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 )}
                 whileHover={{ x: 4 }}
@@ -322,7 +322,7 @@ export default function Header() {
             ))}
           </nav>
 
-          <Separator className="bg-cyan-500/10 my-4" />
+          <Separator className="bg-emerald-500/10 my-4" />
 
           {/* User Section */}
           {isAuthenticated && user ? (
@@ -330,7 +330,7 @@ export default function Header() {
               <div className="flex items-center gap-3 px-3 py-2 mb-2">
                 <Avatar className="size-8">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white text-xs font-semibold">
+                  <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white text-xs font-semibold">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -363,7 +363,7 @@ export default function Header() {
                 {user.role === 'admin' && (
                   <motion.button
                     onClick={() => handleNavClick('admin')}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 transition-all duration-300 text-left"
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-all duration-300 text-left"
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.2 }}
                   >
@@ -371,7 +371,7 @@ export default function Header() {
                     Admin Panel
                   </motion.button>
                 )}
-                <Separator className="bg-cyan-500/10 my-2" />
+                <Separator className="bg-emerald-500/10 my-2" />
                 <motion.button
                   onClick={() => {
                     logout();
@@ -393,7 +393,7 @@ export default function Header() {
                   setShowAuthDialog(true, 'login');
                   setSidebarOpen(false);
                 }}
-                className="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-background font-semibold shadow-lg shadow-cyan-500/25 rounded-xl"
+                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-background font-semibold shadow-lg shadow-emerald-500/25 rounded-xl"
               >
                 <User className="size-4 mr-2" />
                 Sign In

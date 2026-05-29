@@ -23,7 +23,7 @@ export default function FAQSection() {
           className="text-center mb-10"
         >
           <div className="inline-flex items-center justify-center size-12 rounded-full glass-light mb-4">
-            <HelpCircle className="size-6 text-cyan-400" />
+            <HelpCircle className="size-6 text-emerald-400" />
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
             Frequently Asked{' '}
@@ -47,9 +47,9 @@ export default function FAQSection() {
                 <AccordionItem
                   key={index}
                   value={`faq-${index}`}
-                  className="border-cyan-500/10 last:border-b-0"
+                  className="border-emerald-500/10 last:border-b-0"
                 >
-                  <AccordionTrigger className="text-left text-sm sm:text-base font-medium hover:text-cyan-400 hover:no-underline transition-colors py-4">
+                  <AccordionTrigger className="text-left text-sm sm:text-base font-medium hover:text-emerald-400 hover:no-underline transition-colors py-4">
                     {item.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-slate-400 text-sm leading-relaxed pb-4">

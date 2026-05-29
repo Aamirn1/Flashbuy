@@ -118,7 +118,7 @@ export function AdminUsers() {
         transition={{ delay: 0.1 }}
         className="relative"
       >
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-400/50" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400/50" />
         <Input
           placeholder="Search users by name or email..."
           value={search}
@@ -143,7 +143,7 @@ export function AdminUsers() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-cyan-500/10 hover:bg-transparent">
+              <TableRow className="border-emerald-500/10 hover:bg-transparent">
                 <TableHead className="text-muted-foreground">Name</TableHead>
                 <TableHead className="text-muted-foreground">Email</TableHead>
                 <TableHead className="text-muted-foreground">Role</TableHead>
@@ -156,11 +156,11 @@ export function AdminUsers() {
             </TableHeader>
             <TableBody>
               {filteredUsers.map((user) => (
-                <TableRow key={user.id} className="border-cyan-500/5 hover:bg-cyan-500/5">
+                <TableRow key={user.id} className="border-emerald-500/5 hover:bg-emerald-500/5">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-cyan-500/15 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
-                        <span className="text-xs font-medium text-cyan-400">
+                      <div className="h-8 w-8 rounded-full bg-emerald-500/15 flex items-center justify-center flex-shrink-0 border border-emerald-500/20">
+                        <span className="text-xs font-medium text-emerald-400">
                           {user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
                         </span>
                       </div>
@@ -171,7 +171,7 @@ export function AdminUsers() {
                   <TableCell>
                     <Badge className={
                       user.role === 'admin'
-                        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
                     }>
                       {user.role === 'admin' ? <Shield className="h-3 w-3 mr-1" /> : null}
@@ -194,7 +194,7 @@ export function AdminUsers() {
                   <TableCell className="text-muted-foreground text-xs">{formatDate(user.createdAt)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="sm" className="text-cyan-400 hover:bg-cyan-500/10" onClick={() => openDetail(user)}>
+                      <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10" onClick={() => openDetail(user)}>
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button
@@ -225,7 +225,7 @@ export function AdminUsers() {
 
       {/* User Detail Dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="glass-strong border-cyan-500/20 sm:max-w-[500px]">
+        <DialogContent className="glass-strong border-emerald-500/20 sm:max-w-[500px]">
           {selectedUser && (
             <>
               <DialogHeader>
@@ -234,8 +234,8 @@ export function AdminUsers() {
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-2xl bg-cyan-500/15 flex items-center justify-center border border-cyan-500/20">
-                    <span className="text-xl font-medium text-cyan-400">
+                  <div className="h-16 w-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center border border-emerald-500/20">
+                    <span className="text-xl font-medium text-emerald-400">
                       {selectedUser.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
                     </span>
                   </div>
@@ -249,7 +249,7 @@ export function AdminUsers() {
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   {[
-                    { label: 'Role', content: <Badge className={selectedUser.role === 'admin' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'}>{selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}</Badge> },
+                    { label: 'Role', content: <Badge className={selectedUser.role === 'admin' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'}>{selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)}</Badge> },
                     { label: 'Status', content: <Badge className={selectedUser.isBanned ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}>{selectedUser.isBanned ? 'Banned' : 'Active'}</Badge> },
                     { label: 'Balance', content: <span className="font-semibold text-gradient-gold">${selectedUser.balance.toFixed(2)} USDT</span> },
                     { label: 'Orders', content: <span className="font-semibold text-foreground">{selectedUser.orderCount || 0}</span> },
@@ -265,7 +265,7 @@ export function AdminUsers() {
 
                 <div className="glass-light rounded-lg p-3">
                   <p className="text-muted-foreground text-sm">Referral Code</p>
-                  <p className="font-mono text-sm mt-1 text-cyan-400">{selectedUser.referralCode || 'N/A'}</p>
+                  <p className="font-mono text-sm mt-1 text-emerald-400">{selectedUser.referralCode || 'N/A'}</p>
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -283,7 +283,7 @@ export function AdminUsers() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 glass-light border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/10"
+                    className="flex-1 glass-light border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10"
                     onClick={() => setResetConfirm(selectedUser.id)}
                   >
                     <KeyRound className="h-4 w-4 mr-2" /> Reset Password
@@ -297,7 +297,7 @@ export function AdminUsers() {
 
       {/* Reset Password Confirm Dialog */}
       <Dialog open={!!resetConfirm} onOpenChange={() => setResetConfirm(null)}>
-        <DialogContent className="glass-strong border-cyan-500/20">
+        <DialogContent className="glass-strong border-emerald-500/20">
           <DialogHeader>
             <DialogTitle className="text-gradient-cyan">Reset Password</DialogTitle>
             <DialogDescription className="text-muted-foreground">

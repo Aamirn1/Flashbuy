@@ -25,7 +25,7 @@ const STATUS_OPTIONS: { value: string; label: string }[] = [
 const GLASS_STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
   payment_waiting: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-  paid: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  paid: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   processing: 'bg-violet-500/20 text-violet-400 border border-violet-500/30',
   completed: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
   cancelled: 'bg-red-500/20 text-red-400 border border-red-500/30',
@@ -105,7 +105,7 @@ export function OrderHistory() {
               onClick={() => { setStatusFilter(opt.value); setCurrentPage(1); }}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                 statusFilter === opt.value
-                  ? 'glass-light border-cyan-500/30 text-cyan-400'
+                  ? 'glass-light border-emerald-500/30 text-emerald-400'
                   : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
               }`}
             >
@@ -135,7 +135,7 @@ export function OrderHistory() {
           <>
             <Table>
               <TableHeader>
-                <TableRow className="border-cyan-500/10 hover:bg-transparent">
+                <TableRow className="border-emerald-500/10 hover:bg-transparent">
                   <TableHead className="text-muted-foreground">Order Number</TableHead>
                   <TableHead className="text-muted-foreground">Date</TableHead>
                   <TableHead className="text-muted-foreground">Items</TableHead>
@@ -148,10 +148,10 @@ export function OrderHistory() {
                 {paginatedOrders.map((order) => (
                   <TableRow
                     key={order.id}
-                    className="cursor-pointer border-cyan-500/5 hover:bg-cyan-500/5 transition-colors"
+                    className="cursor-pointer border-emerald-500/5 hover:bg-emerald-500/5 transition-colors"
                     onClick={() => navigate('order-detail', order.id)}
                   >
-                    <TableCell className="font-medium text-cyan-400 font-mono">{order.orderNumber}</TableCell>
+                    <TableCell className="font-medium text-emerald-400 font-mono">{order.orderNumber}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">{formatDate(order.createdAt)}</TableCell>
                     <TableCell>
                       <span className="text-sm text-foreground">
@@ -165,7 +165,7 @@ export function OrderHistory() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10" onClick={(e) => { e.stopPropagation(); navigate('order-detail', order.id); }}>
+                      <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10" onClick={(e) => { e.stopPropagation(); navigate('order-detail', order.id); }}>
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
@@ -176,7 +176,7 @@ export function OrderHistory() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-cyan-500/10">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-emerald-500/10">
                 <p className="text-sm text-muted-foreground">
                   Showing {(currentPage - 1) * PAGE_SIZE + 1} to{' '}
                   {Math.min(currentPage * PAGE_SIZE, filteredOrders.length)} of{' '}
@@ -186,7 +186,7 @@ export function OrderHistory() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-cyan-400 hover:bg-cyan-500/10"
+                    className="text-emerald-400 hover:bg-emerald-500/10"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage((p) => p - 1)}
                   >
@@ -198,7 +198,7 @@ export function OrderHistory() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-cyan-400 hover:bg-cyan-500/10"
+                    className="text-emerald-400 hover:bg-emerald-500/10"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage((p) => p + 1)}
                   >
