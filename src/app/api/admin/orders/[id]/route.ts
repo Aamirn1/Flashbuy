@@ -66,32 +66,54 @@ export async function PATCH(
     const order = await db.order.findUnique({ where: { id } });
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
+    // Build cascade update data based on status
+    const cascadeData: Record<string, unknown> = {};
+
+    // Update related payment status
+    if (status === 'paid') {
+      cascadeData.paymentStatus = 'confirmed';
+    } else if (status === 'refunded') {
+      cascadeData.paymentStatus = 'refunded';
+    } else if (status === 'cancelled') {
+      cascadeData.paymentStatus = 'failed';
+    } else if (status === 'payment_waiting') {
+      cascadeData.paymentStatus = 'pending';
+    }
+
+    // Update related delivery status
+    if (status === 'completed') {
+      cascadeData.deliveryStatus = 'delivered';
+    } else if (status === 'cancelled' || status === 'refunded') {
+      cascadeData.deliveryStatus = 'failed';
+    } else if (status === 'processing') {
+      cascadeData.deliveryStatus = 'pending';
+    }
+
+    // Perform the main order update with cascaded fields
     const updatedOrder = await db.order.update({
       where: { id },
-      data: { status },
+      data: { status, ...cascadeData },
       include: {
         user: { select: { id: true, name: true, email: true, walletAddress: true } },
-        items: { include: { product: { select: { id: true, name: true, images: true, price: true } } } },
+        items: { include: { product: { select: { id: true, name: true, images: true, price: true, slug: true } } } },
         payment: true,
       },
     });
 
-    // Update related payment status
-    if (status === 'paid') {
-      await db.order.update({ where: { id }, data: { paymentStatus: 'confirmed' } });
-      if (updatedOrder.payment) {
-        await db.payment.update({
-          where: { id: updatedOrder.payment.id },
-          data: { status: 'confirmed', confirmedAt: new Date() },
-        });
-      }
+    // Update related Payment record
+    if (status === 'paid' && updatedOrder.payment) {
+      await db.payment.update({
+        where: { id: updatedOrder.payment.id },
+        data: { status: 'confirmed', confirmedAt: new Date() },
+      });
     }
 
-    if (status === 'refunded') {
-      await db.order.update({ where: { id }, data: { paymentStatus: 'refunded' } });
-      if (updatedOrder.payment) {
-        await db.payment.update({ where: { id: updatedOrder.payment.id }, data: { status: 'refunded' } });
-      }
+    if (status === 'refunded' && updatedOrder.payment) {
+      await db.payment.update({ where: { id: updatedOrder.payment.id }, data: { status: 'refunded' } });
+    }
+
+    if (status === 'cancelled' && updatedOrder.payment) {
+      await db.payment.update({ where: { id: updatedOrder.payment.id }, data: { status: 'failed' } });
     }
 
     // Handle delivery for completed orders
@@ -110,7 +132,6 @@ export async function PATCH(
           }
         }
       }
-      await db.order.update({ where: { id }, data: { deliveryStatus: 'delivered' } });
     }
 
     // Restore stock for cancelled/refunded
@@ -123,9 +144,21 @@ export async function PATCH(
       }
     }
 
+    // Re-fetch the order to get the latest data after all cascade updates
+    const freshOrder = await db.order.findUnique({
+      where: { id },
+      include: {
+        user: { select: { id: true, name: true, email: true, walletAddress: true } },
+        items: { include: { product: { select: { id: true, name: true, images: true, price: true, slug: true } } } },
+        payment: true,
+      },
+    });
+
+    const orderToReturn = freshOrder || updatedOrder;
+
     const parsedOrder = {
-      ...updatedOrder,
-      items: updatedOrder.items.map((item) => ({
+      ...orderToReturn,
+      items: orderToReturn.items.map((item) => ({
         ...item,
         product: item.product
           ? { ...item.product, images: parseJsonField(item.product.images) }

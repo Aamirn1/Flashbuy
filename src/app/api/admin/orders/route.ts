@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         where,
         include: {
           user: {
-            select: { id: true, name: true, email: true },
+            select: { id: true, name: true, email: true, walletAddress: true },
           },
           items: {
             include: {
@@ -102,11 +102,35 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Build cascade update data based on status
+    const cascadeData: Record<string, unknown> = {};
+
+    // Update related payment status
+    if (status === 'paid') {
+      cascadeData.paymentStatus = 'confirmed';
+    } else if (status === 'refunded') {
+      cascadeData.paymentStatus = 'refunded';
+    } else if (status === 'cancelled') {
+      cascadeData.paymentStatus = 'failed';
+    } else if (status === 'payment_waiting') {
+      cascadeData.paymentStatus = 'pending';
+    }
+
+    // Update related delivery status
+    if (status === 'completed') {
+      cascadeData.deliveryStatus = 'delivered';
+    } else if (status === 'cancelled' || status === 'refunded') {
+      cascadeData.deliveryStatus = 'failed';
+    } else if (status === 'processing') {
+      cascadeData.deliveryStatus = 'pending';
+    }
+
+    // Perform the main order update with cascaded fields
     const updatedOrder = await db.order.update({
       where: { id: orderId },
-      data: { status },
+      data: { status, ...cascadeData },
       include: {
-        user: { select: { id: true, name: true, email: true } },
+        user: { select: { id: true, name: true, email: true, walletAddress: true } },
         items: {
           include: {
             product: {
@@ -118,15 +142,11 @@ export async function PATCH(request: NextRequest) {
       },
     });
 
-    // Update related payment status
+    // Update related Payment record
     if (status === 'paid' && updatedOrder.payment) {
       await db.payment.update({
         where: { id: updatedOrder.payment.id },
         data: { status: 'confirmed', confirmedAt: new Date() },
-      });
-      await db.order.update({
-        where: { id: orderId },
-        data: { paymentStatus: 'confirmed' },
       });
     }
 
@@ -135,9 +155,12 @@ export async function PATCH(request: NextRequest) {
         where: { id: updatedOrder.payment.id },
         data: { status: 'refunded' },
       });
-      await db.order.update({
-        where: { id: orderId },
-        data: { paymentStatus: 'refunded' },
+    }
+
+    if (status === 'cancelled' && updatedOrder.payment) {
+      await db.payment.update({
+        where: { id: updatedOrder.payment.id },
+        data: { status: 'failed' },
       });
     }
 
@@ -157,10 +180,6 @@ export async function PATCH(request: NextRequest) {
           }
         }
       }
-      await db.order.update({
-        where: { id: orderId },
-        data: { deliveryStatus: 'delivered' },
-      });
     }
 
     // Restore stock for cancelled/refunded orders
@@ -173,9 +192,27 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // Re-fetch the order to get the latest data after all cascade updates
+    const freshOrder = await db.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { id: true, name: true, email: true, walletAddress: true } },
+        items: {
+          include: {
+            product: {
+              select: { id: true, name: true, images: true, price: true },
+            },
+          },
+        },
+        payment: true,
+      },
+    });
+
+    const orderToReturn = freshOrder || updatedOrder;
+
     const parsedOrder = {
-      ...updatedOrder,
-      items: updatedOrder.items.map((item) => ({
+      ...orderToReturn,
+      items: orderToReturn.items.map((item) => ({
         ...item,
         product: item.product
           ? { ...item.product, images: parseJsonField(item.product.images) }

@@ -7,7 +7,6 @@ import type { Page, DashboardStats, Order } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   LayoutDashboard,
   Package,
@@ -26,19 +25,6 @@ import {
   CreditCard,
   Headphones,
 } from 'lucide-react';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
 import { AdminProducts } from './AdminProducts';
 import { AdminOrders } from './AdminOrders';
 import { AdminUsers } from './AdminUsers';
@@ -101,17 +87,240 @@ const GLASS_STATUS_COLORS: Record<string, string> = {
   refunded: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
 };
 
-const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="glass-strong rounded-lg px-3 py-2 border border-emerald-500/20">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-semibold text-gradient-gold">${payload[0].value.toLocaleString()}</p>
+/* ------------------------------------------------------------------ */
+/*  CSS-based chart components (no recharts dependency)               */
+/* ------------------------------------------------------------------ */
+
+interface BarChartItem {
+  label: string;
+  value: number;
+}
+
+function CSSBarChart({
+  data,
+  formatValue,
+  showLine,
+}: {
+  data: BarChartItem[];
+  formatValue?: (v: number) => string;
+  showLine?: boolean;
+}) {
+  const maxVal = Math.max(...data.map((d) => d.value), 1);
+  const fmt = formatValue ?? ((v: number) => `$${v.toLocaleString()}`);
+
+  return (
+    <div className="flex flex-col h-full min-h-[260px]">
+      {/* Y-axis labels + chart area */}
+      <div className="flex flex-1 items-end gap-0">
+        {/* Y-axis */}
+        <div className="flex flex-col justify-between h-full pb-6 pr-2 text-right">
+          {[...Array(5)].map((_, i) => {
+            const val = Math.round(maxVal - (maxVal / 4) * i);
+            return (
+              <span key={i} className="text-[10px] text-muted-foreground/60 leading-none">
+                {fmt(val)}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Bars container */}
+        <div className="flex-1 relative">
+          {/* Horizontal grid lines */}
+          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="border-t border-white/[0.04]" />
+            ))}
+          </div>
+
+          {/* Bars */}
+          <div className="relative flex items-end justify-around gap-2 h-full pb-6">
+            {data.map((item, idx) => {
+              const heightPct = (item.value / maxVal) * 100;
+              return (
+                <div key={idx} className="flex flex-col items-center flex-1 h-full justify-end group">
+                  {/* Tooltip on hover */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity mb-1 pointer-events-none">
+                    <div className="glass-strong rounded-md px-2 py-1 border border-emerald-500/20 text-xs whitespace-nowrap">
+                      <span className="text-muted-foreground">{item.label}: </span>
+                      <span className="font-semibold text-gradient-gold">{fmt(item.value)}</span>
+                    </div>
+                  </div>
+                  {/* Bar */}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${heightPct}%` }}
+                    transition={{ delay: idx * 0.06, duration: 0.5, ease: 'easeOut' }}
+                    className="w-full max-w-[40px] rounded-t-md relative overflow-hidden cursor-pointer"
+                    style={{
+                      background: 'linear-gradient(to top, rgba(5, 150, 105, 0.4), rgba(52, 211, 153, 0.8))',
+                      minHeight: '4px',
+                    }}
+                  >
+                    {/* Shine overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                    {/* Hover highlight */}
+                    <div className="absolute inset-0 bg-emerald-400/0 group-hover:bg-emerald-400/20 transition-colors" />
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
-    );
-  }
-  return null;
-};
+
+      {/* X-axis labels */}
+      <div className="flex pl-[52px]">
+        <div className="flex justify-around flex-1">
+          {data.map((item, idx) => (
+            <span key={idx} className="text-[10px] text-muted-foreground/60 text-center flex-1">
+              {item.label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CSSLineChart({
+  data,
+  formatValue,
+}: {
+  data: BarChartItem[];
+  formatValue?: (v: number) => string;
+}) {
+  const maxVal = Math.max(...data.map((d) => d.value), 1);
+  const fmt = formatValue ?? ((v: number) => `$${v.toLocaleString()}`);
+
+  // Compute SVG path for the line and area
+  const chartWidth = 100;
+  const chartHeight = 100;
+  const padding = 2;
+
+  const points = data.map((item, idx) => {
+    const x = padding + (idx / Math.max(data.length - 1, 1)) * (chartWidth - padding * 2);
+    const y = chartHeight - padding - (item.value / maxVal) * (chartHeight - padding * 2);
+    return { x, y };
+  });
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  const areaPath = `${linePath} L ${points[points.length - 1].x} ${chartHeight - padding} L ${points[0].x} ${chartHeight - padding} Z`;
+
+  return (
+    <div className="flex flex-col h-full min-h-[260px]">
+      {/* Y-axis labels + chart area */}
+      <div className="flex flex-1 items-end gap-0">
+        {/* Y-axis */}
+        <div className="flex flex-col justify-between h-full pb-6 pr-2 text-right">
+          {[...Array(5)].map((_, i) => {
+            const val = Math.round(maxVal - (maxVal / 4) * i);
+            return (
+              <span key={i} className="text-[10px] text-muted-foreground/60 leading-none">
+                {fmt(val)}
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Chart container */}
+        <div className="flex-1 relative">
+          {/* Horizontal grid lines */}
+          <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="border-t border-white/[0.04]" />
+            ))}
+          </div>
+
+          {/* SVG line chart */}
+          <div className="relative h-full pb-6">
+            <svg
+              viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+              preserveAspectRatio="none"
+              className="absolute inset-0 w-full h-full"
+            >
+              {/* Area fill */}
+              <motion.path
+                d={areaPath}
+                fill="url(#areaGradient)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              />
+              {/* Line */}
+              <motion.path
+                d={linePath}
+                fill="none"
+                stroke="#34d399"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1.2, ease: 'easeInOut' }}
+              />
+              <defs>
+                <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#34d399" stopOpacity="0.3" />
+                  <stop offset="95%" stopColor="#34d399" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Interactive dots */}
+            <div className="absolute inset-0 pb-6">
+              <div className="relative h-full w-full">
+                {points.map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="absolute group cursor-pointer"
+                    style={{
+                      left: `${p.x}%`,
+                      top: `${p.y}%`,
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                  >
+                    {/* Hover area */}
+                    <div className="absolute -inset-3" />
+                    {/* Tooltip */}
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none z-10">
+                      <div className="glass-strong rounded-md px-2 py-1 border border-emerald-500/20 text-xs whitespace-nowrap">
+                        <span className="text-muted-foreground">{data[idx].label}: </span>
+                        <span className="font-semibold text-gradient-gold">{fmt(data[idx].value)}</span>
+                      </div>
+                    </div>
+                    {/* Dot */}
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: idx * 0.08, duration: 0.3 }}
+                      className="h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-background shadow-[0_0_8px_rgba(52,211,153,0.5)] group-hover:scale-150 transition-transform"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* X-axis labels */}
+      <div className="flex pl-[52px]">
+        <div className="flex justify-between flex-1 px-1">
+          {data.map((item, idx) => (
+            <span key={idx} className="text-[10px] text-muted-foreground/60 text-center">
+              {item.label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main Component                                                     */
+/* ------------------------------------------------------------------ */
 
 export function AdminDashboard() {
   const { currentPage, navigate, logout } = useStore();
@@ -152,6 +361,16 @@ export function AdminDashboard() {
       default: return <OverviewContent />;
     }
   };
+
+  const dailyData: BarChartItem[] = (stats?.dailyRevenue || demoDailyRevenue).map((d) => ({
+    label: 'date' in d ? (d as { date: string; revenue: number }).date : '',
+    value: d.revenue,
+  }));
+
+  const monthlyData: BarChartItem[] = (stats?.monthlyRevenue || demoMonthlyRevenue).map((d) => ({
+    label: 'month' in d ? (d as { month: string; revenue: number }).month : '',
+    value: d.revenue,
+  }));
 
   const OverviewContent = () => (
     <div className="space-y-6">
@@ -196,31 +415,7 @@ export function AdminDashboard() {
           className="glass-card rounded-xl p-6"
         >
           <h3 className="text-lg font-semibold text-glow-cyan mb-4">Daily Revenue</h3>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stats?.dailyRevenue || demoDailyRevenue}>
-                <defs>
-                  <linearGradient id="emeraldGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
-                <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#34d399"
-                  strokeWidth={2}
-                  fill="url(#emeraldGradient)"
-                  dot={{ fill: '#34d399', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, fill: '#34d399', stroke: '#050a15', strokeWidth: 2 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <CSSLineChart data={dailyData} />
         </motion.div>
 
         <motion.div
@@ -230,23 +425,7 @@ export function AdminDashboard() {
           className="glass-card rounded-xl p-6"
         >
           <h3 className="text-lg font-semibold text-glow-cyan mb-4">Monthly Revenue</h3>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats?.monthlyRevenue || demoMonthlyRevenue}>
-                <defs>
-                  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0.4} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.08)" />
-                <XAxis dataKey="month" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="revenue" fill="url(#barGradient)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <CSSBarChart data={monthlyData} />
         </motion.div>
       </div>
 

@@ -112,7 +112,12 @@ export const useStore = create<AppState>()(
           const state = get();
           // Only push if page actually changes
           if (state.currentPage !== page) {
-            window.history.pushState({ page: state.currentPage }, '');
+            window.history.pushState({
+              page: state.currentPage,
+              selectedProductId: state.selectedProductId,
+              selectedOrderId: state.selectedOrderId,
+              selectedTicketId: state.selectedTicketId,
+            }, '');
           }
         }
         set((state) => ({
@@ -127,11 +132,8 @@ export const useStore = create<AppState>()(
       goBack: () => {
         if (typeof window !== 'undefined') {
           window.history.back();
+          // The popstate handler will restore the page state from history
         }
-        set((state) => ({
-          currentPage: state.previousPage || 'home',
-          previousPage: null,
-        }));
       },
       
       setUser: (user) => set({ user, isAuthenticated: !!user }),

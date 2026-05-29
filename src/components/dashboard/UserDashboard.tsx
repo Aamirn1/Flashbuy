@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
 import type { Page, Order } from '@/lib/types';
@@ -58,7 +58,6 @@ const safeNum = (val: unknown): number => {
 
 export function UserDashboard() {
   const { user, currentPage, navigate, logout, setUser } = useStore();
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [stats, setStats] = useState({
     totalOrders: 0,
     activeTickets: 0,
@@ -68,8 +67,17 @@ export function UserDashboard() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
 
+  // Use ref to prevent infinite re-renders when setUser updates user inside the effect
+  const lastFetchedUserId = useRef<string | undefined>(undefined);
+
   // Fetch real stats
   useEffect(() => {
+    const userId = user?.id;
+    if (!userId) return;
+    // Skip if we already fetched for this user id
+    if (lastFetchedUserId.current === userId) return;
+    lastFetchedUserId.current = userId;
+
     const fetchStats = async () => {
       setLoadingStats(true);
       try {
@@ -87,16 +95,16 @@ export function UserDashboard() {
         if (walletRes.ok) {
           const walletData = await walletRes.json();
           const balance = safeNum(walletData.balance);
-          const bonus = safeNum(walletData.welcomeBonus);
           const bonusUnlocked = walletData.welcomeBonusUnlocked;
           setStats(prev => ({
             ...prev,
-            walletBalance: bonusUnlocked ? balance : balance,
+            walletBalance: balance,
           }));
           // Update user in store
-          if (user) {
+          const currentUser = useStore.getState().user;
+          if (currentUser) {
             setUser({
-              ...user,
+              ...currentUser,
               balance,
               welcomeBonus: safeNum(walletData.welcomeBonus),
               welcomeBonusUnlocked: bonusUnlocked,
@@ -128,10 +136,9 @@ export function UserDashboard() {
       }
     };
     fetchStats();
-  }, [user?.id]);
+  }, [user?.id, setUser]);
 
   const handleNavClick = (page: Page) => {
-    setActiveTab(page === 'dashboard' ? 'dashboard' : page);
     navigate(page);
   };
 

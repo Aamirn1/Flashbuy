@@ -67,6 +67,13 @@ export default function CheckoutView() {
 
   const [isConfirming, setIsConfirming] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+
+  // Scroll to top when order is complete
+  useEffect(() => {
+    if (orderComplete) {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    }
+  }, [orderComplete]);
   const [orderNumber, setOrderNumber] = useState('');
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [completedTotal, setCompletedTotal] = useState(0);
@@ -188,14 +195,11 @@ export default function CheckoutView() {
       setOrderComplete(true);
       clearCart();
       removeCoupon();
-      // Scroll to top so user sees the confirmation
-      window.scrollTo({ top: 0, behavior: 'instant' });
     } catch {
       setOrderNumber(generateOrderNumber());
       setOrderComplete(true);
       clearCart();
       removeCoupon();
-      window.scrollTo({ top: 0, behavior: 'instant' });
     } finally {
       setIsConfirming(false);
     }

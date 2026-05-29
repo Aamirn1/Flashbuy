@@ -53,7 +53,7 @@ export function TicketDetail() {
       const res = await fetch(`/api/tickets/${ticket.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: reply, sender: 'customer' }),
+        body: JSON.stringify({ message: reply }),
       });
       if (res.ok) {
         setReply('');

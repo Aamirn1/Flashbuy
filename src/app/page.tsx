@@ -43,20 +43,35 @@ function PageRouter() {
 
   // Handle browser back button
   useEffect(() => {
-    const handlePopState = () => {
-      const state = useStore.getState();
-      if (state.previousPage) {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.page) {
+        // Restore the page state from history
         useStore.setState({
-          currentPage: state.previousPage,
-          previousPage: null,
+          currentPage: event.state.page,
+          selectedProductId: event.state.selectedProductId || null,
+          selectedOrderId: event.state.selectedOrderId || null,
+          selectedTicketId: event.state.selectedTicketId || null,
         });
       } else {
-        useStore.setState({ currentPage: 'home' });
+        // No history state — user is at the very beginning
+        // Push home back to prevent browser from closing
+        const currentState = useStore.getState();
+        if (currentState.currentPage !== 'home') {
+          useStore.setState({ currentPage: 'home' });
+        }
+        // Push a state so back button doesn't exit the browser/app
+        window.history.pushState({ page: 'home' }, '');
       }
     };
     window.addEventListener('popstate', handlePopState);
-    // Push initial state
+
+    // Replace the current history entry with our initial state
     window.history.replaceState({ page: 'home' }, '');
+
+    // Push an extra entry so back button from home doesn't close browser
+    // This creates a "buffer" that keeps the user in the app
+    window.history.pushState({ page: 'home' }, '');
+
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
