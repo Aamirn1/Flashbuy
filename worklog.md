@@ -83,3 +83,25 @@ Stage Summary:
 - Admin order status changes properly cascade to payment and delivery status
 - User dashboard no longer has infinite re-render loop
 - All 10 modified files committed and pushed to GitHub
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Fix admin & user page UI issues - sub-pages rendered without dashboard wrapper/sidebar
+
+Work Log:
+- Analyzed screenshot: Admin Products page showing "No products found" with cart badge inconsistency
+- Found ROOT CAUSE: When navigating to admin sub-pages (admin-products, admin-orders, etc.) or user sub-pages (orders, wallet, etc.), the PageRouter rendered them STANDALONE without their dashboard wrapper, losing sidebar navigation and layout
+- Fixed page.tsx: All admin pages now render through <AdminDashboard /> which has sidebar + content routing; All user dashboard pages now render through <UserDashboard /> which has sidebar + content routing
+- Fixed page.tsx: Removed unnecessary imports (ProductGrid, ProductDetail, individual admin/user components)
+- Fixed page.tsx: Hide site Header and Footer when on dashboard/admin pages since they have their own full-height layouts
+- Fixed AdminDashboard: Added ArrowLeft icon import, added goBack from store, added "Back to Store" button in both mobile and desktop layouts, added admin-analytics/admin-coupons/admin-settings to renderContent switch
+- Fixed UserDashboard: Added ArrowLeft icon import, added goBack from store, added "Back to Store" button in both mobile and desktop sidebar layouts
+- All lint checks pass
+- Pushed to GitHub (commit 5b880f5)
+
+Stage Summary:
+- Critical fix: Admin and user sub-pages now properly render within their dashboard wrappers with sidebar navigation
+- Back-to-store navigation added to both admin and user dashboards
+- Site header/footer hidden on dashboard pages to prevent double navigation
+- All changes pushed to GitHub
