@@ -65,7 +65,11 @@ function PageRouter() {
 
   // Scroll to top on every page navigation
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
   }, [currentPage]);
 
   // Redirect to home if trying to access protected pages without auth

@@ -467,3 +467,12 @@
 .orb-blue {
   background: rgba(16, 185, 129, 0.1);
 }
+
+/* ===== Hide scrollbar for tab overflow ===== */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

@@ -199,7 +199,7 @@ export function TicketDetail() {
                 className={`flex gap-3 ${msg.isAdmin ? 'flex-row' : 'flex-row-reverse'}`}
               >
                 <Avatar className="h-8 w-8 flex-shrink-0 ring-1 ring-emerald-500/20">
-                  <AvatarFallback className={msg.isAdmin ? 'bg-emerald-500/20 text-emerald-400' : 'bg-violet-500/20 text-violet-400'}>
+                  <AvatarFallback className={msg.isAdmin ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-500/15 text-emerald-400'}>
                     {msg.isAdmin ? <Headphones className="h-4 w-4" /> : <User className="h-4 w-4" />}
                   </AvatarFallback>
                 </Avatar>
@@ -207,7 +207,7 @@ export function TicketDetail() {
                   <div className="flex items-center gap-2 mb-1">
                     {msg.isAdmin && <span className="text-xs font-medium text-emerald-400">Support Team</span>}
                     <span className="text-xs text-muted-foreground">{msg.timestamp ? formatDate(msg.timestamp) : ''}</span>
-                    {!msg.isAdmin && <span className="text-xs font-medium text-violet-400">You</span>}
+                    {!msg.isAdmin && <span className="text-xs font-medium text-emerald-400">You</span>}
                   </div>
                   <div className={`inline-block rounded-2xl px-4 py-2.5 text-sm ${
                     msg.isAdmin

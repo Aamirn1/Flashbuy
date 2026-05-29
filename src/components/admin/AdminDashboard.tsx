@@ -542,7 +542,7 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-mesh">
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <div className="glass border-b border-emerald-500/10 px-4 py-3">
+        <div className="glass border-b border-emerald-500/10 px-4 py-3 sticky top-0 z-30">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={goBack}>
@@ -556,15 +556,15 @@ export function AdminDashboard() {
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex gap-1 overflow-x-auto pb-1">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item.page}
                 onClick={() => handleNavClick(item.page)}
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium whitespace-nowrap transition-all ${
                   currentPage === item.page
                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent'
                 }`}
               >
                 {item.icon}
@@ -573,7 +573,7 @@ export function AdminDashboard() {
             ))}
           </div>
         </div>
-        <div className="p-4">{renderContent()}</div>
+        <div className="p-4 pb-8">{renderContent()}</div>
       </div>
 
       {/* Desktop Layout */}

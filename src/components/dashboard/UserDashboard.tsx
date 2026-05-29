@@ -162,7 +162,7 @@ export function UserDashboard() {
     { key: 'orders', page: 'orders' as Page, label: 'Total Orders', value: stats.totalOrders.toString(), icon: Package, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', isText: true },
     { key: 'wallet', page: 'wallet' as Page, label: 'Wallet Balance', value: `$${safeNum(user?.balance || stats.walletBalance).toFixed(2)}`, icon: DollarSign, iconBg: 'bg-emerald-500/20', iconColor: 'text-emerald-400', isText: false },
     { key: 'tickets', page: 'tickets' as Page, label: 'Active Tickets', value: stats.activeTickets.toString(), icon: Ticket, iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400', isText: true },
-    { key: 'referrals', page: 'referrals' as Page, label: 'Referral Earnings', value: `$${stats.referralEarnings.toFixed(2)}`, icon: TrendingUp, iconBg: 'bg-violet-500/20', iconColor: 'text-violet-400', isText: false },
+    { key: 'referrals', page: 'referrals' as Page, label: 'Referral Earnings', value: `$${stats.referralEarnings.toFixed(2)}`, icon: TrendingUp, iconBg: 'bg-amber-500/20', iconColor: 'text-amber-400', isText: false },
   ];
 
   const OverviewContent = () => (
@@ -352,7 +352,7 @@ export function UserDashboard() {
     <div className="min-h-screen bg-mesh">
       {/* Mobile Tabs */}
       <div className="lg:hidden">
-        <div className="glass border-b border-emerald-500/10 px-4 py-3">
+        <div className="glass border-b border-emerald-500/10 px-4 py-3 sticky top-0 z-30">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" className="text-emerald-400 hover:bg-emerald-500/10 h-8 w-8 p-0" onClick={goBack}>
@@ -369,7 +369,7 @@ export function UserDashboard() {
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
             {NAV_ITEMS.map((item) => {
               const isActive = currentPage === item.page ||
                 (item.page === 'orders' && currentPage === 'order-detail') ||
@@ -378,10 +378,10 @@ export function UserDashboard() {
                 <button
                   key={item.page}
                   onClick={() => handleNavClick(item.page)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   {item.icon}
@@ -391,7 +391,7 @@ export function UserDashboard() {
             })}
           </div>
         </div>
-        <div className="p-4">{renderContent()}</div>
+        <div className="p-4 pb-8">{renderContent()}</div>
       </div>
 
       {/* Desktop Layout */}

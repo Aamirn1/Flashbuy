@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Copy, DollarSign, TrendingUp, Gift, CheckCircle2, ArrowUpRight, RefreshCw } from 'lucide-react';
+import { Users, Copy, DollarSign, TrendingUp, Gift, CheckCircle2, ArrowUpRight, RefreshCw, Share2, Zap } from 'lucide-react';
 
 // Safe number conversion
 const safeNum = (val: unknown): number => {
@@ -125,35 +125,49 @@ export function ReferralView() {
 
         <div className="relative space-y-3">
           <div className="flex items-center gap-2">
-            <Input
-              readOnly
-              value={referralCode}
-              className="glass-input font-mono text-base sm:text-lg text-emerald-400"
-            />
+            <div className="flex-1 glass-light rounded-xl px-4 py-3 border border-emerald-500/20 overflow-hidden">
+              <p className="font-mono text-base sm:text-lg text-emerald-400 tracking-wider">{referralCode}</p>
+            </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleCopy(referralCode, 'code')}
-              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-10 w-10"
+              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-11 w-11 rounded-xl"
             >
-              {copied === 'code' ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+              {copied === 'code' ? <CheckCircle2 className="h-5 w-5 text-emerald-400" /> : <Copy className="h-5 w-5" />}
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <Input
-              readOnly
-              value={referralLink}
-              className="glass-input text-xs sm:text-sm text-foreground/60"
-            />
+            <div className="flex-1 glass-light rounded-xl px-4 py-2.5 border border-emerald-500/15 overflow-hidden">
+              <p className="text-xs sm:text-sm text-foreground/70 truncate">{referralLink}</p>
+            </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => handleCopy(referralLink, 'link')}
-              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-10 w-10"
+              className="flex-shrink-0 text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/20 h-11 w-11 rounded-xl"
             >
-              {copied === 'link' ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+              {copied === 'link' ? <CheckCircle2 className="h-5 w-5 text-emerald-400" /> : <Copy className="h-5 w-5" />}
             </Button>
           </div>
+          {/* Share Button */}
+          <button
+            className="w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 bg-emerald-500/15 text-emerald-400 font-semibold text-sm border border-emerald-500/30 hover:bg-emerald-500/25 transition-all"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Flash Buy - Get Flash USDT',
+                  text: `Join Flash Buy and get Flash USDT at just $0.01 per unit! Use my referral code: ${referralCode}`,
+                  url: referralLink,
+                }).catch(() => {});
+              } else {
+                handleCopy(referralLink, 'link');
+              }
+            }}
+          >
+            <Share2 className="h-4 w-4" />
+            Share Referral Link
+          </button>
         </div>
       </motion.div>
 
@@ -164,8 +178,8 @@ export function ReferralView() {
             label: 'Total Referrals',
             value: totalReferrals.toString(),
             icon: Users,
-            iconBg: 'bg-violet-500/20',
-            iconColor: 'text-violet-400',
+            iconBg: 'bg-emerald-500/20',
+            iconColor: 'text-emerald-400',
             isText: true,
           },
           {
@@ -243,8 +257,8 @@ export function ReferralView() {
             {referrals.map((ref, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/20 transition-all">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
-                    <Users className="size-4 text-violet-400" />
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                    <Users className="size-4 text-emerald-400" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{ref.name}</p>

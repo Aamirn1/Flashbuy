@@ -71,7 +71,12 @@ export default function CheckoutView() {
   // Scroll to top when order is complete
   useEffect(() => {
     if (orderComplete) {
-      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      // Use requestAnimationFrame to ensure DOM has updated before scrolling
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
     }
   }, [orderComplete]);
   const [orderNumber, setOrderNumber] = useState('');

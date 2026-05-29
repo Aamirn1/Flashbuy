@@ -515,7 +515,7 @@ export function AdminTickets() {
                               className={
                                 msg.isAdmin
                                   ? 'bg-emerald-500/20 text-emerald-400'
-                                  : 'bg-violet-500/20 text-violet-400'
+                                  : 'bg-emerald-500/15 text-emerald-400'
                               }
                             >
                               {msg.isAdmin ? (
@@ -536,7 +536,7 @@ export function AdminTickets() {
                                 {msg.timestamp ? formatMessageTime(msg.timestamp) : ''}
                               </span>
                               {!msg.isAdmin && (
-                                <span className="text-xs font-medium text-violet-400">
+                                <span className="text-xs font-medium text-emerald-400">
                                   {selectedTicket.user?.name || 'Customer'}
                                 </span>
                               )}
@@ -545,7 +545,7 @@ export function AdminTickets() {
                               className={`inline-block rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                                 msg.isAdmin
                                   ? 'bg-emerald-500/15 text-foreground border border-emerald-500/20 rounded-tl-sm'
-                                  : 'bg-violet-500/15 text-foreground border border-violet-500/20 rounded-tr-sm'
+                                  : 'bg-emerald-500/10 text-foreground border border-emerald-500/15 rounded-tr-sm'
                               }`}
                             >
                               {msg.message}

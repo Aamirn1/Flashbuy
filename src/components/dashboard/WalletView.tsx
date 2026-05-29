@@ -451,7 +451,7 @@ export function WalletView() {
               <button
                 key={opt.value}
                 onClick={() => setTypeFilter(opt.value)}
-                className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all ${
+                className={`rounded-xl px-2.5 py-1.5 text-xs font-medium transition-all ${
                   typeFilter === opt.value
                     ? 'glass-light border-emerald-500/30 text-emerald-400'
                     : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
@@ -469,11 +469,11 @@ export function WalletView() {
             <p className="text-sm">Your transaction history will appear here.</p>
           </div>
         ) : (
-          <div className="max-h-96 overflow-y-auto px-4 sm:px-6 pb-4 space-y-2">
+          <div className="max-h-[400px] overflow-y-auto px-4 sm:px-6 pb-4 space-y-2">
             {filteredTransactions.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg glass-light hover:border-emerald-500/20 transition-all">
+              <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl glass-light hover:border-emerald-500/20 transition-all">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                  <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${
                     ['deposit', 'refund', 'commission', 'welcome_bonus'].includes(tx.type)
                       ? 'bg-emerald-500/20' : 'bg-red-500/20'
                   }`}>
